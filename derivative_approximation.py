@@ -1,3 +1,7 @@
+import manage_list as ml
+import matplotlib.pyplot as plt
+
+
 class FiniteDifference(h, f, d_f=None, dd_f=None):
     """ Represents the first and second order finite difference approximation of a function and
     allows for a computation of error to the exact derivatives.
@@ -25,6 +29,7 @@ class FiniteDifference(h, f, d_f=None, dd_f=None):
     f = None
     d_f = None
     dd_f = None
+    
     def __init__(self, h, f, d_f=None, dd_f=None):
         """ returns an Object of class FiniteDifference
 
@@ -128,12 +133,37 @@ class FiniteDifference(h, f, d_f=None, dd_f=None):
         if self.d_f is not None:
             for i in range(a, b, step):
                 max_dif_2 = max(max_dif_2, abs(f_2(i) - self.dd_f(i)))
-        if max_dif_1 is not None and max_dif_2 is not None:
-            return max_dif_1, max_dif_2
-        elif max_dif_2 is None:
-            return max_dif_1
-        else:
-            return max_dif_2
+        return max_dif_1, max_dif_2
+
+def plot(title, txtfile, label1):
+    fig1, ax1 = plt.subplots(figsize=(5, 5))
+    plt.yscale("log")
+    plt.xscale("log")
+    plt.xticks(fontsize=20)
+    plt.yticks(fontsize=20)
+    plt.title(title, fontsize=40)
+    plt.ylabel("y", fontsize = 20)
+    plt.xlabel("x", fontsize = 20)
+    ax1.grid()
+
+
+    lines = []
+    with open(txtfile, "r") as f:
+        lines = f.readlines()
+    lines_list = [i.split() for i in lines]
+    y = []
+    x = []
+    for e in lines_list:
+        x += float(e[0])
+        y += float(e[1])
+    
+    ax1.plot(x, y, "g", label=label1, linewidth = 2)
+    ax1.legend(fontsize = 20, loc='upper left')
+
+    plt.show()
+
+
+
 
 # Methoden / Funktionen 3 un 4
 
@@ -144,4 +174,3 @@ def main():
 
 if __name__=="__main__":
     main()
-    
