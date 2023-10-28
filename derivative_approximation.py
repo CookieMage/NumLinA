@@ -1,5 +1,6 @@
 import manage_list as ml
 import matplotlib.pyplot as plt
+from math import sin
 import re
 import os
 
@@ -157,9 +158,9 @@ class FiniteDifference:
         dh_f = self.compute_dh_f()
         ddh_f = self.compute_ddh_f()
         errors = self.compute_errors(a, b, p)
-        ml.save(func_name, "errors.csv", "dh_1", errors[0])
-        ml.save(func_name, "errors.csv", "ddh_2", errors[1])
-        ml.save(func_name, "errors.csv", "")
+        ml.save(func_name, "_error.csv", "dh_1", errors[0])
+        ml.save(func_name, "_error.csv", "ddh_2", errors[1])
+        ml.save(func_name, "_error.csv", "")
         for i in array:
             ml.save(func_name, ".csv", i, self.f(i))
             ml.save(func_name, "_dh.csv", i, dh_f(i))
@@ -181,28 +182,27 @@ def plothelper(filename,):
         lines = [i.split() for i in lines]
         lines_list = []
         
-        counter = 0
-        for i,e in enumerate(lines):
-            if len(lines_list) < counter+1:
-                lines_list += [[]]
-            if e == []:
-                counter += 1
-                continue
-            lines_list[counter] += e
-        print(filename)
-        print(lines_list[0])
-        x, y = [], []
-        for i,e in enumerate(lines_list):
-            x += [[e[2*i] for i in range(len(e)//2)]]
-        for i in enumerate(lines_list):
-            y += [[e[2*i+1] for i in range(len(e)//2)]]
-        for i,e in enumerate(y):
-            print(y[0])
-            y[i] = float(e)
-        for i,e in enumerate(x):
-            print(x)
-            x[i] = float(e)
-    return x, y
+        if "error" not in filename:
+            counter = 0
+            for i,e in enumerate(lines):
+                if len(lines_list) < counter+1:
+                    lines_list += [[]]
+                if e == []:
+                    counter += 1
+                    continue
+                lines_list[counter] += e
+            x, y = [], []
+            for i,e in enumerate(lines_list):
+                x += [[e[2*i] for i in range(len(e)//2)]]
+            for i in enumerate(lines_list):
+                y += [[e[2*i+1] for i in range(len(e)//2)]]
+            for i,e in enumerate(y):
+                for j,f in enumerate(e):
+                    y[i][j] = float(f)
+            for i,e in enumerate(x):
+                for j,f in enumerate(e):
+                    x[i][j] = float(f)
+            return x, y
 
 
 
@@ -301,46 +301,38 @@ def main():
         ml.clear(i, "_2.csv")
 
 
-    def f_1(x):
-        return x**2
-    def d_f_1(x):
-        return 2*x
-    def dd_f_1(x):
-        return 2
+    def g(x):
+        return sin(x)/x
+    def d_g(x):
+        return 0
+    def dd_g(x):
+        return 0
 
-    def f_2(x):
-        return 3*x**3
-    def d_f_2(x):
-        return 9*x**2
-    def dd_f_2(x):
-        return 18*x
+    def gk(x, k=1):
+        return sin(k*x)/x
+    def d_gk(x, k=1):
+        return 0
+    def dd_gk(x, k=1):
+        return 0
 
-    def f_3(x):
-        return 3*x**2+2*x-7
-    def d_f_3(x):
-        return 6*x+2
-    def dd_f_3(x):
-        return 6
-    
+
+
     for i in range(10):
         h = 10**(-i)
-        exp_1 = FiniteDifference(h, f_1, d_f_1, dd_f_1)
-        exp_1.experiment("f1", a, b, p)
+        exp_1 = FiniteDifference(h, g, d_g, dd_g)
+        exp_1.experiment("g", a, b, p)
     for i in range(10):
         h = 10**(-i)
-        exp_2 = FiniteDifference(h, f_2, d_f_2, dd_f_2)
-        exp_2.experiment("f2", a, b, p)
-    for i in range(10):
-        h = 10**(-i)
-        exp_3 = FiniteDifference(h, f_3, d_f_3, dd_f_3)
-        exp_3.experiment("f3", a, b, p)
+        exp_2 = FiniteDifference(h, gk, d_gk, dd_gk)
+        exp_2.experiment("gk", a, b, p)
 
-    plot("1. Ableitung", "f1_1.csv", "f'", "f1_dh.csv", "dh")
-    plot("2. Ableitung", "f1_1.csv", "f''", "f1_dh.csv", "ddh")
-    plot("1. Ableitung", "f2_1.csv", "f'", "f2_dh.csv", "dh")
-    plot("2. Ableitung", "f2_1.csv", "f''", "f2_dh.csv", "ddh")
-    plot("1. Ableitung", "f3_1.csv", "f'", "f3_dh.csv", "dh")
-    plot("2. Ableitung", "f3_1.csv", "f''", "f3_dh.csv", "ddh")
+
+    plot("1. Ableitung", "g_1.csv", "g'", "g_dh.csv", "dh")
+    plot("2. Ableitung", "g_2.csv", "g''", "g_ddh.csv", "ddh")
+    plot("Abschätzungsfehler", "g_error.csv", "g'", "g_dh.csv", "dh")
+    plot("1. Ableitung", "g_1.csv", "g'", "g_dh.csv", "dh")
+    plot("2. Ableitung", "g_2.csv", "g''", "g_ddh.csv", "ddh")
+    plot("Abschätzungsfehler", "g_error.csv", "g''", "g_dh.csv", "ddh")
 
 
 if __name__=="__main__":
