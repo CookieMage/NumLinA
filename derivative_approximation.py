@@ -192,10 +192,10 @@ def plothelper(filename,):
                     continue
                 lines_list[counter] += e
             x, y = [], []
-            for i,e in enumerate(lines_list):
-                x += [[e[2*i] for i in range(len(e)//2)]]
-            for i in enumerate(lines_list):
-                y += [[e[2*i+1] for i in range(len(e)//2)]]
+            for e in lines_list:
+                x += [[e[2*j] for j in range(len(e)//2)]]
+            for e in lines_list:
+                y += [[e[2*j+1] for j in range(len(e)//2)]]
             for i,e in enumerate(y):
                 for j,f in enumerate(e):
                     y[i][j] = float(f)
@@ -203,6 +203,29 @@ def plothelper(filename,):
                 for j,f in enumerate(e):
                     x[i][j] = float(f)
             return x, y
+        else:
+            counter = 0
+            for i,e in enumerate(lines):
+                if len(lines_list) < counter+1:
+                    lines_list += [[]]
+                if e == []:
+                    counter += 1
+                    continue
+                lines_list[counter] += e
+            for i,e in enumerate(lines_list):
+                for j,f in enumerate(e):
+                    if "dh" in f:
+                        lines_list[i].pop(j)
+            dh, ddh = [], []
+            for e in lines_list:
+                dh += [[e[2*j] for j in range(len(e)//2)]]
+            for e in lines_list:
+                ddh += [[e[2*j+1] for j in range(len(e)//2)]]
+            print(dh, ddh)
+            for i,e in enumerate(dh):
+                for j,f in enumerate(e):
+                    y[i][j] = float(f)
+            return y
 
 
 
@@ -292,13 +315,9 @@ def main():
     b = 1000
     p = 10
 
-    for i in ["f1", "f2", "f3"]:
-        ml.clear(i, "errors.csv")
-        ml.clear(i, ".csv")
-        ml.clear(i, "_dh.csv")
-        ml.clear(i, "_ddh.csv")
-        ml.clear(i, "_1.csv")
-        ml.clear(i, "_2.csv")
+    for func_name in ["g", "gk"]:
+        for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
+            ml.clear(func_name, file + ".csv")
 
 
     def g(x):
