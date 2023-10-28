@@ -1,6 +1,7 @@
 import manage_list as ml
 import matplotlib.pyplot as plt
 import re
+import os
 
 
 class FiniteDifference:
@@ -140,7 +141,6 @@ class FiniteDifference:
         # erhöhen. Dies funktioniert, da range() nur ganze Zahlen erzeugen kann.
         array = [a+0.5*x for x in range(0, 2*abs(b-a)+1, step)]
         if self.d_f is not None:
-            print(array)
             for i in array:
                 max_dif_1 = max(max_dif_1, abs(f_1(i) - self.d_f(i)))
         if self.d_f is not None:
@@ -149,7 +149,7 @@ class FiniteDifference:
         return max_dif_1, max_dif_2
 
 
-    def experiment(self, a, b, p):
+    def experiment(self, func_name, a, b, p):
         step = ((2*abs(b-a)) // (p-1))
         if step == 0:
             step = 1
@@ -157,27 +157,50 @@ class FiniteDifference:
         dh_f = self.compute_dh_f()
         ddh_f = self.compute_ddh_f()
         errors = self.compute_errors(a, b, p)
-        ml.save("errors.txt", "dh_1", errors[0])
-        ml.save("errors.txt", "ddh_2", errors[1])
+        ml.save(func_name, "errors.csv", "dh_1", errors[0])
+        ml.save(func_name, "errors.csv", "ddh_2", errors[1])
+        ml.save(func_name, "errors.csv", "")
         for i in array:
-            ml.save("f.txt", i, self.f(i))
-            ml.save("f_1.txt", i, dh_f(i))
-            ml.save("f_2.txt", i, ddh_f(i))
-            ml.save("f_2.txt", i, self.d_f(i))
-            ml.save("f_2.txt", i, self.dd_f(i))
+            ml.save(func_name, ".csv", i, self.f(i))
+            ml.save(func_name, "_dh.csv", i, dh_f(i))
+            ml.save(func_name, "_ddh.csv", i, ddh_f(i))
+            ml.save(func_name, "_1.csv", i, self.d_f(i))
+            ml.save(func_name, "_2.csv", i, self.dd_f(i))
+        ml.save(func_name, ".csv", "")
+        ml.save(func_name, "_dh.csv", "")
+        ml.save(func_name, "_ddh.csv", "")
+        ml.save(func_name, "_1.csv", "")
+        ml.save(func_name, "_2.csv", "")
 
 
 
 
 def plothelper(filename,):
-    with open(filename, "r") as file:
+    with open("experiments/" + filename, "r") as file:
         lines = file.readlines()
-        lines_list = [i.split() for i in lines]
-        y = [element[1] for element in lines_list]
-        x = [element[0] for element in lines_list]
+        lines = [i.split() for i in lines]
+        lines_list = []
+        
+        counter = 0
+        for i,e in enumerate(lines):
+            if len(lines_list) < counter+1:
+                lines_list += [[]]
+            if e == []:
+                counter += 1
+                continue
+            lines_list[counter] += e
+        print(filename)
+        print(lines_list[0])
+        x, y = [], []
+        for i,e in enumerate(lines_list):
+            x += [[e[2*i] for i in range(len(e)//2)]]
+        for i in enumerate(lines_list):
+            y += [[e[2*i+1] for i in range(len(e)//2)]]
         for i,e in enumerate(y):
+            print(y[0])
             y[i] = float(e)
         for i,e in enumerate(x):
+            print(x)
             x[i] = float(e)
     return x, y
 
@@ -267,28 +290,31 @@ def main():
     
     a = -1000
     b = 1000
-    p = 4
-    
+    p = 10
+
+    for i in ["f1", "f2", "f3"]:
+        ml.clear(i, "errors.csv")
+        ml.clear(i, ".csv")
+        ml.clear(i, "_dh.csv")
+        ml.clear(i, "_ddh.csv")
+        ml.clear(i, "_1.csv")
+        ml.clear(i, "_2.csv")
+
+
     def f_1(x):
         return x**2
     def d_f_1(x):
         return 2*x
     def dd_f_1(x):
         return 2
-    
-    exp_1 = FiniteDifference(1, f_1, d_f_1, dd_f_1)
-    exp_1.compute_errors(a, b, p)
-    
+
     def f_2(x):
-        return x**3
+        return 3*x**3
     def d_f_2(x):
         return 9*x**2
     def dd_f_2(x):
         return 18*x
-    
-    exp_2 = FiniteDifference(1, f_2, d_f_2, dd_f_2)
-    exp_2.compute_errors(a, b, p)
-    
+
     def f_3(x):
         return 3*x**2+2*x-7
     def d_f_3(x):
@@ -296,9 +322,26 @@ def main():
     def dd_f_3(x):
         return 6
     
-    exp_3 = FiniteDifference(1, f_3, d_f_3, dd_f_3)
-    exp_3.compute_errors(a, b, p)
-    
+    for i in range(10):
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, f_1, d_f_1, dd_f_1)
+        exp_1.experiment("f1", a, b, p)
+    for i in range(10):
+        h = 10**(-i)
+        exp_2 = FiniteDifference(h, f_2, d_f_2, dd_f_2)
+        exp_2.experiment("f2", a, b, p)
+    for i in range(10):
+        h = 10**(-i)
+        exp_3 = FiniteDifference(h, f_3, d_f_3, dd_f_3)
+        exp_3.experiment("f3", a, b, p)
+
+    plot("1. Ableitung", "f1_1.csv", "f'", "f1_dh.csv", "dh")
+    plot("2. Ableitung", "f1_1.csv", "f''", "f1_dh.csv", "ddh")
+    plot("1. Ableitung", "f2_1.csv", "f'", "f2_dh.csv", "dh")
+    plot("2. Ableitung", "f2_1.csv", "f''", "f2_dh.csv", "ddh")
+    plot("1. Ableitung", "f3_1.csv", "f'", "f3_dh.csv", "dh")
+    plot("2. Ableitung", "f3_1.csv", "f''", "f3_dh.csv", "ddh")
+
 
 if __name__=="__main__":
     main()
