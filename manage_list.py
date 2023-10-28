@@ -151,7 +151,7 @@ def save(filename, data, data1=""):
     '''
     try:
         # haenge die Parameter im Format "iteration data\n" hinten an das Dokument filename an
-        with open(filename, "a", encoding="utf8") as file:
+        with open(filename, "w", encoding="utf8") as file:
             file.write(str(data)+" "+str(data1)+"\n")
     except OSError as exc:
         raise exc
