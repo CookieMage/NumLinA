@@ -239,7 +239,6 @@ def plot(title, filename_1, name_1, filename_2 = None, name_2 = None, filename_3
     if "error" not in filename_1:
         x, y1 = plothelper(filename_1)
         for e in y1:
-            print(max(e))
             plt.plot(x, e, "b", linewidth = 2, linestyle="dashed")
         legend.append(name_1)
         graphs.append(Line2D([0], [0], color = "b", linewidth=2, linestyle="dashed"))
@@ -351,7 +350,7 @@ def main():
     """
     a = math.pi
     b = 3*math.pi
-    p = 10
+    p = 100
     c = 0.1
 
     for func_name in ["g", "gk"]:
@@ -375,22 +374,22 @@ def main():
 
 
 
-    for i in range(1, 16):
-        h = 10**(-i)
+    for i in range(4, 18):
+        h = 10**(-i*0.5)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
-    for i in range(1, 16):
-        h = 10**(-i)
+    for i in range(4, 18):
+        h = 10**(-i*0.5)
         exp_2 = FiniteDifference(h, gk, d_gk, dd_gk)
         exp_2.experiment("gk", a, b, p)
 
 
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
-    plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
-    plot("Abschätzungsfehler", "g_error.csv", "")
+    #plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
+    #plot("Abschätzungsfehler", "g_error.csv", "")
     plot("1. Ableitung", "gk_dh.csv", "dh", "gk_1.csv", "g'")
-    plot("2. Ableitung", "gk_ddh.csv", "ddh", "gk_2.csv", "g''")
-    plot("Abschätzungsfehler", "gk_error.csv", "")
+    #plot("2. Ableitung", "gk_ddh.csv", "ddh", "gk_2.csv", "g''")
+    #plot("Abschätzungsfehler", "gk_error.csv", "")
 
 
 if __name__=="__main__":
