@@ -350,13 +350,14 @@ def main():
     """
     a = math.pi
     b = 3*math.pi
-    p = 100
+    p = 1000
     c = 0.1
 
     for func_name in ["g", "gk"]:
         for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
             ml.clear(func_name, file + ".csv")
 
+    progress_bar(0, 30)
 
     def g(x):
         return math.sin(x)/x
@@ -365,6 +366,8 @@ def main():
     def dd_g(x):
         return -((x**2-2)*math.sin(x)+2*x*math.cos(x))/x**3
 
+    progress_bar(1, 30)
+
     def gk(x, k=c):
         return math.sin(k*x)/x
     def d_gk(x, k=c):
@@ -372,24 +375,26 @@ def main():
     def dd_gk(x, k=c):
         return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
 
+    progress_bar(2, 30)
 
-
-    for i in range(4, 18):
-        h = 10**(-i*0.5)
+    for i in range(2, 9):
+        h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
-    for i in range(4, 18):
-        h = 10**(-i*0.5)
+        progress_bar(i-1, 15)
+    for i in range(2, 9):
+        h = 10**(-i)
         exp_2 = FiniteDifference(h, gk, d_gk, dd_gk)
         exp_2.experiment("gk", a, b, p)
+        progress_bar(i+6, 15)
 
 
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
-    #plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
-    #plot("Abschätzungsfehler", "g_error.csv", "")
+    plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
+    plot("Abschätzungsfehler", "g_error.csv", "")
     plot("1. Ableitung", "gk_dh.csv", "dh", "gk_1.csv", "g'")
-    #plot("2. Ableitung", "gk_ddh.csv", "ddh", "gk_2.csv", "g''")
-    #plot("Abschätzungsfehler", "gk_error.csv", "")
+    plot("2. Ableitung", "gk_ddh.csv", "ddh", "gk_2.csv", "g''")
+    plot("Abschätzungsfehler", "gk_error.csv", "")
 
 
 if __name__=="__main__":
