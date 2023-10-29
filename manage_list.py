@@ -19,7 +19,7 @@ main():
 
 import os
 
-def save(func_name, filename, data, data1=""):
+def save(func_name, filename, data, data_1="", data_2=""):
     '''function that saves data in a specific format
     
     Parameters
@@ -44,7 +44,7 @@ def save(func_name, filename, data, data1=""):
             os.makedirs(cwd + "/experiments")
         # haenge die Parameter im Format "iteration data\n" hinten an das Dokument filename an
         with open("experiments/" + func_name + filename, "a", encoding="utf8") as file:
-            file.write(str(data)+" "+str(data1)+"\n")
+            file.write(str(data)+" "+str(data_1)+" "+str(data_2)+"\n")
     except OSError as exc:
         raise exc
     except TypeError as exc:

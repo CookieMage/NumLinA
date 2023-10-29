@@ -1,6 +1,7 @@
 import manage_list as ml
 import matplotlib.pyplot as plt
 from math import sin
+import matplotlib
 import re
 import os
 
@@ -158,8 +159,8 @@ class FiniteDifference:
         dh_f = self.compute_dh_f()
         ddh_f = self.compute_ddh_f()
         errors = self.compute_errors(a, b, p)
-        ml.save(func_name, "_error.csv", "dh_1", errors[0])
-        ml.save(func_name, "_error.csv", "ddh_2", errors[1])
+        ml.save(func_name, "_error.csv", "dh_1", self.h, errors[0])
+        ml.save(func_name, "_error.csv", "ddh_2", self.h, errors[1])
         ml.save(func_name, "_error.csv", "")
         for i in array:
             ml.save(func_name, ".csv", i, self.f(i))
@@ -216,16 +217,23 @@ def plothelper(filename,):
                 for j,f in enumerate(e):
                     if "dh" in f:
                         lines_list[i].pop(j)
-            dh, ddh = [], []
+            h, temp, dh, ddh = [], [], [], []
             for e in lines_list:
+                h += [[e[2*j] for j in range(len(e)//2)]]
+            h = [e[0] for e in h]
+            for e in lines_list:
+                temp += [[e[2*j+1] for j in range(len(e)//2)]]
+            for e in temp:
                 dh += [[e[2*j] for j in range(len(e)//2)]]
-            for e in lines_list:
+            for e in temp:
                 ddh += [[e[2*j+1] for j in range(len(e)//2)]]
-            print(dh, ddh)
-            for i,e in enumerate(dh):
-                for j,f in enumerate(e):
-                    y[i][j] = float(f)
-            return y
+            dh = [inner for outer in dh for inner in outer]
+            ddh = [inner for outer in ddh for inner in outer]
+            for i, e in enumerate(dh):
+                    dh[i] = float(e)
+            for i, e in enumerate(ddh):
+                    ddh[i] = float(e)
+            return h, dh, ddh
 
 
 
@@ -236,28 +244,50 @@ def plot(title, filename_1, name_1, filename_2 = None, name_2 = None, filename_3
     plt.xticks(fontsize=20)
     plt.yticks(fontsize=20)
     plt.title(title, fontsize=40)
-    plt.xlabel("Anzahl der Listenelemente", fontsize = 20)
     ax1.grid()
     
     y1 = []
-    x, y1 = plothelper(filename_1)
-    plt.plot(x, y1, "b", label = name_1, linewidth = 2, linestyle="solid")
+    if "error" not in filename_1:
+        x, y1 = plothelper(filename_1)
+        plt.plot(x, y1, "b", label = name_1, linewidth = 2, linestyle="solid")
+    else:
+        h, dh, ddh = plothelper(filename_1)
+        plt.plot(h, dh, "b", label = name_1, linewidth = 2, linestyle="solid")
+        plt.plot(h, ddh, "g", label = name_1, linewidth = 2, linestyle="solid")
+
+        
     
     if filename_2 != None:
-        y2 = []
-        x, y2 = plothelper(filename_2)
-        plt.plot(x, y2, "g", label = name_2, linewidth = 2, linestyle="dashed")
+        if "error" not in filename_1:
+            y2 = []
+            x, y2 = plothelper(filename_2)
+            plt.plot(x, y2, "g", label = name_2, linewidth = 2, linestyle="dashed")
+        else:
+            h, dh, ddh = plothelper(filename_1)
+            plt.plot(h, dh, "b", label = name_1, linewidth = 2, linestyle="dashed")
+            plt.plot(h, ddh, "g", label = name_1, linewidth = 2, linestyle="dashed")
+
         
     if filename_3 != None:
-        y3 = []
-        x, y3 = plothelper(filename_3)
-        plt.plot(x, y3, "r", label = name_3, linewidth = 2, linestyle="dotted")
+        if "error" not in filename_1:
+            y3 = []
+            x, y3 = plothelper(filename_3)
+            plt.plot(x, y3, "r", label = name_3, linewidth = 2, linestyle="dotted")
+        else:
+            h, dh, ddh = plothelper(filename_1)
+            plt.plot(h, dh, "b", label = name_1, linewidth = 2, linestyle="dotted")
+            plt.plot(h, ddh, "g", label = name_1, linewidth = 2, linestyle="dotted")
         
     if filename_4 != None:
-        y4 = []
-        x, y4 = plothelper(filename_4)
-        plt.plot(x, y4, "y", label = name_4, linewidth = 2, linestyle="dashdot")
-        
+        if "error" not in filename_1:
+            y4 = []
+            x, y4 = plothelper(filename_4)
+            plt.plot(x, y4, "y", label = name_4, linewidth = 2, linestyle="dashdot")
+        else:
+            h, dh, ddh = plothelper(filename_1)
+            plt.plot(h, dh, "b", label = name_1, linewidth = 2, linestyle="dashdot")
+            plt.plot(h, ddh, "g", label = name_1, linewidth = 2, linestyle="dashdot")
+    plt.setp(ax1.get_xticklabels(), rotation=40, horizontalalignment='right')
     plt.legend(fontsize=20)
     plt.show()
 
@@ -336,11 +366,11 @@ def main():
 
 
 
-    for i in range(10):
+    for i in range(2, 16):
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
-    for i in range(10):
+    for i in range(2, 16):
         h = 10**(-i)
         exp_2 = FiniteDifference(h, gk, d_gk, dd_gk)
         exp_2.experiment("gk", a, b, p)
