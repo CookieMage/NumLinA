@@ -1,3 +1,26 @@
+'''This is an implementation of the class FiniteDifference, which can be used to approximate the
+first and second derivatives of a given function. It can be used to find the error of these
+approximations as well.
+
+Classes
+-------
+FiniteDifference
+    Represents the first and second order finite difference approximation of a function and
+    allows for a computation of error to the exact derivatives.
+
+Functions
+---------
+power_func()
+    function that draws the identity, square and cube functions as well as the first and second derivative of these for given values x
+plothelper()
+    support function for main()
+plot()
+    support function for main()
+progress_bar()
+    function to support main(); displays a progressbar in console
+main()
+    example implementation for using the above defined code
+'''
 import math
 import numpy as np
 from matplotlib.lines import Line2D
@@ -7,7 +30,7 @@ import manage_list as ml
 
 
 class FiniteDifference:
-    """ Represents the first and second order finite difference approximation of a function and
+    ''' Represents the first and second order finite difference approximation of a function and
     allows for a computation of error to the exact derivatives.
 
     Parameters
@@ -27,15 +50,31 @@ class FiniteDifference:
     ----------
     h : float
         Step size of the approximation.
-    """
-    #weitere attribute in den Docstring
+    f : callable
+        Function to approximate the derivatives of. The calling signature is
+        'f(x)'. Here 'x' is a scalar or array_like of 'numpy'. The return
+        value is of the same type as 'x'.
+    d_f : callable, default value = None
+        The analytic first derivative of 'f' with the same signature.
+    dd_f : callable, default value = None
+        The analytic second derivative of 'f' with the same signature.
+    
+    Functions
+    ---------
+    ##########################################################
+    ##########################################################
+    ##########################################################
+    ##########################################################
+    ##########################################################
+    ##########################################################
+    '''
     h = None
     f = None
     d_f = None
     dd_f = None
 
-    def __init__(self, h, f, d_f=None, dd_f=None):
-        """ returns an Object of class FiniteDifference
+    def __init__(self, h : float, f : callable, d_f=None, dd_f=None):
+        ''' returns an Object of class FiniteDifference
 
         Parameters
         ----------
@@ -52,9 +91,9 @@ class FiniteDifference:
 
         Raises
         ------
-        ValueError
+        TypeError
             One of the given arguments is of the wrong type
-        """
+        '''
         try:
             h = float(h)
         except TypeError as exc:
@@ -72,37 +111,37 @@ class FiniteDifference:
 
 
     def compute_dh_f(self):
-        """Calculates the approximation for the first derivative of the f with step size h.
+        '''Calculates the approximation for the first derivative of the f with step size h.
 
         Parameters
         ----------
-        -
 
         Return
         ------
         callable
             Calculates the approximation of the first derivative for a given x.
-        """
-        def f_1(x : float):
+        '''
+        def f_1(x : float or int or list):
             return (self.f(x+self.h)-self.f(x))/self.h
         return f_1
 
     def compute_ddh_f(self):
-        """Calculates the approximation for the second derivative of f with step size h.
+        '''Calculates the approximation for the second derivative of f with step size h.
+
         Parameters
         ----------
-        -
+
         Return
         ------
         callable
             Calculates the approximation of the first derivative for a given x.
-        """
+        '''
         def f_2(x : float):
             return (self.f(x+self.h)-2*self.f(x)+self.f(x-self.h))/(self.h**2)
         return f_2
 
     def compute_errors(self, a, b, p):
-        """ Calculates an approximation to the errors between an approximation
+        ''' Calculates an approximation to the errors between an approximation
         and the exact derivative for first and second order derivatives in the
         infinity norm.
         
@@ -123,8 +162,8 @@ class FiniteDifference:
         Raises
         ------
         ValueError
-            If no analytic derivative was provided by the user.
-        """
+            If no analytic derivative has been provided
+        '''
         if self.d_f is None and self.dd_f is None:
             raise ValueError
         f_1 = self.compute_dh_f()
@@ -142,6 +181,25 @@ class FiniteDifference:
 
 
     def experiment(self, func_name, a, b, p):
+        '''approximates first and second deriviatves, computes their values on a given Intervall
+        and saves them; calculates the error of these approximations and saves them as well
+
+        Parameters
+        ----------
+        func_name : _type_
+            _description_
+        a : _type_
+            _description_
+        b : _type_
+            _description_
+        p : _type_
+            _description_
+        
+        Raises
+        ------
+        ValueError
+            If no analytic derivative has been provided
+        '''
         steps = np.linspace(a, b, p)
         dh_f = self.compute_dh_f()
         ddh_f = self.compute_ddh_f()
@@ -163,11 +221,29 @@ class FiniteDifference:
 
 
 
-def plothelper(filename,):
+def plothelper(filename : str):
+    '''function for reading files created by experiment() and returning the saved data in a usable
+    format
+
+    Parameters
+    ----------
+    filename : str
+        name of the file that is to be read
+
+    Returns
+    -------
+    dh : list
+        read data
+    ddh : list
+        read data
+    optional : list, None
+        read data
+    '''
     with open("experiments/" + filename, "r", encoding = "utf8") as file:
         lines = file.readlines()
         lines = [i.split() for i in lines]
         lines_list = []
+        optional = None
 
         if "error" not in filename:
             counter = 0
@@ -189,7 +265,6 @@ def plothelper(filename,):
             x = x[0]
             for i,e in enumerate(x):
                 x[i] = float(e)
-            return x, y
         else:
             counter = 0
             for i,e in enumerate(lines):
@@ -219,11 +294,28 @@ def plothelper(filename,):
                 dh[i] = float(e)
             for i, e in enumerate(ddh):
                 ddh[i] = float(e)
-            return h, dh, ddh
+            x, y = dh, ddh
+            optional = h
+        return x, y, optional
 
 
 
-def plot(title, filename_1, name_1, filename_2 = None, name_2 = None, filename_3 = None, name_3 = None, filename_4 = None, name_4 = None):
+def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 = None):
+    '''function for creating a plot containing the data of given files
+
+    Parameters
+    ----------
+    title : str
+        title of the generated plot
+    filename_1 : str
+        name of the first file containing data
+    name_1 : _str
+        name of the graph corresponding to the first file
+    filename_2 : str, default value = None
+        name of the second file containing data
+    name_2 : str, default value = None
+        name of the graph corresponding to the second file
+    '''
     _, ax1 = plt.subplots(figsize=(5, 5))
     plt.xticks(fontsize=17)
     plt.yticks(fontsize=17)
@@ -237,7 +329,7 @@ def plot(title, filename_1, name_1, filename_2 = None, name_2 = None, filename_3
 
     y1 = []
     if "error" not in filename_1:
-        x, y1 = plothelper(filename_1)
+        x, y1, _ = plothelper(filename_1)
         for e in y1:
             plt.plot(x, e, "b", linewidth = 2, linestyle="dashed")
         legend.append(name_1)
@@ -245,33 +337,17 @@ def plot(title, filename_1, name_1, filename_2 = None, name_2 = None, filename_3
 
         if filename_2 is not None:
             y2 = []
-            x, y2 = plothelper(filename_2)
+            x, y2, _ = plothelper(filename_2)
             for e in y2:
                 plt.plot(x, e, "g", linewidth = 2, linestyle="solid")
             legend.append(name_2)
             graphs.append(Line2D([0], [0], color = "g", linewidth=2, linestyle="solid"))
-
-        if filename_3 is not None:
-            y3 = []
-            x, y3 = plothelper(filename_3)
-            for e in y3:
-                plt.plot(x, e, "r", linewidth = 2, linestyle="dotted")
-            legend.append(name_3)
-            graphs.append(Line2D([0], [0], color = "r", linewidth=2, linestyle="dotted"))
-
-        if filename_4 is not None:
-            y4 = []
-            x, y4 = plothelper(filename_4)
-            for e in y4:
-                plt.plot(x, e, "y", linewidth = 2, linestyle="dashdot")
-            legend.append(name_4)
-            graphs.append(Line2D([0], [0], color = "y", linewidth=2, linestyle="dashdot"))
     else:
         plt.xlabel("h", fontsize = 20)
         ax1.xaxis.set_label_coords(1.02, 0.025)
         plt.yscale("log")
         plt.xscale("log")
-        h, dh, ddh = plothelper(filename_1)
+        dh, ddh, h = plothelper(filename_1)
         plt.plot(h, dh, "b", label = "dh", linewidth = 2, linestyle="solid")
         plt.plot(h, ddh, "g", label = "ddh", linewidth = 2, linestyle="solid")
         legend.append("dh")
@@ -284,6 +360,14 @@ def plot(title, filename_1, name_1, filename_2 = None, name_2 = None, filename_3
     plt.show()
 
 def power_func(numbers : list):
+    ##############################################################
+    '''_summary_############################################################
+
+    Parameters
+    ----------
+    numbers : list
+        numbers which are used to calculate values of the functions which are then plotted
+    '''
     colors = ["b", "g", "y"]
     line = ["solid", "dashed", "dotted"]
     for s in [1, 2, 3]:
@@ -396,6 +480,6 @@ def main():
     plot("2. Ableitung", "gk_ddh.csv", "ddh", "gk_2.csv", "g''")
     plot("Abschätzungsfehler", "gk_error.csv", "")
 
-
+# main-guard
 if __name__=="__main__":
     main()
