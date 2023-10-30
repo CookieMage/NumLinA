@@ -32,13 +32,15 @@ def save(func_name : str, filename : str, data : str, data_1="", data_2=""):
     Exceptions
     ----------
     TypeError
-        filename is not a str
+        one of the arguments is not a str
     '''
     try:
+        # get current directory
         cwd = os.getcwd()
+        # create a directory for saving csv files if it does not exist already
         if not os.path.exists(cwd + "/experiments"):
             os.makedirs(cwd + "/experiments")
-        # haenge die Parameter im Format "iteration data\n" hinten an das Dokument filename an
+        # append parameters to the document func_name+filename using the format "data data1 data2\n"
         with open("experiments/" + func_name + filename, "a", encoding="utf8") as file:
             file.write(str(data)+" "+str(data_1)+" "+str(data_2)+"\n")
     except TypeError as exc:
@@ -59,15 +61,16 @@ def clear(func_name, filename):
     Exceptions
     ----------
     TypeError
-        filename is not a str
-        func_name is not a str
+        one of the arguments is not a str
     '''
     try:
+        # get current directory
         cwd = os.getcwd()
+        # create a directory for saving csv files if it does not exist already
         if not os.path.exists(cwd + "/experiments"):
             os.makedirs(cwd + "/experiments")
+            # overwrite the contents of func_name+filename with an empty str
         with open("experiments/" + func_name + filename, "w", encoding="utf8") as file:
-            # ueberschreibe das Dokument mit einem leeren str
             file.write("")
     except TypeError as exc:
         raise exc
@@ -75,10 +78,12 @@ def clear(func_name, filename):
 def main():
     '''example implementation for using the above defined code
     '''
-    # speichere Daten mittels save
+    # save data using save
     for i, element in enumerate([1, "data", "list", [1, 2]]):
         save("1_", "list.txt", i, element)
+    # clear document
     clear("1_", "list.txt")
+    # save new data using save
     for i, element in enumerate([2, "data", "list", [3, 4]]):
         save("1_", "list.txt", i, element)
 

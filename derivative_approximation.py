@@ -11,7 +11,8 @@ FiniteDifference
 Functions
 ---------
 power_func()
-    function that draws the identity, square and cube functions as well as the first and second derivative of these for given values x
+    function that draws the identity, square and cube functions as well as the first and second
+    derivative of these for given values x
 plothelper()
     support function for main()
 plot()
@@ -61,12 +62,19 @@ class FiniteDifference:
     
     Functions
     ---------
-    ##########################################################
-    ##########################################################
-    ##########################################################
-    ##########################################################
-    ##########################################################
-    ##########################################################
+    __init__()
+        returns an Object of class FiniteDifference
+    compute_dh_f()
+        calculates the approximation for the first derivative of the f with step size h
+    compute_ddh_f()
+        calculates the approximation for the second derivative of f with step size h
+    compute_errors()
+        Calculates an approximation to the errors between an approximation
+        and the exact derivative for first and second order derivatives in the
+        infinity norm.
+    experiment()
+        approximates first and second deriviatves, computes their values on a given Intervall
+        and saves them; calculates the error of these approximations and saves them as well
     '''
     h = None
     f = None
@@ -74,7 +82,7 @@ class FiniteDifference:
     dd_f = None
 
     def __init__(self, h : float, f : callable, d_f=None, dd_f=None):
-        ''' returns an Object of class FiniteDifference
+        '''returns an Object of class FiniteDifference
 
         Parameters
         ----------
@@ -94,6 +102,8 @@ class FiniteDifference:
         TypeError
             One of the given arguments is of the wrong type
         '''
+        # raise error if parameters are of the wrong type
+        # assign values of parameters to attributes of object
         try:
             h = float(h)
         except TypeError as exc:
@@ -111,7 +121,7 @@ class FiniteDifference:
 
 
     def compute_dh_f(self):
-        '''Calculates the approximation for the first derivative of the f with step size h.
+        '''calculates the approximation for the first derivative of the f with step size h
 
         Parameters
         ----------
@@ -119,14 +129,15 @@ class FiniteDifference:
         Return
         ------
         callable
-            Calculates the approximation of the first derivative for a given x.
+            calculates the approximation of the first derivative for a given x
         '''
+        # define f_1 as the approximation of the first derivative of f using step size h
         def f_1(x : float or int or list):
             return (self.f(x+self.h)-self.f(x))/self.h
         return f_1
 
     def compute_ddh_f(self):
-        '''Calculates the approximation for the second derivative of f with step size h.
+        '''calculates the approximation for the second derivative of f with step size h
 
         Parameters
         ----------
@@ -134,13 +145,14 @@ class FiniteDifference:
         Return
         ------
         callable
-            Calculates the approximation of the first derivative for a given x.
+            calculates the approximation of the second derivative for a given x
         '''
+        # define f_2 as the approximation of the second derivative of f using step size h
         def f_2(x : float):
             return (self.f(x+self.h)-2*self.f(x)+self.f(x-self.h))/(self.h**2)
         return f_2
 
-    def compute_errors(self, a, b, p):
+    def compute_errors(self, a : float, b : float, p : int):
         ''' Calculates an approximation to the errors between an approximation
         and the exact derivative for first and second order derivatives in the
         infinity norm.
@@ -164,54 +176,66 @@ class FiniteDifference:
         ValueError
             If no analytic derivative has been provided
         '''
+        # raise ValueError if no analytic derivative was provided
         if self.d_f is None and self.dd_f is None:
             raise ValueError
+        # compute approximations of first and second derivatives
         f_1 = self.compute_dh_f()
         f_2 = self.compute_ddh_f()
+        # declaration and initialization of max_dif_1, max_dif_2
         max_dif_1 = 0.0
         max_dif_2 = 0.0
+        # create list containing p evenly spaced numbers within the interval [a,b]
         steps = np.linspace(a, b, p)
+        # find the biggest local difference between the analytic and approximated first derivative if an analytic one was provided
         if self.d_f is not None:
             for i in steps:
                 max_dif_1 = max(max_dif_1, abs(f_1(i) - self.d_f(i)))
+        # find the biggest local difference between the analytic and approximated second derivative if an analytic one was provided
         if self.d_f is not None:
             for i in steps:
                 max_dif_2 = max(max_dif_2, abs(f_2(i) - self.dd_f(i)))
         return max_dif_1, max_dif_2
 
 
-    def experiment(self, func_name, a, b, p):
+    def experiment(self, func_name : str, a : float, b : float, p : int):
         '''approximates first and second deriviatves, computes their values on a given Intervall
         and saves them; calculates the error of these approximations and saves them as well
 
         Parameters
         ----------
-        func_name : _type_
-            _description_
-        a : _type_
-            _description_
-        b : _type_
-            _description_
-        p : _type_
-            _description_
+        func_name : str
+            name of function that is used for experimentation
+            only used for labeling the save data
+        a, b : float
+            Start and end point of the interval.
+        p : int
+            Number of intervals used in the approximation of the infinity norm.
         
         Raises
         ------
         ValueError
             If no analytic derivative has been provided
         '''
+        # create list containing p evenly spaced numbers within the interval [a,b]
         steps = np.linspace(a, b, p)
+        # compute approximations of the first and second derivatives
         dh_f = self.compute_dh_f()
         ddh_f = self.compute_ddh_f()
+        # compute the maximum local difference between the analytic and approximated derivatives
         errors = self.compute_errors(a, b, p)
+        # save error data
         ml.save(func_name, "_error.csv", "dh_1", self.h, errors[0])
         ml.save(func_name, "_error.csv", "ddh_2", self.h, errors[1])
+        # save an empty line in the error file in order to make different experiments done in succesion distinguishable
         ml.save(func_name, "_error.csv", "")
+        # save function values for each values in steps in corresponding files
         for i in steps:
             ml.save(func_name, "_dh.csv", i, dh_f(i))
             ml.save(func_name, "_ddh.csv", i, ddh_f(i))
             ml.save(func_name, "_1.csv", i, self.d_f(i))
             ml.save(func_name, "_2.csv", i, self.dd_f(i))
+        # save an empty line in the corresponding file in order to make different experiments done in succesion distinguishable
         ml.save(func_name, ".csv", "")
         ml.save(func_name, "_dh.csv", "")
         ml.save(func_name, "_ddh.csv", "")
@@ -236,14 +260,14 @@ def plothelper(filename : str):
         read data
     ddh : list
         read data
-    optional : list, None
+    h : list, None
         read data
     '''
     with open("experiments/" + filename, "r", encoding = "utf8") as file:
         lines = file.readlines()
         lines = [i.split() for i in lines]
         lines_list = []
-        optional = None
+        h = None
 
         if "error" not in filename:
             counter = 0
@@ -295,8 +319,7 @@ def plothelper(filename : str):
             for i, e in enumerate(ddh):
                 ddh[i] = float(e)
             x, y = dh, ddh
-            optional = h
-        return x, y, optional
+        return x, y, h
 
 
 
@@ -354,14 +377,14 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
         graphs.append(Line2D([0], [0], color = "b", linewidth=2))
         legend.append("ddh")
         graphs.append(Line2D([0], [0], color = "g", linewidth=2))
-    
+
     plt.setp(ax1.get_xticklabels(), rotation=40, horizontalalignment='right')
     plt.legend(graphs, legend, fontsize=20, loc="upper left")
     plt.show()
 
 def power_func(numbers : list):
-    ##############################################################
-    '''_summary_############################################################
+    '''function that draws the identity, square and cube functions as well as the first and second
+    derivative of these for given values
 
     Parameters
     ----------
@@ -385,17 +408,17 @@ def power_func(numbers : list):
             plt.legend(fontsize = 20)
 
 
-def progress_bar(current, total, bar_length=20):
+def progress_bar(current : int, total : int, bar_length=20):
     '''support function for main(); displays a progressbar in console based on the percentile
     calculated by current / total
     
     Parameter
     ---------
-    current
+    current : int
         current number
-    total
+    total : int
         maximum number to be reached
-    bar_length
+    bar_length : int
         constant for resizing the progress bar
     
     Exceptions
