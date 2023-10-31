@@ -263,12 +263,17 @@ def plothelper(filename : str):
     h : list, None
         read data
     '''
+    # open specified file
     with open("experiments/" + filename, "r", encoding = "utf8") as file:
+        # read file line per line
         lines = file.readlines()
+        # split lines at spaces
         lines = [i.split() for i in lines]
+        # initialize and declare lines_list and h
         lines_list = []
         h = None
 
+        # if the file does not contain error data
         if "error" not in filename:
             counter = 0
             for i,e in enumerate(lines):
@@ -457,7 +462,7 @@ def main():
     """
     a = math.pi
     b = 3*math.pi
-    p = 1000
+    p = 250
     c = 0.1
 
     for func_name in ["g", "gk"]:
@@ -484,24 +489,29 @@ def main():
 
     progress_bar(2, 30)
 
-    for i in range(2, 9):
+    for i in range(2, 15):
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
         progress_bar(i-1, 15)
-    for i in range(2, 9):
-        h = 10**(-i)
-        exp_2 = FiniteDifference(h, gk, d_gk, dd_gk)
-        exp_2.experiment("gk", a, b, p)
-        progress_bar(i+6, 15)
-
 
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
+
+    for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
+        ml.clear("g", file + ".csv")
+
+    for i in range(0, 8):
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, g, d_g, dd_g)
+        exp_1.experiment("g", a, b, p)
+        progress_bar(i-1, 15)
+    
     plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
+
+
+
+
     plot("Abschätzungsfehler", "g_error.csv", "")
-    plot("1. Ableitung", "gk_dh.csv", "dh", "gk_1.csv", "g'")
-    plot("2. Ableitung", "gk_ddh.csv", "ddh", "gk_2.csv", "g''")
-    plot("Abschätzungsfehler", "gk_error.csv", "")
 
 # main-guard
 if __name__=="__main__":
