@@ -273,11 +273,16 @@ def plothelper(filename : str):
         lines_list = []
         h = None
 
-        # if the file does not contain error data
+        # if the file does not contain error data open it and read its content
         if "error" not in filename:
+            # initialize and declare counter
+            # counter is used to dynamicly scale the size of lines_list accordingly
             counter = 0
+            # save elements of lines in lines_list, skipping empty str and grouping different
+            # paragraphs by saving them as a list in lines_list
             for i,e in enumerate(lines):
-                if len(lines_list) < counter+1:
+                # add a new empty list to lines_list, if lines_list has the same size as counter
+                if len(lines_list) == counter:
                     lines_list += [[]]
                 if e == []:
                     counter += 1
@@ -359,22 +364,21 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
     if "error" not in filename_1:
         x, y1, _ = plothelper(filename_1)
         for e in y1:
-            plt.plot(x, e, "b", linewidth = 2, linestyle="dashed")
+            plt.plot(x, e, "g", linewidth = 2, linestyle="solid")
         legend.append(name_1)
-        graphs.append(Line2D([0], [0], color = "b", linewidth=2, linestyle="dashed"))
+        graphs.append(Line2D([0], [0], color = "g", linewidth=2, linestyle="solid"))
 
         if filename_2 is not None:
             y2 = []
             x, y2, _ = plothelper(filename_2)
             for e in y2:
-                plt.plot(x, e, "g", linewidth = 2, linestyle="solid")
+                plt.plot(x, e, "r", linewidth = 3, linestyle="dotted")
             legend.append(name_2)
-            graphs.append(Line2D([0], [0], color = "g", linewidth=2, linestyle="solid"))
+            graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
     else:
         plt.xlabel("h", fontsize = 20)
         ax1.xaxis.set_label_coords(1.02, 0.025)
         plt.yscale("log")
-        plt.xscale("log")
         dh, ddh, h = plothelper(filename_1)
         plt.plot(h, dh, "b", label = "dh", linewidth = 2, linestyle="solid")
         plt.plot(h, ddh, "g", label = "ddh", linewidth = 2, linestyle="solid")
@@ -489,7 +493,7 @@ def main():
 
     progress_bar(2, 30)
 
-    for i in range(2, 15):
+    for i in [0, 10, 14]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
@@ -500,7 +504,7 @@ def main():
     for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
         ml.clear("g", file + ".csv")
 
-    for i in range(0, 8):
+    for i in [1, 4, 7]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
@@ -511,7 +515,7 @@ def main():
 
 
 
-    plot("Abschätzungsfehler", "g_error.csv", "")
+    plot("Approximationsfehler", "g_error.csv", "")
 
 # main-guard
 if __name__=="__main__":
