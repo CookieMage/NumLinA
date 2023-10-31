@@ -133,6 +133,12 @@ class FiniteDifference:
         '''
         # define f_1 as the approximation of the first derivative of f using step size h
         def f_1(x : float or int or list):
+            if isinstance(x, list):
+                result = []
+                for e in x:
+                    result += [(self.f(e+self.h)-self.f(e))/self.h]
+                print(result)
+                return result
             return (self.f(x+self.h)-self.f(x))/self.h
         return f_1
 
@@ -149,6 +155,12 @@ class FiniteDifference:
         '''
         # define f_2 as the approximation of the second derivative of f using step size h
         def f_2(x : float):
+            if isinstance(x, list):
+                result = []
+                for e in x:
+                    result += [(self.f(e+self.h)-2*self.f(e)+self.f(e-self.h))/(self.h**2)]
+                print(result)
+                return result
             return (self.f(x+self.h)-2*self.f(x)+self.f(x-self.h))/(self.h**2)
         return f_2
 
@@ -284,10 +296,13 @@ def plothelper(filename : str):
                 # add a new empty list to lines_list, if lines_list has the same size as counter
                 if len(lines_list) == counter:
                     lines_list += [[]]
+                # if the element is empty increment counter
                 if e == []:
                     counter += 1
                     continue
+                # save element in lines_list
                 lines_list[counter] += e
+            # initialize and declare x, y
             x, y = [], []
             for e in lines_list:
                 x += [[e[2*j] for j in range(len(e)//2)]]
