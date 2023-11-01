@@ -217,6 +217,48 @@ class FiniteDifference:
         return max_dif_1, max_dif_2
 
 
+    def compute_dhs_errors(self, a : float, b : float, p : int):
+        ''' Calculates an approximation to the errors between an approximation
+        and the exact derivative for first and second order derivatives in the
+        infinity norm.
+        
+        Parameters
+        ----------
+        a, b : float
+            Start and end point of the interval.
+        p : int
+            Number of intervals used in the approximation of the infinity norm.
+
+        Returns
+        -------
+        float
+            Errors of the approximation of the first derivative.
+        float
+            Errors of the approximation of the second derivative.
+
+        Raises
+        ------
+        ValueError
+            If no analytic derivative has been provided
+        '''
+        # raise ValueError if no analytic derivative was provided
+        if self.d_f is None and self.dd_f is None:
+            raise ValueError
+        # compute approximations of first 
+        f_1 = self.compute_dhs_f()
+        # declaration and initialization of max_dif_1, max_dif_2
+        max_dif_1 = 0.0
+        # create list containing p evenly spaced numbers within the interval [a,b]
+        steps = np.linspace(a, b, p)
+        # find the biggest local difference between the analytic and approximated first derivative
+        # if an analytic one was provided
+        if self.d_f is not None:
+            for i in steps:
+                max_dif_1 = max(max_dif_1, abs(f_1(i) - self.d_f(i)))
+        # find the biggest local difference between the analytic and approximated second derivative
+        return max_dif_1
+
+
     def experiment(self, func_name : str, a : float, b : float, p : int):
         '''approximates first and second deriviatves, computes their values on a given Intervall
         and saves them; calculates the error of these approximations and saves them as well
@@ -628,7 +670,6 @@ def main():
     progress_bar(9, 9)
 
     plot("Approximationsfehler", "g_error.csv", "")
-
 
     for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs"]:
         ml.clear("g", file + ".csv")
