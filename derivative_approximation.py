@@ -119,7 +119,22 @@ class FiniteDifference:
         self.d_f = d_f
         self.dd_f = dd_f
 
+    def compute_dhS__f(self):
+        '''calculates the approximation for the first derivative of the f with step size h
 
+        Parameters
+        ----------
+
+        Return
+        ------
+        callable
+            calculates the approximation of the first derivative for a given x
+        '''
+        # define f_1 as the approximation of the first derivative of f using step size h
+        def f_1(x_value : float or int):
+            return (self.f(x_value-2* self.h)-8 * self.f(x_value-self.h)+8 * self.f(x_value+self.h)-self.f(x_value+2 * self.h)) / (12*self.h)
+        return f_1
+    
     def compute_dh_f(self):
         '''calculates the approximation for the first derivative of the f with step size h
 
