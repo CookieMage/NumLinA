@@ -132,8 +132,8 @@ class FiniteDifference:
             calculates the approximation of the first derivative for a given x
         '''
         # define f_1 as the approximation of the first derivative of f using step size h
-        def f_1(x : float or int):
-            return (self.f(x+self.h)-self.f(x))/self.h
+        def f_1(x_value : float or int):
+            return (self.f(x_value+self.h)-self.f(x_value))/self.h
         return f_1
 
     def compute_ddh_f(self):
@@ -148,8 +148,8 @@ class FiniteDifference:
             calculates the approximation of the second derivative for a given x
         '''
         # define f_2 as the approximation of the second derivative of f using step size h
-        def f_2(x : float or int):
-            return (self.f(x+self.h)-2*self.f(x)+self.f(x-self.h))/(self.h**2)
+        def f_2(x_value : float or int):
+            return (self.f(x_value+self.h)-2*self.f(x_value)+self.f(x_value-self.h))/(self.h**2)
         return f_2
 
     def compute_errors(self, a : float, b : float, p : int):
@@ -187,11 +187,13 @@ class FiniteDifference:
         max_dif_2 = 0.0
         # create list containing p evenly spaced numbers within the interval [a,b]
         steps = np.linspace(a, b, p)
-        # find the biggest local difference between the analytic and approximated first derivative if an analytic one was provided
+        # find the biggest local difference between the analytic and approximated first derivative
+        # if an analytic one was provided
         if self.d_f is not None:
             for i in steps:
                 max_dif_1 = max(max_dif_1, abs(f_1(i) - self.d_f(i)))
-        # find the biggest local difference between the analytic and approximated second derivative if an analytic one was provided
+        # find the biggest local difference between the analytic and approximated second derivative
+        # if an analytic one was provided
         if self.d_f is not None:
             for i in steps:
                 max_dif_2 = max(max_dif_2, abs(f_2(i) - self.dd_f(i)))
@@ -227,7 +229,8 @@ class FiniteDifference:
         # save error data
         ml.save(func_name, "_error.csv", "dh_1", self.h, errors[0])
         ml.save(func_name, "_error.csv", "ddh_2", self.h, errors[1])
-        # save an empty line in the error file in order to make different experiments done in succesion distinguishable
+        # save an empty line in the error file in order to make different experiments done in
+        # succesion distinguishable
         ml.save(func_name, "_error.csv", "")
         # save function values for each values in steps in corresponding files
         for i in steps:
@@ -235,7 +238,8 @@ class FiniteDifference:
             ml.save(func_name, "_ddh.csv", i, ddh_f(i))
             ml.save(func_name, "_1.csv", i, self.d_f(i))
             ml.save(func_name, "_2.csv", i, self.dd_f(i))
-        # save an empty line in the corresponding file in order to make different experiments done in succesion distinguishable
+        # save an empty line in the corresponding file in order to make different experiments done
+        # in succesion distinguishable
         ml.save(func_name, ".csv", "")
         ml.save(func_name, "_dh.csv", "")
         ml.save(func_name, "_ddh.csv", "")
@@ -269,9 +273,8 @@ def plothelper(filename : str):
         lines = file.readlines()
         # split lines at spaces
         lines = [i.split() for i in lines]
-        # initialize and declare lines_list and h
+        # initialize and declare lines_list
         lines_list = []
-        h = None
 
         # if the file does not contain error data open it and read its content
         if "error" not in filename:
@@ -280,33 +283,35 @@ def plothelper(filename : str):
             counter = 0
             # save elements of lines in lines_list, skipping empty str and grouping different
             # paragraphs by saving them as a list in lines_list
-            for i,e in enumerate(lines):
+            for i,element in enumerate(lines):
                 # add a new empty list to lines_list, if lines_list has the same size as counter
                 if len(lines_list) == counter:
                     lines_list += [[]]
                 # if the element is empty increment counter
-                if e == []:
+                if element == []:
                     counter += 1
                     continue
                 # save element in lines_list
-                lines_list[counter] += e
+                lines_list[counter] += element
             # initialize and declare x, y
-            x, y = [], []
-            # take every element of e with an even number and append it to x
-            for e in lines_list:
-                x += [[e[2*j] for j in range(len(e)//2)]]
-            # take every element of e with an odd number and append it to y
-            for e in lines_list:
-                y += [[e[2*j+1] for j in range(len(e)//2)]]
+            x_values, y_values = [], []
+            # take every element of element of lines_list with an even number and append it to
+            # x_values
+            for element in lines_list:
+                x_values += [[element[2*j] for j in range(len(element)//2)]]
+            # take every element of element of lines_list with an odd number and append it to
+            # y_values
+            for element in lines_list:
+                y_values += [[element[2*j+1] for j in range(len(element)//2)]]
             # convert all data into floats
-            for i,e in enumerate(y):
-                for j,f in enumerate(e):
-                    y[i][j] = float(f)
+            for i,element in enumerate(y_values):
+                for j,felement in enumerate(element):
+                    y_values[i][j] = float(felement)
             # every element of x is the same so we don't need more than one
-            x = x[0]
+            x_values = x_values[0]
             # x ist still a list and every element of that list must be converted to float
-            for i,e in enumerate(x):
-                x[i] = float(e)
+            for i,element in enumerate(x_values):
+                x_values[i] = float(element)
         # if the file does contain error data open it and read its content
         else:
             # initialize and declare counter
@@ -314,48 +319,50 @@ def plothelper(filename : str):
             counter = 0
             # save elements of lines in lines_list, skipping empty str and grouping different
             # paragraphs by saving them as a list in lines_list
-            for i,e in enumerate(lines):
+            for i,element in enumerate(lines):
                 # add a new empty list to lines_list, if lines_list has the same size as counter
                 if len(lines_list) == counter:
                     lines_list += [[]]
                 # if the element is empty increment counter
-                if e == []:
+                if element == []:
                     counter += 1
                     continue
                 # save element in lines_list
-                lines_list[counter] += e
+                lines_list[counter] += element
             # delete str "dh" and "ddh" from lines_list
-            for i,e in enumerate(lines_list):
-                for j,f in enumerate(e):
+            for i, element in enumerate(lines_list):
+                for j,f in enumerate(element):
                     if "dh" in f:
                         lines_list[i].pop(j)
-            # initialize and declar h, temp, dh, ddh
-            h, temp, dh, ddh = [], [], [], []
-            # save every even element of e of lines_list in h
-            for e in lines_list:
-                h += [[e[2*j] for j in range(len(e)//2)]]
-            # since dh and ddh use the same h every element of h looks like [x, x] where x is the value for h and therefore we only need the first element of each element of h in h
-            h = [e[0] for e in h]
-            #  save every odd element of e of lines_list in temp
-            for e in lines_list:
-                temp += [[e[2*j+1] for j in range(len(e)//2)]]
-            # save every even element of e of temp in dh
-            for e in temp:
-                dh += [[e[2*j] for j in range(len(e)//2)]]
-            # save every odd element of e of temp in ddh
-            for e in temp:
-                ddh += [[e[2*j+1] for j in range(len(e)//2)]]
-            # remove braces of list within dh and ddh ( [x, [y, z]] -> [x, y, z] )
-            dh = [inner for outer in dh for inner in outer]
-            ddh = [inner for outer in ddh for inner in outer]
-            # convert every element of dh to float
-            for i, e in enumerate(dh):
-                dh[i] = float(e)
-            # convert every element of ddh in float
-            for i, e in enumerate(ddh):
-                ddh[i] = float(e)
-            return dh, ddh, h
-        return x, y, h
+            # initialize and declar h_values, temp, dh_values, ddh_values
+            h_values, temp, dh_values, ddh_values = [], [], [], []
+            # save every even element of element of lines_list in h_values
+            for element in lines_list:
+                h_values += [[element[2*j] for j in range(len(element)//2)]]
+            # since dh_values and ddh_values use the same h every element of h looks like [x, x]
+            # where x is the value for h_values and therefore we only need the first element of
+            # each element of h_values in h_values
+            h_values = [element[0] for element in h_values]
+            # save every odd element of element of lines_list in temp
+            for element in lines_list:
+                temp += [[element[2*j+1] for j in range(len(element)//2)]]
+            # save every even element of element of temp in dh_values
+            for element in temp:
+                dh_values += [[element[2*j] for j in range(len(element)//2)]]
+            # save every odd element of element of temp in ddh_values
+            for element in temp:
+                ddh_values += [[element[2*j+1] for j in range(len(element)//2)]]
+            # remove braces of list within dh_values and ddh_values ( [x, [y, z]] -> [x, y, z] )
+            dh_values = [inner for outer in dh_values for inner in outer]
+            ddh_values = [inner for outer in ddh_values for inner in outer]
+            # convert every element of dh_values to float
+            for i, element in enumerate(dh_values):
+                dh_values[i] = float(element)
+            # convert every element of ddh_values in float
+            for i, element in enumerate(ddh_values):
+                ddh_values[i] = float(element)
+            return dh_values, ddh_values, h_values
+        return x_values, y_values, None
 
 
 
@@ -392,10 +399,10 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
         # if the first file does not contain error data continue as usual
         if "error" not in filename_1:
             # using plothelper() read the data for the first graph
-            x, y1, _ = plothelper(filename_1)
-            # draw all plots saved in y1
-            for e in y1:
-                plt.plot(x, e, "g", linewidth = 2, linestyle="solid")
+            x_values, y1_values, _ = plothelper(filename_1)
+            # draw all plots saved in y1_values
+            for element in y1_values:
+                plt.plot(x_values, element, "g", linewidth = 2, linestyle="solid")
             # append graph to legend
             legend.append(name_1)
             graphs.append(Line2D([0], [0], color = "g", linewidth=2, linestyle="solid"))
@@ -403,10 +410,10 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
             # repeat for the second file if it has been provided
             if filename_2 is not None:
                 # using plothelper() read the data for the second graph
-                x, y2, _ = plothelper(filename_2)
-                # draw all plots saved in y2
-                for e in y2:
-                    plt.plot(x, e, "r", linewidth = 3, linestyle="dotted")
+                x_values, y2_values, _ = plothelper(filename_2)
+                # draw all plots saved in y2_values
+                for element in y2_values:
+                    plt.plot(x_values, element, "r", linewidth = 3, linestyle="dotted")
                 # append graph to legend
                 legend.append(name_2)
                 graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
@@ -417,10 +424,10 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
             ax1.xaxis.set_label_coords(1.02, 0.025)
             plt.yscale("log")
             # using plothelper() read the data for the graph
-            dh, ddh, h = plothelper(filename_1)
-            # draw plots for dh and ddh
-            plt.plot(h, dh, "b", label = "dh", linewidth = 2, linestyle="solid")
-            plt.plot(h, ddh, "g", label = "ddh", linewidth = 2, linestyle="solid")
+            dh_values, ddh_values, h = plothelper(filename_1)
+            # draw plots for dh_values and ddh_values
+            plt.plot(h, dh_values, "b", label = "dh", linewidth = 2, linestyle="solid")
+            plt.plot(h, ddh_values, "g", label = "ddh", linewidth = 2, linestyle="solid")
             # append graphs to legend
             legend.append("dh")
             graphs.append(Line2D([0], [0], color = "b", linewidth=2))
@@ -449,22 +456,22 @@ def power_func(numbers : list):
     colors = ["b", "g", "r"]
     line = ["solid", "dashed", "dotted"]
     # repeat everything for each s
-    for s in [1, 2, 3]:
+    for s_value in [1, 2, 3]:
         plt.yscale("log")
         plt.yscale("log")
         # create labels for corresponding graphs
-        labels = [f"f(x)=x^{s}", f"f(x)'", f"f(x)''"]
+        labels = [f"f(x)=x^{s_value}", "f(x)'", "f(x)''"]
         # define the function as well as its first and second analytic derivatives
-        def f(x):
-            return x**s
-        def f_1(x):
-            return s*x**(s-1)
-        def f_2(x):
-            return (s-1)*s*x**(s-2)
+        def func(x_value):
+            return x_value**s_value
+        def func_1(x_value):
+            return s_value*x_value**(s_value-1)
+        def func_2(x_value):
+            return (s_value-1)*s_value*x_value**(s_value-2)
         # plot graphs using corresponding colors, linestyles and labels
-        for i,e in enumerate([f, f_1, f_2]):
-            plt.plot(numbers, [e(x) for x in numbers], label = labels[i],
-                     color = colors[s-1], linewidth = 2, linestyle = line[i])
+        for i, element in enumerate([func, func_1, func_2]):
+            plt.plot(numbers, [element(x) for x in numbers], label = labels[i],
+                     color = colors[s_value-1], linewidth = 2, linestyle = line[i])
         plt.legend(fontsize = 20)
         plt.show()
 
@@ -522,36 +529,36 @@ def main():
     a = math.pi
     b = 3*math.pi
     p = 250
-    c = 0.1
+    #c = 0.1
 
     for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
         ml.clear("g", file + ".csv")
 
     progress_bar(0, 9)
 
-    def g(x):
-        return math.sin(x)/x
-    def d_g(x):
-        return math.cos(x)/x - math.sin(x)/x**2
-    def dd_g(x):
-        return -((x**2-2)*math.sin(x)+2*x*math.cos(x))/x**3
+    def func_g(x_value):
+        return math.sin(x_value)/x_value
+    def func_d_g(x_value):
+        return math.cos(x_value)/x_value - math.sin(x_value)/x_value**2
+    def func_dd_g(x_value):
+        return -((x_value**2-2)*math.sin(x_value)+2*x_value*math.cos(x_value))/x_value**3
 
     progress_bar(1, 9)
 
-    def gk(x, k=c):
-        return math.sin(k*x)/x
-    def d_gk(x, k=c):
-        return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
-    def dd_gk(x, k=c):
-        return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
+    #def func_gk(x, k=c):
+    #    return math.sin(k*x)/x
+    #def func_d_gk(x, k=c):
+    #    return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
+    #def func_dd_gk(x, k=c):
+    #    return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
 
     progress_bar(2, 9)
 
     for i in [0, 10, 14]:
         h = 10**(-i)
-        exp_1 = FiniteDifference(h, g, d_g, dd_g)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
-        
+
     progress_bar(3, 9)
 
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
@@ -565,11 +572,11 @@ def main():
 
     for i in [0, 4, 7]:
         h = 10**(-i)
-        exp_1 = FiniteDifference(h, g, d_g, dd_g)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
-    
+
     progress_bar(6, 9)
-    
+
     plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
 
     progress_bar(7, 9)
@@ -581,7 +588,7 @@ def main():
 
     for i in range(-3, 15):
         h = 10**(-i)
-        exp_1 = FiniteDifference(h, g, d_g, dd_g)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
 
     progress_bar(9, 9)
