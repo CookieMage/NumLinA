@@ -119,8 +119,9 @@ class FiniteDifference:
         self.d_f = d_f
         self.dd_f = dd_f
 
-    def compute_dhS_f(self):
-        '''calculates the approximation for the first derivative of the f with step size h
+    def compute_dhs_f(self):
+        '''use a alternativ method to calculates the approximation for the first derivative of the f with step size h with a 
+           better approximation of O(h^4)
 
         Parameters
         ----------
@@ -137,7 +138,7 @@ class FiniteDifference:
         return f_1
 
     def compute_dh_f(self):
-        '''calculates the approximation for the first derivative of the f with step size h
+        '''calculates the approximation for the first derivative of the f with step size h whith the forrword difference
 
         Parameters
         ----------
@@ -240,6 +241,7 @@ class FiniteDifference:
         # compute approximations of the first and second derivatives
         dh_f = self.compute_dh_f()
         ddh_f = self.compute_ddh_f()
+        dhs_f = self.compute_dhs_f()
         # compute the maximum local difference between the analytic and approximated derivatives
         errors = self.compute_errors(a, b, p)
         # save error data
@@ -254,6 +256,7 @@ class FiniteDifference:
             ml.save(func_name, "_ddh.csv", i, ddh_f(i))
             ml.save(func_name, "_1.csv", i, self.d_f(i))
             ml.save(func_name, "_2.csv", i, self.dd_f(i))
+            ml.save(func_name, "_dhs.csv", i, dhs_f(i))
         # save an empty line in the corresponding file in order to make different experiments done
         # in succesion distinguishable
         ml.save(func_name, ".csv", "")
@@ -261,6 +264,9 @@ class FiniteDifference:
         ml.save(func_name, "_ddh.csv", "")
         ml.save(func_name, "_1.csv", "")
         ml.save(func_name, "_2.csv", "")
+        ml.save(func_name, "_dhs.csv", "")
+
+    
 
 
 
@@ -556,7 +562,7 @@ def main():
     """
     a = math.pi
     b = 3*math.pi
-    p = 250
+    p = 1000
     #c = 0.1
 
     for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
@@ -574,40 +580,40 @@ def main():
     progress_bar(1, 9)
 
     #def func_gk(x, k=c):
-    #    return math.sin(k*x)/x
-    #def func_d_gk(x, k=c):
-    #    return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
+     #   return math.sin(k*x)/x
+    ##def func_d_gk(x, k=c):
+     #   return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
     #def func_dd_gk(x, k=c):
-    #    return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
+      #  return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
 
-    #progress_bar(2, 9)
-#
-    #for i in [0, 10, 14]:
-    #    h = 10**(-i)
-    #    exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
-    #    exp_1.experiment("g", a, b, p)
-#
-    #progress_bar(3, 9)
-#
-    #plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
-#
-    #progress_bar(4, 9)
-#
-    #for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
-    #    ml.clear("g", file + ".csv")
-#
-    #progress_bar(5, 9)
-#
-    #for i in [0, 4, 7]:
-    #    h = 10**(-i)
-    #    exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
-    #    exp_1.experiment("g", a, b, p)
-#
-    #progress_bar(6, 9)
-#
-    #plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
-#
-    #progress_bar(7, 9)
+    progress_bar(2, 9)
+
+    for i in [0, 10, 14]:
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
+        exp_1.experiment("g", a, b, p)
+
+    progress_bar(3, 9)
+
+    plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
+
+    progress_bar(4, 9)
+
+    for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
+        ml.clear("g", file + ".csv")
+
+    progress_bar(5, 9)
+
+    for i in [0, 4, 7]:
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
+        exp_1.experiment("g", a, b, p)
+
+    progress_bar(6, 9)
+
+    plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
+
+    progress_bar(7, 9)
 
     for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
         ml.clear("g", file + ".csv")
@@ -620,6 +626,20 @@ def main():
         exp_1.experiment("g", a, b, p)
 
     progress_bar(9, 9)
+
+    plot("Approximationsfehler", "g_error.csv", "")
+
+
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs"]:
+        ml.clear("g", file + ".csv")
+
+    for i in [-0.3,0,2]:
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
+        exp_1.experiment("g", a, b, p)
+
+
+    plot("1. Ableitung(Alternative)", "g_dhs.csv", "dhs", "g_1.csv", "g'")
 
     plot("Approximationsfehler", "g_error.csv", "")
 
