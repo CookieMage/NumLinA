@@ -450,8 +450,10 @@ def power_func(numbers : list):
     line = ["solid", "dashed", "dotted"]
     # repeat everything for each s
     for s in [1, 2, 3]:
+        plt.yscale("log")
+        plt.yscale("log")
         # create labels for corresponding graphs
-        labels = [f"f_{s}", f"f_{s}'", f"f_{s}''"]
+        labels = [f"f(x)=x^{s}", f"f(x)'", f"f(x)''"]
         # define the function as well as its first and second analytic derivatives
         def f(x):
             return x**s
@@ -465,8 +467,6 @@ def power_func(numbers : list):
                      color = colors[s-1], linewidth = 2, linestyle = line[i])
         plt.legend(fontsize = 20)
         plt.show()
-
-power_func([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 def progress_bar(current : int, total : int, bar_length=20):
     '''support function for main(); displays a progressbar in console based on the percentile
@@ -527,7 +527,7 @@ def main():
     for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
         ml.clear("g", file + ".csv")
 
-    progress_bar(0, 30)
+    progress_bar(0, 9)
 
     def g(x):
         return math.sin(x)/x
@@ -536,7 +536,7 @@ def main():
     def dd_g(x):
         return -((x**2-2)*math.sin(x)+2*x*math.cos(x))/x**3
 
-    progress_bar(1, 30)
+    progress_bar(1, 9)
 
     def gk(x, k=c):
         return math.sin(k*x)/x
@@ -545,35 +545,46 @@ def main():
     def dd_gk(x, k=c):
         return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
 
-    progress_bar(2, 30)
+    progress_bar(2, 9)
 
     for i in [0, 10, 14]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
-        progress_bar(i-1, 15)
+        
+    progress_bar(3, 9)
 
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
 
+    progress_bar(4, 9)
+
     for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
         ml.clear("g", file + ".csv")
+
+    progress_bar(5, 9)
 
     for i in [0, 4, 7]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
-        progress_bar(i-1, 15)
+    
+    progress_bar(6, 9)
     
     plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
+
+    progress_bar(7, 9)
 
     for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
         ml.clear("g", file + ".csv")
 
-    for i in range(15):
+    progress_bar(8, 9)
+
+    for i in range(-3, 15):
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
-        progress_bar(i-1, 15)
+
+    progress_bar(9, 9)
 
     plot("Approximationsfehler", "g_error.csv", "")
 
