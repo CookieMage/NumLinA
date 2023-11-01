@@ -419,20 +419,32 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
                 graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
         # if the first file does contain error data open it and read its content
         else:
+            ax1.set_ylim(bottom = 10**-8.5)
             # change graph accordingly
             plt.xlabel("h", fontsize = 20)
             ax1.xaxis.set_label_coords(1.02, 0.025)
             plt.yscale("log")
             # using plothelper() read the data for the graph
-            dh_values, ddh_values, h = plothelper(filename_1)
+            dh_values, ddh_values, h_values = plothelper(filename_1)
+            square = [(float(x)+0.0001)**2 for x in h_values]
             # draw plots for dh_values and ddh_values
-            plt.plot(h, dh_values, "b", label = "dh", linewidth = 2, linestyle="solid")
-            plt.plot(h, ddh_values, "g", label = "ddh", linewidth = 2, linestyle="solid")
+            plt.plot(h_values, dh_values, "b", label = "dh", linewidth = 2, linestyle="solid")
+            plt.plot(h_values, ddh_values, "g", label = "ddh", linewidth = 2, linestyle="solid")
+            # draw guideline
+            plt.plot(h_values, square, "grey", label = "square", linewidth = 2,
+                     linestyle="dashdot")
+            plt.plot(h_values, [float(x)-10**-10 for x in h_values], "grey", label = "cube", linewidth = 2,
+                     linestyle="dotted")
             # append graphs to legend
             legend.append("dh")
             graphs.append(Line2D([0], [0], color = "b", linewidth=2))
             legend.append("ddh")
             graphs.append(Line2D([0], [0], color = "g", linewidth=2))
+            # append guideline to legend
+            legend.append("x")
+            graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dotted"))
+            legend.append("x^2")
+            graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dashdot"))
 
         # rotate ticklabels to prevent possible overlapping
         plt.setp(ax1.get_xticklabels(), rotation=20, horizontalalignment='right')
@@ -552,41 +564,41 @@ def main():
     #def func_dd_gk(x, k=c):
     #    return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
 
-    progress_bar(2, 9)
-
-    for i in [0, 10, 14]:
-        h = 10**(-i)
-        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
-        exp_1.experiment("g", a, b, p)
-
-    progress_bar(3, 9)
-
-    plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
-
-    progress_bar(4, 9)
-
-    for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
-        ml.clear("g", file + ".csv")
-
-    progress_bar(5, 9)
-
-    for i in [0, 4, 7]:
-        h = 10**(-i)
-        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
-        exp_1.experiment("g", a, b, p)
-
-    progress_bar(6, 9)
-
-    plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
-
-    progress_bar(7, 9)
+    #progress_bar(2, 9)
+#
+    #for i in [0, 10, 14]:
+    #    h = 10**(-i)
+    #    exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
+    #    exp_1.experiment("g", a, b, p)
+#
+    #progress_bar(3, 9)
+#
+    #plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
+#
+    #progress_bar(4, 9)
+#
+    #for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
+    #    ml.clear("g", file + ".csv")
+#
+    #progress_bar(5, 9)
+#
+    #for i in [0, 4, 7]:
+    #    h = 10**(-i)
+    #    exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
+    #    exp_1.experiment("g", a, b, p)
+#
+    #progress_bar(6, 9)
+#
+    #plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
+#
+    #progress_bar(7, 9)
 
     for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
         ml.clear("g", file + ".csv")
 
     progress_bar(8, 9)
 
-    for i in range(-3, 15):
+    for i in range(0, 15):
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
