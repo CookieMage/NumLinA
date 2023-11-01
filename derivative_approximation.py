@@ -119,7 +119,7 @@ class FiniteDifference:
         self.d_f = d_f
         self.dd_f = dd_f
 
-    def compute_dhS__f(self):
+    def compute_dhS_f(self):
         '''calculates the approximation for the first derivative of the f with step size h
 
         Parameters
@@ -132,9 +132,10 @@ class FiniteDifference:
         '''
         # define f_1 as the approximation of the first derivative of f using step size h
         def f_1(x_value : float or int):
-            return (self.f(x_value-2* self.h)-8 * self.f(x_value-self.h)+8 * self.f(x_value+self.h)-self.f(x_value+2 * self.h)) / (12*self.h)
+            return (self.f(x_value-2* self.h)-8 * self.f(x_value-self.h)+8 * \
+                self.f(x_value+self.h)-self.f(x_value+2 * self.h)) / (12*self.h)
         return f_1
-    
+
     def compute_dh_f(self):
         '''calculates the approximation for the first derivative of the f with step size h
 
@@ -346,8 +347,8 @@ def plothelper(filename : str):
                 lines_list[counter] += element
             # delete str "dh" and "ddh" from lines_list
             for i, element in enumerate(lines_list):
-                for j,f in enumerate(element):
-                    if "dh" in f:
+                for j, felement in enumerate(element):
+                    if "dh" in felement:
                         lines_list[i].pop(j)
             # initialize and declar h_values, temp, dh_values, ddh_values
             h_values, temp, dh_values, ddh_values = [], [], [], []
@@ -443,12 +444,12 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
             dh_values, ddh_values, h_values = plothelper(filename_1)
             square = [(float(x)+0.0001)**2 for x in h_values]
             # draw plots for dh_values and ddh_values
-            plt.plot(h_values, dh_values, "b", label = "dh", linewidth = 2, linestyle="solid")
-            plt.plot(h_values, ddh_values, "g", label = "ddh", linewidth = 2, linestyle="solid")
+            plt.plot(h_values, dh_values, "b", linewidth = 2, linestyle="solid")
+            plt.plot(h_values, ddh_values, "g", linewidth = 2, linestyle="solid")
             # draw guideline
-            plt.plot(h_values, square, "grey", label = "square", linewidth = 2,
+            plt.plot(h_values, square, "grey", linewidth = 2,
                      linestyle="dashdot")
-            plt.plot(h_values, [float(x)-10**-10 for x in h_values], "grey", label = "cube", linewidth = 2,
+            plt.plot(h_values, [float(x)-10**-10 for x in h_values], "grey", linewidth = 2,
                      linestyle="dotted")
             # append graphs to legend
             legend.append("dh")
