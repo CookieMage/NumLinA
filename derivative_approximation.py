@@ -132,13 +132,7 @@ class FiniteDifference:
             calculates the approximation of the first derivative for a given x
         '''
         # define f_1 as the approximation of the first derivative of f using step size h
-        def f_1(x : float or int or list):
-            if isinstance(x, list):
-                result = []
-                for e in x:
-                    result += [(self.f(e+self.h)-self.f(e))/self.h]
-                print(result)
-                return result
+        def f_1(x : float or int):
             return (self.f(x+self.h)-self.f(x))/self.h
         return f_1
 
@@ -154,13 +148,7 @@ class FiniteDifference:
             calculates the approximation of the second derivative for a given x
         '''
         # define f_2 as the approximation of the second derivative of f using step size h
-        def f_2(x : float):
-            if isinstance(x, list):
-                result = []
-                for e in x:
-                    result += [(self.f(e+self.h)-2*self.f(e)+self.f(e-self.h))/(self.h**2)]
-                print(result)
-                return result
+        def f_2(x : float or int):
             return (self.f(x+self.h)-2*self.f(x)+self.f(x-self.h))/(self.h**2)
         return f_2
 
@@ -304,46 +292,69 @@ def plothelper(filename : str):
                 lines_list[counter] += e
             # initialize and declare x, y
             x, y = [], []
+            # take every element of e with an even number and append it to x
             for e in lines_list:
                 x += [[e[2*j] for j in range(len(e)//2)]]
+            # take every element of e with an odd number and append it to y
             for e in lines_list:
                 y += [[e[2*j+1] for j in range(len(e)//2)]]
+            # convert all data into floats
             for i,e in enumerate(y):
                 for j,f in enumerate(e):
                     y[i][j] = float(f)
+            # every element of x is the same so we don't need more than one
             x = x[0]
+            # x ist still a list and every element of that list must be converted to float
             for i,e in enumerate(x):
                 x[i] = float(e)
+        # if the file does contain error data open it and read its content
         else:
+            # initialize and declare counter
+            # counter is used to dynamicly scale the size of lines_list accordingly
             counter = 0
+            # save elements of lines in lines_list, skipping empty str and grouping different
+            # paragraphs by saving them as a list in lines_list
             for i,e in enumerate(lines):
-                if len(lines_list) < counter+1:
+                # add a new empty list to lines_list, if lines_list has the same size as counter
+                if len(lines_list) == counter:
                     lines_list += [[]]
+                # if the element is empty increment counter
                 if e == []:
                     counter += 1
                     continue
+                # save element in lines_list
                 lines_list[counter] += e
+            # delete str "dh" and "ddh" from lines_list
             for i,e in enumerate(lines_list):
                 for j,f in enumerate(e):
                     if "dh" in f:
                         lines_list[i].pop(j)
+            # initialize and declar h, temp, dh, ddh
             h, temp, dh, ddh = [], [], [], []
+            # save every even element of e of lines_list in h
             for e in lines_list:
                 h += [[e[2*j] for j in range(len(e)//2)]]
+            # since dh and ddh use the same h every element of h looks like [x, x] where x is the value for h and therefore we only need the first element of each element of h in h
             h = [e[0] for e in h]
+            #  save every odd element of e of lines_list in temp
             for e in lines_list:
                 temp += [[e[2*j+1] for j in range(len(e)//2)]]
+            # save every even element of e of temp in dh
             for e in temp:
                 dh += [[e[2*j] for j in range(len(e)//2)]]
+            # save every odd element of e of temp in ddh
             for e in temp:
                 ddh += [[e[2*j+1] for j in range(len(e)//2)]]
+            # remove braces of list within dh and ddh ( [x, [y, z]] -> [x, y, z] )
             dh = [inner for outer in dh for inner in outer]
             ddh = [inner for outer in ddh for inner in outer]
+            # convert every element of dh to float
             for i, e in enumerate(dh):
                 dh[i] = float(e)
+            # convert every element of ddh in float
             for i, e in enumerate(ddh):
                 ddh[i] = float(e)
-            x, y = dh, ddh
+            return dh, ddh, h
         return x, y, h
 
 
@@ -364,47 +375,66 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
     name_2 : str, default value = None
         name of the graph corresponding to the second file
     '''
-    _, ax1 = plt.subplots(figsize=(5, 5))
-    plt.xticks(fontsize=17)
-    plt.yticks(fontsize=17)
-    plt.xlabel("x", fontsize = 20)
-    ax1.xaxis.set_label_coords(1.02, 0.025)
-    ax1.yaxis.get_offset_text().set_fontsize(20)
-    plt.title(title, fontsize=40)
-    ax1.grid()
-    legend = []
-    graphs = []
-
-    y1 = []
-    if "error" not in filename_1:
-        x, y1, _ = plothelper(filename_1)
-        for e in y1:
-            plt.plot(x, e, "g", linewidth = 2, linestyle="solid")
-        legend.append(name_1)
-        graphs.append(Line2D([0], [0], color = "g", linewidth=2, linestyle="solid"))
-
-        if filename_2 is not None:
-            y2 = []
-            x, y2, _ = plothelper(filename_2)
-            for e in y2:
-                plt.plot(x, e, "r", linewidth = 3, linestyle="dotted")
-            legend.append(name_2)
-            graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
-    else:
-        plt.xlabel("h", fontsize = 20)
+    try:
+        # initialize graph
+        _, ax1 = plt.subplots(figsize=(5, 5))
+        plt.xticks(fontsize=17)
+        plt.yticks(fontsize=17)
+        plt.xlabel("x", fontsize = 20)
         ax1.xaxis.set_label_coords(1.02, 0.025)
-        plt.yscale("log")
-        dh, ddh, h = plothelper(filename_1)
-        plt.plot(h, dh, "b", label = "dh", linewidth = 2, linestyle="solid")
-        plt.plot(h, ddh, "g", label = "ddh", linewidth = 2, linestyle="solid")
-        legend.append("dh")
-        graphs.append(Line2D([0], [0], color = "b", linewidth=2))
-        legend.append("ddh")
-        graphs.append(Line2D([0], [0], color = "g", linewidth=2))
+        ax1.yaxis.get_offset_text().set_fontsize(20)
+        plt.title(title, fontsize=40)
+        ax1.grid()
+        # initialize and declare legend, graph which are later used to create the legend
+        legend = []
+        graphs = []
 
-    plt.setp(ax1.get_xticklabels(), rotation=40, horizontalalignment='right')
-    plt.legend(graphs, legend, fontsize=20, loc="upper left")
-    plt.show()
+        # if the first file does not contain error data continue as usual
+        if "error" not in filename_1:
+            # using plothelper() read the data for the first graph
+            x, y1, _ = plothelper(filename_1)
+            # draw all plots saved in y1
+            for e in y1:
+                plt.plot(x, e, "g", linewidth = 2, linestyle="solid")
+            # append graph to legend
+            legend.append(name_1)
+            graphs.append(Line2D([0], [0], color = "g", linewidth=2, linestyle="solid"))
+
+            # repeat for the second file if it has been provided
+            if filename_2 is not None:
+                # using plothelper() read the data for the second graph
+                x, y2, _ = plothelper(filename_2)
+                # draw all plots saved in y2
+                for e in y2:
+                    plt.plot(x, e, "r", linewidth = 3, linestyle="dotted")
+                # append graph to legend
+                legend.append(name_2)
+                graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
+        # if the first file does contain error data open it and read its content
+        else:
+            # change graph accordingly
+            plt.xlabel("h", fontsize = 20)
+            ax1.xaxis.set_label_coords(1.02, 0.025)
+            plt.yscale("log")
+            # using plothelper() read the data for the graph
+            dh, ddh, h = plothelper(filename_1)
+            # draw plots for dh and ddh
+            plt.plot(h, dh, "b", label = "dh", linewidth = 2, linestyle="solid")
+            plt.plot(h, ddh, "g", label = "ddh", linewidth = 2, linestyle="solid")
+            # append graphs to legend
+            legend.append("dh")
+            graphs.append(Line2D([0], [0], color = "b", linewidth=2))
+            legend.append("ddh")
+            graphs.append(Line2D([0], [0], color = "g", linewidth=2))
+
+        # rotate ticklabels to prevent possible overlapping
+        plt.setp(ax1.get_xticklabels(), rotation=20, horizontalalignment='right')
+        # create legend
+        plt.legend(graphs, legend, fontsize=20, loc="upper left")
+        # show drawn plot
+        plt.show()
+    except TypeError as exc:
+        raise exc
 
 def power_func(numbers : list):
     '''function that draws the identity, square and cube functions as well as the first and second
@@ -415,22 +445,28 @@ def power_func(numbers : list):
     numbers : list
         numbers which are used to calculate values of the functions which are then plotted
     '''
-    colors = ["b", "g", "y"]
+    # create list to make labeling easier
+    colors = ["b", "g", "r"]
     line = ["solid", "dashed", "dotted"]
+    # repeat everything for each s
     for s in [1, 2, 3]:
-        #labels = [f"x^{s}", f"{s}x^{s-1}", f"{s-1*s}x^{s-2}"]
+        # create labels for corresponding graphs
         labels = [f"f_{s}", f"f_{s}'", f"f_{s}''"]
+        # define the function as well as its first and second analytic derivatives
         def f(x):
             return x**s
         def f_1(x):
             return s*x**(s-1)
         def f_2(x):
             return (s-1)*s*x**(s-2)
+        # plot graphs using corresponding colors, linestyles and labels
         for i,e in enumerate([f, f_1, f_2]):
             plt.plot(numbers, [e(x) for x in numbers], label = labels[i],
                      color = colors[s-1], linewidth = 2, linestyle = line[i])
-            plt.legend(fontsize = 20)
+        plt.legend(fontsize = 20)
+        plt.show()
 
+power_func([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 def progress_bar(current : int, total : int, bar_length=20):
     '''support function for main(); displays a progressbar in console based on the percentile
@@ -449,30 +485,34 @@ def progress_bar(current : int, total : int, bar_length=20):
     ----------
     ValueError
         current is bigger than total
+        current is negative
     TypeError
         current is not an int
         total is not an int
         bar_length is not an int
     '''
     try:
-        # teste ob die Eingabe korrekt ist
-        if current > total:
+        # test if input is correct
+        if current > total or current < 0:
             raise ValueError
-        # berechne den prozentualen Fortschritt
+        # compute percentage
         fraction = current / total
-        # speichere die dazugehoerige Pfeillaenge und fuelle den rest mit Leerzeichen auf
+        # save according arrow length and fill the rest with " "
         arrow = int(fraction * bar_length - 1) * '-' + '>'
         padding = int(bar_length - len(arrow)) * ' '
-        # teste ob das Ende der Progressbar erreicht wurde und ermoegliche eine ueberschreibung bzw
-        # verhindere diese
+        # test if the progressbar is full and enable or deny overwrighting of the bar accordingly
         if current == total:
             ending = '\n'
         else:
             ending = '\r'
-        # gebe den Fortschritt in Form der Progressbar aus
+        # print the progressbar
         print(f'Progress: [{arrow}{padding}] {int(fraction*100)}%', end=ending)
     except TypeError as exc:
         raise exc
+    except ValueError as exc:
+        raise exc
+
+
 
 
 
@@ -484,9 +524,8 @@ def main():
     p = 250
     c = 0.1
 
-    for func_name in ["g", "gk"]:
-        for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
-            ml.clear(func_name, file + ".csv")
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
+        ml.clear("g", file + ".csv")
 
     progress_bar(0, 30)
 
@@ -519,7 +558,7 @@ def main():
     for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
         ml.clear("g", file + ".csv")
 
-    for i in [1, 4, 7]:
+    for i in [0, 4, 7]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, g, d_g, dd_g)
         exp_1.experiment("g", a, b, p)
@@ -527,8 +566,14 @@ def main():
     
     plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
 
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
+        ml.clear("g", file + ".csv")
 
-
+    for i in range(15):
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, g, d_g, dd_g)
+        exp_1.experiment("g", a, b, p)
+        progress_bar(i-1, 15)
 
     plot("Approximationsfehler", "g_error.csv", "")
 
