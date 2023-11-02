@@ -13,6 +13,9 @@ Functions
 power_func()
     function that draws the identity, square and cube functions as well as the first and second
     derivative of these for given values x
+plot_derivatives()
+    function for drawing the plots of the approximated derivatives of func_f and its analytic
+    derivatives if these have been provided
 plothelper()
     support function for main()
 plot()
@@ -64,6 +67,9 @@ class FiniteDifference:
     ---------
     __init__()
         returns an Object of class FiniteDifference
+    compute_dhs_f(self):
+        use a alternative method to calculates the approximation for the first derivative of the f
+        with step size h using a better approximation of O(h^4)
     compute_dh_f()
         calculates the approximation for the first derivative of the f with step size h
     compute_ddh_f()
@@ -71,6 +77,10 @@ class FiniteDifference:
     compute_errors()
         Calculates an approximation to the errors between an approximation
         and the exact derivative for first and second order derivatives in the
+        infinity norm.
+    compute_dhs_errors()
+        Calculates an approximation to the errors between an approximation
+        and the exact derivative for first order derivatives in the
         infinity norm.
     experiment()
         approximates first and second deriviatves, computes their values on a given Intervall
@@ -308,8 +318,76 @@ class FiniteDifference:
         ml.save(func_name, "_2.csv", "")
         ml.save(func_name, "_dhs.csv", "")
 
-    
 
+
+def power_func(numbers : list):
+    '''function that draws the identity, square and cube functions as well as the first and second
+    derivative of these for given values
+
+    Parameters
+    ----------
+    numbers : list
+        numbers which are used to calculate values of the functions which are then plotted
+    '''
+    # create list to make labeling easier
+    colors = ["b", "g", "r"]
+    line = ["solid", "dashed", "dotted"]
+    # repeat everything for each s
+    for s_value in [1, 2, 3]:
+        plt.yscale("log")
+        plt.xscale("log")
+        # create labels for corresponding graphs
+        labels = [f"f(x)=x^{s_value}", "f(x)'", "f(x)''"]
+        # define the function as well as its first and second analytic derivatives
+        def func(x_value):
+            return x_value**s_value
+        def func_1(x_value):
+            return s_value*x_value**(s_value-1)
+        def func_2(x_value):
+            return (s_value-1)*s_value*x_value**(s_value-2)
+        # plot graphs using corresponding colors, linestyles and labels
+        for i, element in enumerate([func, func_1, func_2]):
+            plt.plot(numbers, [element(x) for x in numbers], label = labels[i],
+                     color = colors[s_value-1], linewidth = 2, linestyle = line[i])
+    plt.grid()
+    plt.legend(fontsize = 20)
+    plt.show()
+
+
+
+def plot_derivatives(h, a, b, p, func_f, func_d_f= None, func_dd_f = None):
+    '''function for drawing the plots of the approximated derivatives of func_f and its analytic
+    derivatives if these have been provided
+    
+    Parameter
+    ---------
+    h : int
+        current number
+    a, b : float
+        Start and end point of the interval.
+    p : int
+        Number of intervals used in the approximation of the infinity norm.
+    func_f : callable
+        function which derivatives are displayed
+    func_d_f : callable, optional
+        analytic first derivative of func_f
+    func_dd_f : callable, optional
+        analytic second derivative of func_f
+    '''
+    steps = np.linspace(a, b, p)
+    # compute approximations of the first and second derivatives
+    exp = FiniteDifference(h, func_f, func_d_f, func_dd_f)
+    dh_f = exp.compute_dh_f()
+    ddh_f = exp.compute_ddh_f()
+    # initialize graph
+    _, ax1 = plt.subplots(figsize=(5, 5))
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
+    plt.xlabel("x", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.02, 0.025)
+    ax1.yaxis.get_offset_text().set_fontsize(20)
+    plt.title("Ableitungen", fontsize=40)
+    ax1.grid()
 
 
 
@@ -410,12 +488,14 @@ def plothelper(filename : str):
             # save every odd element of element of lines_list in temp
             for element in lines_list:
                 temp += [[element[2*j+1] for j in range(len(element)//2)]]
+            # return formated date if the file contains dhs data
             if "dhs" in filename:
-                dhs_values = [inner for outer in temp for inner in outer]
+                # remove braces of list within temp ( [x, [y, z]] -> [x, y, z] )
+                temp = [inner for outer in temp for inner in outer]
                 # convert every element of dhs_values to float
-                for i, element in enumerate(dhs_values):
-                    dhs_values[i] = float(element)
-                return h_values, dhs_values, None
+                for i, element in enumerate(temp):
+                    temp[i] = float(element)
+                return h_values, temp, None
             # save every even element of element of temp in dh_values
             for element in temp:
                 dh_values += [[element[2*j] for j in range(len(element)//2)]]
@@ -483,10 +563,10 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
                 x_values, y2_values, _ = plothelper(filename_2)
                 # draw all plots saved in y2_values
                 for element in y2_values:
-                    plt.plot(x_values, element, "r", linewidth = 3, linestyle="dotted")
+                    plt.plot(x_values, element, "b", linewidth = 4, linestyle="dotted")
                 # append graph to legend
                 legend.append(name_2)
-                graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
+                graphs.append(Line2D([0], [0], color = "b", linewidth=4, linestyle="dotted"))
         # if the first file does contain error data open it and read its content
         elif "dhs" not in filename_1:
             ax1.set_ylim(bottom = 10**-8.5)
@@ -515,6 +595,8 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
             graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dotted"))
             legend.append("h^2")
             graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dashdot"))
+            # rotate ticklabels to prevent possible overlapping
+            plt.setp(ax1.get_xticklabels(), rotation=20, horizontalalignment='right')
         else:
             ax1.set_ylim(bottom = 10**-13)
             # change graph accordingly
@@ -534,8 +616,8 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
             # append guideline to legend
             legend.append("h^4")
             graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dashdot"))
-        # rotate ticklabels to prevent possible overlapping
-        plt.setp(ax1.get_xticklabels(), rotation=20, horizontalalignment='right')
+            # rotate ticklabels to prevent overlapping
+            plt.setp(ax1.get_xticklabels(), rotation=20, horizontalalignment='right')
         # create legend
         plt.legend(graphs, legend, fontsize=20, loc="upper left")
         # show drawn plot
@@ -543,37 +625,7 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
     except TypeError as exc:
         raise exc
 
-def power_func(numbers : list):
-    '''function that draws the identity, square and cube functions as well as the first and second
-    derivative of these for given values
 
-    Parameters
-    ----------
-    numbers : list
-        numbers which are used to calculate values of the functions which are then plotted
-    '''
-    # create list to make labeling easier
-    colors = ["b", "g", "r"]
-    line = ["solid", "dashed", "dotted"]
-    # repeat everything for each s
-    for s_value in [1, 2, 3]:
-        plt.yscale("log")
-        plt.yscale("log")
-        # create labels for corresponding graphs
-        labels = [f"f(x)=x^{s_value}", "f(x)'", "f(x)''"]
-        # define the function as well as its first and second analytic derivatives
-        def func(x_value):
-            return x_value**s_value
-        def func_1(x_value):
-            return s_value*x_value**(s_value-1)
-        def func_2(x_value):
-            return (s_value-1)*s_value*x_value**(s_value-2)
-        # plot graphs using corresponding colors, linestyles and labels
-        for i, element in enumerate([func, func_1, func_2]):
-            plt.plot(numbers, [element(x) for x in numbers], label = labels[i],
-                     color = colors[s_value-1], linewidth = 2, linestyle = line[i])
-        plt.legend(fontsize = 20)
-        plt.show()
 
 def progress_bar(current : int, total : int, bar_length=20):
     '''support function for main(); displays a progressbar in console based on the percentile
@@ -600,7 +652,7 @@ def progress_bar(current : int, total : int, bar_length=20):
     '''
     try:
         # test if input is correct
-        if current > total or current < 0:
+        if current < 0 or current > total:
             raise ValueError
         # compute percentage
         fraction = current / total
@@ -617,29 +669,41 @@ def progress_bar(current : int, total : int, bar_length=20):
     except TypeError as exc:
         raise exc
     except ValueError as exc:
-        print(current)
-        raise exc
+        print(f"\n{exc}: Progressbar is overfilled! current value: {current}")
 
 
+    plt.plot(steps, [dh_f(step) for step in steps], "b", label = "1. approximierte Ableitung", linewidth = 2,linestyle = "solid")
+    plt.plot(steps, [ddh_f(step) for step in steps], "g", label = "2. approximierte Ableitung", linewidth = 2,linestyle = "solid")
+    if func_d_f is not None:
+        plt.plot(steps, [func_d_f(step) for step in steps], "b", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
+    if func_dd_f is not None:
+        plt.plot(steps, [func_dd_f(step) for step in steps], "g", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
+    plt.legend(fontsize=20, loc="lower left")
+    plt.show()
 
 
 
 def main():
     """ Example of code that can be run using the provided class, mehtods and function
     """
+    # initialize and declare variables
     a = math.pi
     b = 3*math.pi
-    p = 250
+    p = 1000
     c = 0.1
 
+    # update / create progressbar
     progress = 0
-    progress_bar(progress, 77)
+    progress_bar(progress, 63)
 
-    for file in ["_1", "_2", "_dh", "_ddh", "_error",  "_dhs_error"]:
+    # clear / create files needed for saving data
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
+    # create function and analytic derivatives for testing code
     def func_g(x_value):
         return math.sin(x_value)/x_value
     def func_d_g(x_value):
@@ -647,99 +711,177 @@ def main():
     def func_dd_g(x_value):
         return -((x_value**2-2)*math.sin(x_value)+2*x_value*math.cos(x_value))/x_value**3
 
+    # update progressbar
     progress+=1
-    progress_bar(progress, 77)
+    progress_bar(progress, 63)
 
+    # create function and analytic derivatives for testing code
     def func_gk(x, k=c):
         return math.sin(k*x)/x
     def func_d_gk(x, k=c):
         return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
     def func_dd_gk(x, k=c):
         return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
-
+    
+    # update progressbar
     progress+=1
-    progress_bar(progress, 77)
+    progress_bar(progress, 63)
+
+    # plot approximations of derivatives
+    plot_derivatives(0.01, a, b, p, func_g)
+
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
+
+    # plot approximations of derivatives and analytic derivatives
+    plot_derivatives(0.01, a, b, p, func_g, func_d_g, func_dd_g)
+
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
+
+    # plot approximations of derivatives
+    plot_derivatives(0.01, a, b, p, func_gk)
+
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
+
+    # plot approximations of derivatives and analytic derivatives
+    plot_derivatives(0.01, a, b, p, func_gk, func_d_gk, func_dd_gk)
+
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
+
+    # plot f(x)=x, f(x)=x^2, f(x)=x^3 and derivatives of these
+    power_func(np.linspace(a, b, p))
+
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
 
     for i in [0, 10, 14]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
-
+    # plot different approximations of first derivative and analytic first derivative
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
 
+    # update progressbar
     progress+=1
-    progress_bar(progress, 77)
+    progress_bar(progress, 63)
 
+    # since the approximation for the first approximated derivative works better on a different
+    # intervall than the second approximation we draw them in their own plot. Therefore we need to
+    # save new data. In order to not corrupt this data the files must first be cleared
+
+    # clear files needed for saving data
     for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
-
-
+    # generate data for plotting second approximated derivative
     for i in [0, 4, 7]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
+    # plot different approximations of second derivative and analytic first derivative
     plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
 
+    # update progressbar
     progress+=1
-    progress_bar(progress, 77)
+    progress_bar(progress, 63)
 
+    # Since we want to draw both plots at once we need to show a bigger intervall in our plot.
+    # Therefore new data must be saved and we again first need to clear the old data from the
+    # files.
+
+    # clear files needed for saving data
     for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
-
-    for i in range(0, 15):
+    # generate data for plotting the error of the approximations
+    # we used range(0, 15) insted of [0, 4, 8, 12, 15] for our experiments
+    for i in [0, 4, 8, 12, 15]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
-
+    # plot error of the approximations relative to h
     plot("Approximationsfehler", "g_error.csv", "")
-    progress+=1
-    progress_bar(progress, 77)
 
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
+
+    # Since we want to generate new data we again need to delete old saves.
+
+    # clear files needed for saving data
     for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
-    for i in [-0.3,0,2]:
+    # generate data for plotting first approximated derivative using an alternative function
+    for i in [-0.3, 0, 2]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
+    # plot alternative approximation of first derivative
     plot("1. Ableitung(Alternative)", "g_dhs.csv", "dhs", "g_1.csv", "g'")
-    progress+=1
-    progress_bar(progress, 77)
 
+    # update progressbar
+    progress+=1
+    progress_bar(progress, 63)
+
+    # clear files needed for saving data
     for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
+        progress_bar(progress, 63)
 
-    for i in range(0, 15):
+    # generate data for plotting the error of the alternative approximations
+    # we used range(0, 15) insted of [0, 4, 8, 12, 15] for our experiments
+    for i in [0, 4, 8, 12, 15]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        # update progressbar
         progress+=1
-        progress_bar(progress, 77)
-
+        progress_bar(progress, 63)
+    
+    # plot error of alternative approximation of first derivative
     plot("Approximationsfehler", "g_dhs_error.csv", "")
-    progress_bar(progress, 77)
+
+    # update progressbar
+    progress += 1
+    progress_bar(progress, 63)
+
+
 
 # main-guard
 if __name__=="__main__":
