@@ -290,6 +290,8 @@ class FiniteDifference:
         ml.save(func_name, "_dhs_error.csv", "dhs", self.h, dhs_error)
         # save an empty line in the error file in order to make different experiments done in
         # succesion distinguishable
+        ml.save(func_name, "_error.csv", "")
+        ml.save(func_name, "_dhs_error.csv", "")
         # save function values for each values in steps in corresponding files
         for i in steps:
             ml.save(func_name, "_dh.csv", i, dh_f(i))
@@ -408,6 +410,12 @@ def plothelper(filename : str):
             # save every odd element of element of lines_list in temp
             for element in lines_list:
                 temp += [[element[2*j+1] for j in range(len(element)//2)]]
+            if "dhs" in filename:
+                dhs_values = [inner for outer in temp for inner in outer]
+                # convert every element of dhs_values to float
+                for i, element in enumerate(dhs_values):
+                    dhs_values[i] = float(element)
+                return h_values, dhs_values, None
             # save every even element of element of temp in dh_values
             for element in temp:
                 dh_values += [[element[2*j] for j in range(len(element)//2)]]
@@ -423,7 +431,7 @@ def plothelper(filename : str):
             # convert every element of ddh_values in float
             for i, element in enumerate(ddh_values):
                 ddh_values[i] = float(element)
-            return dh_values, ddh_values, h_values
+            return h_values, dh_values, ddh_values
         return x_values, y_values, None
 
 
@@ -480,14 +488,14 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
                 legend.append(name_2)
                 graphs.append(Line2D([0], [0], color = "r", linewidth=3, linestyle="dotted"))
         # if the first file does contain error data open it and read its content
-        else:
+        elif "dhs" not in filename_1:
             ax1.set_ylim(bottom = 10**-8.5)
             # change graph accordingly
             plt.xlabel("h", fontsize = 20)
             ax1.xaxis.set_label_coords(1.02, 0.025)
             plt.yscale("log")
             # using plothelper() read the data for the graph
-            dh_values, ddh_values, h_values = plothelper(filename_1)
+            h_values, dh_values, ddh_values = plothelper(filename_1)
             square = [(float(x)+0.0001)**2 for x in h_values]
             # draw plots for dh_values and ddh_values
             plt.plot(h_values, dh_values, "b", linewidth = 2, linestyle="solid")
@@ -503,11 +511,35 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
             legend.append("ddh")
             graphs.append(Line2D([0], [0], color = "g", linewidth=2))
             # append guideline to legend
-            legend.append("x")
+            legend.append("h")
             graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dotted"))
-            legend.append("x^2")
+            legend.append("h^2")
             graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dashdot"))
-
+        else:
+            ax1.set_ylim(bottom = 10**-13)
+            # change graph accordingly
+            plt.xlabel("h", fontsize = 20)
+            ax1.xaxis.set_label_coords(1.02, 0.025)
+            plt.yscale("log")
+            # using plothelper() read the data for the graph
+            h_values, dhs_values, _ = plothelper(filename_1)
+            quartic = [(float(x)+0.0001)**4 for x in h_values]
+            quintic = [(float(x)+0.0001)**5 for x in h_values]
+            # draw plots for dh_values and ddh_values
+            plt.plot(h_values, dhs_values, "b", linewidth = 2, linestyle="solid")
+            # draw guideline
+            plt.plot(h_values, quartic, "grey", linewidth = 2,
+                     linestyle="dashdot")
+            plt.plot(h_values, quintic, "grey", linewidth = 2,
+                     linestyle="dotted")
+            # append graphs to legend
+            legend.append("dhs")
+            graphs.append(Line2D([0], [0], color = "b", linewidth=2))
+            # append guideline to legend
+            legend.append("h^4")
+            graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dashdot"))
+            legend.append("h^5")
+            graphs.append(Line2D([0], [0], color = "grey", linewidth=2, linestyle="dotted"))
         # rotate ticklabels to prevent possible overlapping
         plt.setp(ax1.get_xticklabels(), rotation=20, horizontalalignment='right')
         # create legend
@@ -602,13 +634,16 @@ def main():
     """
     a = math.pi
     b = 3*math.pi
-    p = 1000
-    #c = 0.1
+    p = 250
+    c = 0.1
 
-    for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
+    progress = 0
+    progress_bar(progress, 72)
+
+    for file in ["_1", "_2", "_dh", "_ddh", "_error",  "_dhs_error"]:
         ml.clear("g", file + ".csv")
-
-    progress_bar(0, 9)
+        progress+=1
+        progress_bar(progress, 72)
 
     def func_g(x_value):
         return math.sin(x_value)/x_value
@@ -617,74 +652,99 @@ def main():
     def func_dd_g(x_value):
         return -((x_value**2-2)*math.sin(x_value)+2*x_value*math.cos(x_value))/x_value**3
 
-    progress_bar(1, 9)
+    progress+=1
+    progress_bar(progress, 72)
 
-    #def func_gk(x, k=c):
-     #   return math.sin(k*x)/x
-    ##def func_d_gk(x, k=c):
-     #   return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
-    #def func_dd_gk(x, k=c):
-      #  return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
+    def func_gk(x, k=c):
+        return math.sin(k*x)/x
+    def func_d_gk(x, k=c):
+        return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
+    def func_dd_gk(x, k=c):
+        return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
 
-    progress_bar(2, 9)
+    progress+=1
+    progress_bar(progress, 72)
 
     for i in [0, 10, 14]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        progress+=1
+        progress_bar(progress, 72)
 
     progress_bar(3, 9)
 
     plot("1. Ableitung", "g_dh.csv", "dh", "g_1.csv", "g'")
 
-    progress_bar(4, 9)
+    progress+=1
+    progress_bar(progress, 72)
 
-    for file in ["_1", "_2", "_dh", "_ddh", "_error"]:
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        progress+=1
+        progress_bar(progress, 72)
 
-    progress_bar(5, 9)
+
 
     for i in [0, 4, 7]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
-
-    progress_bar(6, 9)
+        progress+=1
+        progress_bar(progress, 72)
 
     plot("2. Ableitung", "g_ddh.csv", "ddh", "g_2.csv", "g''" )
 
-    progress_bar(7, 9)
+    progress+=1
+    progress_bar(progress, 72)
 
-    for file in ["_1", "_2", "_dh", "_ddh", "_error", ""]:
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        progress+=1
+        progress_bar(progress, 72)
 
-    progress_bar(8, 9)
 
     for i in range(0, 15):
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+        progress+=1
+        progress_bar(progress, 72)
 
-    progress_bar(9, 9)
 
     plot("Approximationsfehler", "g_error.csv", "")
+    progress+=1
+    progress_bar(progress, 72)
 
-    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs"]:
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs", "_dhs_error"]:
         ml.clear("g", file + ".csv")
+        progress+=1
+        progress_bar(progress, 72)
 
     for i in [-0.3,0,2]:
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
-
-
-
-
-
+        progress+=1
+        progress_bar(progress, 72)
 
     plot("1. Ableitung(Alternative)", "g_dhs.csv", "dhs", "g_1.csv", "g'")
+    progress+=1
+    progress_bar(progress, 72)
 
-    plot("Approximationsfehler", "g_error.csv", "")
+    for file in ["_1", "_2", "_dh", "_ddh", "_error", "_dhs", "_dhs_error"]:
+        ml.clear("g", file + ".csv")
+        progress+=1
+        progress_bar(progress, 72)
+
+    for i in range(0, 15):
+        h = 10**(-i)
+        exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
+        exp_1.experiment("g", a, b, p)
+        progress+=1
+        progress_bar(progress, 72)
+
+    plot("Approximationsfehler", "g_dhs_error.csv", "")
 
 # main-guard
 if __name__=="__main__":
