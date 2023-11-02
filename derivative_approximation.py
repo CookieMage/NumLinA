@@ -388,6 +388,18 @@ def plot_derivatives(h, a, b, p, func_f, func_d_f= None, func_dd_f = None):
     ax1.yaxis.get_offset_text().set_fontsize(20)
     plt.title("Ableitungen", fontsize=40)
     ax1.grid()
+    # plot approximation of first derivative
+    plt.plot(steps, [dh_f(step) for step in steps], "b", label = "1. approximierte Ableitung", linewidth = 2,linestyle = "solid")
+    # plot approximation of second derivative
+    plt.plot(steps, [ddh_f(step) for step in steps], "g", label = "2. approximierte Ableitung", linewidth = 2,linestyle = "solid")
+    # plot first derivative if it has been provided
+    if func_d_f is not None:
+        plt.plot(steps, [func_d_f(step) for step in steps], "b", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
+    # plot second derivative if it has been provided
+    if func_dd_f is not None:
+        plt.plot(steps, [func_dd_f(step) for step in steps], "g", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
+    plt.legend(fontsize=20, loc="lower left")
+    plt.show()
 
 
 
@@ -641,6 +653,7 @@ def progress_bar(current : int, total : int, bar_length=20):
         constant for resizing the progress bar
     
     Exceptions
+
     ----------
     ValueError
         current is bigger than total
@@ -671,15 +684,6 @@ def progress_bar(current : int, total : int, bar_length=20):
     except ValueError as exc:
         print(f"\n{exc}: Progressbar is overfilled! current value: {current}")
 
-
-    plt.plot(steps, [dh_f(step) for step in steps], "b", label = "1. approximierte Ableitung", linewidth = 2,linestyle = "solid")
-    plt.plot(steps, [ddh_f(step) for step in steps], "g", label = "2. approximierte Ableitung", linewidth = 2,linestyle = "solid")
-    if func_d_f is not None:
-        plt.plot(steps, [func_d_f(step) for step in steps], "b", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
-    if func_dd_f is not None:
-        plt.plot(steps, [func_dd_f(step) for step in steps], "g", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
-    plt.legend(fontsize=20, loc="lower left")
-    plt.show()
 
 
 
