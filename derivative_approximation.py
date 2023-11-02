@@ -132,10 +132,10 @@ class FiniteDifference:
             calculates the approximation of the first derivative for a given x
         '''
         # define f_1 as the approximation of the first derivative of f using step size h
-        def f_1(x_value : float or int):
+        def fs_1(x_value : float or int):
             return (self.f(x_value-2* self.h)-8 * self.f(x_value-self.h)+8 * \
                 self.f(x_value+self.h)-self.f(x_value+2 * self.h)) / (12*self.h)
-        return f_1
+        return fs_1
 
     def compute_dh_f(self):
         '''calculates the approximation for the first derivative of the f with step size h whith the forrword difference
@@ -219,7 +219,7 @@ class FiniteDifference:
 
     def compute_dhs_errors(self, a : float, b : float, p : int):
         ''' Calculates an approximation to the errors between an approximation
-        and the exact derivative for first and second order derivatives in the
+        and the exact derivative for first order derivatives in the
         infinity norm.
         
         Parameters
@@ -242,20 +242,17 @@ class FiniteDifference:
             If no analytic derivative has been provided
         '''
         # raise ValueError if no analytic derivative was provided
-        if self.d_f is None and self.dd_f is None:
+        if self.d_f is None:
             raise ValueError
-        # compute approximations of first 
+        # compute approximations of first
         f_1 = self.compute_dhs_f()
         # declaration and initialization of max_dif_1, max_dif_2
         max_dif_1 = 0.0
         # create list containing p evenly spaced numbers within the interval [a,b]
         steps = np.linspace(a, b, p)
         # find the biggest local difference between the analytic and approximated first derivative
-        # if an analytic one was provided
-        if self.d_f is not None:
-            for i in steps:
-                max_dif_1 = max(max_dif_1, abs(f_1(i) - self.d_f(i)))
-        # find the biggest local difference between the analytic and approximated second derivative
+        for i in steps:
+            max_dif_1 = max(max_dif_1, abs(f_1(i) - self.d_f(i)))
         return max_dif_1
 
 
@@ -286,12 +283,13 @@ class FiniteDifference:
         dhs_f = self.compute_dhs_f()
         # compute the maximum local difference between the analytic and approximated derivatives
         errors = self.compute_errors(a, b, p)
+        dhs_error = self.compute_dhs_errors(a, b, p)
         # save error data
         ml.save(func_name, "_error.csv", "dh_1", self.h, errors[0])
         ml.save(func_name, "_error.csv", "ddh_2", self.h, errors[1])
+        ml.save(func_name, "_dhs_error.csv", "dhs", self.h, dhs_error)
         # save an empty line in the error file in order to make different experiments done in
         # succesion distinguishable
-        ml.save(func_name, "_error.csv", "")
         # save function values for each values in steps in corresponding files
         for i in steps:
             ml.save(func_name, "_dh.csv", i, dh_f(i))
@@ -678,6 +676,10 @@ def main():
         h = 10**(-i)
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
+
+
+
+
 
 
     plot("1. Ableitung(Alternative)", "g_dhs.csv", "dhs", "g_1.csv", "g'")
