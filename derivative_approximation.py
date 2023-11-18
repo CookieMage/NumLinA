@@ -86,12 +86,12 @@ class FiniteDifference:
         approximates first and second deriviatves, computes their values on a given Intervall
         and saves them; calculates the error of these approximations and saves them as well
     '''
-    h = None
-    f = None
+    h = None        # pylint: disable=invalid-name
+    f = None        # pylint: disable=invalid-name
     d_f = None
     dd_f = None
 
-    def __init__(self, h : float, f : callable, d_f=None, dd_f=None):
+    def __init__(self, h : float, f : callable, d_f=None, dd_f=None):   # pylint: disable=invalid-name
         '''returns an Object of class FiniteDifference
 
         Parameters
@@ -124,8 +124,8 @@ class FiniteDifference:
             raise TypeError
         if dd_f is not None and not callable(dd_f):
             raise TypeError
-        self.h = h
-        self.f = f
+        self.h = h          # pylint: disable=invalid-name
+        self.f = f          # pylint: disable=invalid-name
         self.d_f = d_f
         self.dd_f = dd_f
 
@@ -180,7 +180,7 @@ class FiniteDifference:
             return (self.f(x_value+self.h)-2*self.f(x_value)+self.f(x_value-self.h))/(self.h**2)
         return f_2
 
-    def compute_errors(self, a : float, b : float, p : int):
+    def compute_errors(self, a : float, b : float, p : int):    # pylint: disable=invalid-name
         ''' Calculates an approximation to the errors between an approximation
         and the exact derivative for first and second order derivatives in the
         infinity norm.
@@ -228,7 +228,7 @@ class FiniteDifference:
         return max_dif_1, max_dif_2
 
 
-    def compute_dhs_errors(self, a : float, b : float, p : int):
+    def compute_dhs_errors(self, a : float, b : float, p : int):    # pylint: disable=invalid-name
         ''' Calculates an approximation to the errors between an approximation
         and the exact derivative for first order derivatives in the
         infinity norm.
@@ -267,7 +267,7 @@ class FiniteDifference:
         return max_dif_1
 
 
-    def experiment(self, func_name : str, a : float, b : float, p : int):
+    def experiment(self, func_name : str, a : float, b : float, p : int):   # pylint: disable=invalid-name
         '''approximates first and second deriviatves, computes their values on a given Intervall
         and saves them; calculates the error of these approximations and saves them as well
 
@@ -365,7 +365,9 @@ def power_func(numbers : list):
     plt.show()
 
 
-def plot_derivatives(h, a, b, p, func_f, func_d_f= None, func_dd_f = None):
+def plot_derivatives(h : int, a : float, b : float, p : int,    # pylint: disable=invalid-name
+                     func_f : callable, func_d_f= None,         # pylint: disable=invalid-name
+                     func_dd_f = None):                         # pylint: disable=invalid-name
     '''function for drawing the plots of the approximated derivatives of func_f and its analytic
     derivatives if these have been provided
     
@@ -503,7 +505,7 @@ def plothelper(filename : str):
             for i, element in enumerate(lines_list):
                 for j, felement in enumerate(element):
                     if "dh" in felement:
-                        lines_list[i].pop(j)
+                        lines_list[i].pop(j)        # pylint: disable=unnecessary-list-index-lookup
             # initialize and declar h_values, temp, dh_values, ddh_values
             h_values, temp, dh_values, ddh_values = [], [], [], []
             # save every even element of element of lines_list in h_values
@@ -713,10 +715,10 @@ def main():
     """ Example of code that can be run using the provided class, mehtods and function
     """
     # initialize and declare variables
-    a = math.pi
-    b = 3*math.pi
-    p = 1000
-    c = 0.1
+    a = math.pi         # pylint: disable=invalid-name
+    b = 3*math.pi       # pylint: disable=invalid-name
+    p = 1000            # pylint: disable=invalid-name
+    k_value = 0.1       # pylint: disable=invalid-name
 
     # update / create progressbar
     progress = 0
@@ -742,12 +744,12 @@ def main():
     progress_bar(progress, 63)
 
     # create function and analytic derivatives for testing code
-    def func_gk(x, k=c):
-        return math.sin(k*x)/x
-    def func_d_gk(x, k=c):
-        return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
-    def func_dd_gk(x, k=c):
-        return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
+    def func_gk(x_value, k=k_value):
+        return math.sin(k*x_value)/x_value
+    def func_d_gk(x_value, k=k_value):
+        return (k*math.cos(k*x_value)/x_value) - (math.sin(k*x_value)/x_value**2)
+    def func_dd_gk(x_value, k=k_value):
+        return -((k**2*x_value**2-2)*math.sin(k*x_value)+2*k*x_value*math.cos(k*x_value))/x_value**3
 
     # update progressbar
     progress+=1
@@ -789,7 +791,7 @@ def main():
     progress_bar(progress, 63)
 
     for i in [0, 10, 14]:
-        h = 10**(-i)
+        h = 10**(-i)        # pylint: disable=invalid-name
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
         # update progressbar
@@ -816,7 +818,7 @@ def main():
 
     # generate data for plotting second approximated derivative
     for i in [0, 4, 7]:
-        h = 10**(-i)
+        h = 10**(-i)        # pylint: disable=invalid-name
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
         # update progressbar
@@ -844,7 +846,7 @@ def main():
     # generate data for plotting the error of the approximations
     # we used range(0, 15) insted of [0, 4, 8, 12, 15] for our experiments
     for i in [0, 4, 8, 12, 15]:
-        h = 10**(-i)
+        h = 10**(-i)        # pylint: disable=invalid-name
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
         # update progressbar
@@ -869,7 +871,7 @@ def main():
 
     # generate data for plotting first approximated derivative using an alternative function
     for i in [-0.3, 0, 2]:
-        h = 10**(-i)
+        h = 10**(-i)        # pylint: disable=invalid-name
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
         # update progressbar
@@ -893,7 +895,7 @@ def main():
     # generate data for plotting the error of the alternative approximations
     # we used range(0, 15) insted of [0, 4, 8, 12, 15] for our experiments
     for i in [0, 4, 8, 12, 15]:
-        h = 10**(-i)
+        h = 10**(-i)        # pylint: disable=invalid-name
         exp_1 = FiniteDifference(h, func_g, func_d_g, func_dd_g)
         exp_1.experiment("g", a, b, p)
         # update progressbar
