@@ -130,8 +130,8 @@ class FiniteDifference:
         self.dd_f = dd_f
 
     def compute_dhs_f(self):
-        '''use a alternativ method to calculates the approximation for the first derivative of the f with step size h with a 
-           better approximation of O(h^4)
+        '''use a alternativ method to calculates the approximation for the first derivative of the
+        f with step size h with a better approximation of O(h^4)
 
         Parameters
         ----------
@@ -148,7 +148,8 @@ class FiniteDifference:
         return fs_1
 
     def compute_dh_f(self):
-        '''calculates the approximation for the first derivative of the f with step size h whith the forrword difference
+        '''calculates the approximation for the first derivative of the f with step size h whith
+        the forrword difference
 
         Parameters
         ----------
@@ -332,12 +333,22 @@ def power_func(numbers : list):
     # create list to make labeling easier
     colors = ["b", "g", "r"]
     line = ["solid", "dashed", "dotted"]
+    func_name = ["f", "g", "h"]
+    # initialize graph
+    _, ax1 = plt.subplots(figsize=(5, 5))
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
+    plt.ylabel("y", fontsize = 20, rotation = 0)
+    ax1.yaxis.set_label_coords(-0.01, 1)
+    plt.xlabel("x", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.02, 0.025)
+    ax1.yaxis.get_offset_text().set_fontsize(20)
+    plt.yscale("log")
+    plt.xscale("log")
     # repeat everything for each s
     for s_value in [1, 2, 3]:
-        plt.yscale("log")
-        plt.xscale("log")
-        # create labels for corresponding graphs
-        labels = [f"f(x)=x^{s_value}", "f(x)'", "f(x)''"]
+        labels = [f"{func_name[s_value-1]}(x)=x^{s_value}", f"{func_name[s_value-1]}(x)'",
+                  f"{func_name[s_value-1]}(x)''"]
         # define the function as well as its first and second analytic derivatives
         def func(x_value):
             return x_value**s_value
@@ -352,7 +363,6 @@ def power_func(numbers : list):
     plt.grid()
     plt.legend(fontsize = 20)
     plt.show()
-
 
 
 def plot_derivatives(h, a, b, p, func_f, func_d_f= None, func_dd_f = None):
@@ -383,21 +393,27 @@ def plot_derivatives(h, a, b, p, func_f, func_d_f= None, func_dd_f = None):
     _, ax1 = plt.subplots(figsize=(5, 5))
     plt.xticks(fontsize=17)
     plt.yticks(fontsize=17)
+    plt.ylabel("y", fontsize = 20, rotation = 0)
+    ax1.yaxis.set_label_coords(-0.01, 1)
     plt.xlabel("x", fontsize = 20)
     ax1.xaxis.set_label_coords(1.02, 0.025)
     ax1.yaxis.get_offset_text().set_fontsize(20)
     plt.title("Ableitungen", fontsize=40)
     ax1.grid()
     # plot approximation of first derivative
-    plt.plot(steps, [dh_f(step) for step in steps], "b", label = "1. approximierte Ableitung", linewidth = 2,linestyle = "solid")
+    plt.plot(steps, [dh_f(step) for step in steps], "b",
+             label = "1. approximierte Ableitung", linewidth = 2,linestyle = "solid")
     # plot approximation of second derivative
-    plt.plot(steps, [ddh_f(step) for step in steps], "g", label = "2. approximierte Ableitung", linewidth = 2,linestyle = "solid")
+    plt.plot(steps, [ddh_f(step) for step in steps], "g",
+             label = "2. approximierte Ableitung", linewidth = 2,linestyle = "solid")
     # plot first derivative if it has been provided
     if func_d_f is not None:
-        plt.plot(steps, [func_d_f(step) for step in steps], "b", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
+        plt.plot(steps, [func_d_f(step) for step in steps], "b",
+                 label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
     # plot second derivative if it has been provided
     if func_dd_f is not None:
-        plt.plot(steps, [func_dd_f(step) for step in steps], "g", label = "1. analytische Ableitung", linewidth = 6,linestyle = "dotted")
+        plt.plot(steps, [func_dd_f(step) for step in steps], "g",
+                 label = "1. analytische Ableitung", linewidth = 6, linestyle = "dotted")
     plt.legend(fontsize=20, loc="lower left")
     plt.show()
 
@@ -549,6 +565,8 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
         _, ax1 = plt.subplots(figsize=(5, 5))
         plt.xticks(fontsize=17)
         plt.yticks(fontsize=17)
+        plt.ylabel("y", fontsize = 20, rotation = 0)
+        ax1.yaxis.set_label_coords(-0.01, 1)
         plt.xlabel("x", fontsize = 20)
         ax1.xaxis.set_label_coords(1.02, 0.025)
         ax1.yaxis.get_offset_text().set_fontsize(20)
@@ -583,6 +601,8 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
         elif "dhs" not in filename_1:
             ax1.set_ylim(bottom = 10**-8.5)
             # change graph accordingly
+            plt.ylabel("y", fontsize = 20, rotation = 0)
+            ax1.yaxis.set_label_coords(-0.01, 1)
             plt.xlabel("h", fontsize = 20)
             ax1.xaxis.set_label_coords(1.02, 0.025)
             plt.yscale("log")
@@ -612,6 +632,8 @@ def plot(title : str, filename_1 : str, name_1 : str, filename_2 = None, name_2 
         else:
             ax1.set_ylim(bottom = 10**-13)
             # change graph accordingly
+            plt.ylabel("y", fontsize = 20, rotation = 0)
+            ax1.yaxis.set_label_coords(-0.01, 1)
             plt.xlabel("h", fontsize = 20)
             ax1.xaxis.set_label_coords(1.02, 0.025)
             plt.yscale("log")
@@ -726,7 +748,7 @@ def main():
         return (k*math.cos(k*x)/x) - (math.sin(k*x)/x**2)
     def func_dd_gk(x, k=c):
         return -((k**2*x**2-2)*math.sin(k*x)+2*k*x*math.cos(k*x))/x**3
-    
+
     # update progressbar
     progress+=1
     progress_bar(progress, 63)
@@ -877,7 +899,7 @@ def main():
         # update progressbar
         progress+=1
         progress_bar(progress, 63)
-    
+
     # plot error of alternative approximation of first derivative
     plot("Approximationsfehler", "g_dhs_error.csv", "")
 
