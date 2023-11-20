@@ -1,30 +1,3 @@
-def idxx(nx, n):
-    """ Calculates the number of an equation in the Poisson problem for
-    a given discretization point.
-
-    Parameters
-    ----------
-    nx : list of int
-        Coordinates of a discretization point, multiplied by n.
-    n : int
-        Number of intervals in each dimension.
-    
-    Return
-    ------
-    int
-        Number of the corresponding equation in the Poisson problem.
-    """
-
-    num=0 
-    num = nx[0]
-    if len(nx) > 1:
-        num = num + (n-1) * (nx[1]-1)
-    if len(nx) > 2:
-       num = num + (n-1) * (nx[2]-1)
-    if len(nx) > 3:
-       num = num + (n-1) * (nx[3]-1) 
-
-    return num 
 
 def idx(nx,n):
     if nx[0] > (n-1):
@@ -40,5 +13,36 @@ def idx(nx,n):
 
         
     return num
-print(idx([10,10,10],11) , "<--")
 
+
+def inv_idx(m, d, n):
+    """ Calculates the coordinates of a discretization point for a
+    given equation number of the Poisson problem.
+    
+    Parameters
+    ----------
+    m : int
+        Number of an equation in the Poisson Problem
+    d : int
+        Dimension of the space.
+    n : int
+        Number of intervals in each dimension.
+    
+    Return
+    ------
+    list of int
+        Coordinates of the corresponding discretization point, multiplied by n.
+    """
+    M = m-1
+    nx = [1] * d 
+    print(nx,"Creat")
+    print(len(nx),"Listen Länge")
+    for i in range(len(nx),0,-1):
+        print(i,"das ist i")
+        nx[i-1] = nx[i-1] + (M // ((n-1)**(i-1)))
+        print(nx,"das ist nx zu",i)
+        M = M % (n-1)**(i-1)
+
+    return(nx)
+
+print(inv_idx(9,3,4))

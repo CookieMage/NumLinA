@@ -69,7 +69,13 @@ def inv_idx(m, d, n):
     list of int
         Coordinates of the corresponding discretization point, multiplied by n.
     """
+    M = m-1
+    nx = [1] * d 
+    for i in range(len(nx),0,-1):
+        nx[i-1] = nx[i-1] + (M // ((n-1)**(i-1)))
+        M = M % (n-1)**(i-1)
 
+    return(nx)
 
 def compute_error(d, n, hat_u, u):
     """ Computes the error of the numerical solution of the Poisson problem
