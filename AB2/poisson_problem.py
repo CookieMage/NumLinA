@@ -48,8 +48,6 @@ def idx(nx, n):
         num = num + (n-1)**i * (nx[i]-1)
              
     return num
-print(idx([1,1,1],5) , "<--")
-
 
 def inv_idx(m, d, n):
     """ Calculates the coordinates of a discretization point for a
@@ -100,3 +98,6 @@ def compute_error(d, n, hat_u, u):
     float
         maximal absolute error at the discretization points
     """
+
+print(idx([5,6,3],8))
+print(inv_idx(138,3,8))
