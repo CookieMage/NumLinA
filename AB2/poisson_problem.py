@@ -67,6 +67,8 @@ def inv_idx(m, d, n):
     list of int
         Coordinates of the corresponding discretization point, multiplied by n.
     """
+    if m > (n-1)**d:
+        raise ValueError
     M = m-1
     nx = [1] * d 
     for i in range(len(nx),0,-1):
@@ -99,5 +101,5 @@ def compute_error(d, n, hat_u, u):
         maximal absolute error at the discretization points
     """
 
-print(idx([5,6,3],8))
-print(inv_idx(138,3,8))
+print(idx([36,23,8,1,1],99))
+print(inv_idx(69420,5,99))
