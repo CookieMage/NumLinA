@@ -1,4 +1,6 @@
-def rhs(d, n, f):
+import numpy as np
+
+def rhs(d : int, n : int, f : callable):
     """ Computes the right-hand side vector `b` for a given function `f`.
 
     Parameters
@@ -23,7 +25,7 @@ def rhs(d, n, f):
         If d < 1 or n < 2.
     """
 
-def idx(nx, n):
+def idx(nx : list, n : int):
     """ Calculates the number of an equation in the Poisson problem for
     a given discretization point.
 
@@ -39,17 +41,15 @@ def idx(nx, n):
     int
         Number of the corresponding equation in the Poisson problem.
     """
-    if nx[0] > (n-1):
-        raise ValueError
+    for e in nx:
+        if e > (n-1):
+            raise ValueError
     num = nx[0]
     for i in range(1,len(nx)):
-        if nx[i] > (n-1):
-            raise ValueError
         num = num + (n-1)**i * (nx[i]-1)
-             
     return num
 
-def inv_idx(m, d, n):
+def inv_idx(m : int, d : int, n : int):
     """ Calculates the coordinates of a discretization point for a
     given equation number of the Poisson problem.
     
@@ -69,15 +69,15 @@ def inv_idx(m, d, n):
     """
     if m > (n-1)**d:
         raise ValueError
-    M = m-1
-    nx = [1] * d 
+    m = m-1
+    nx = [1] * d
     for i in range(len(nx),0,-1):
-        nx[i-1] = nx[i-1] + (M // ((n-1)**(i-1)))
-        M = M % (n-1)**(i-1)
+        nx[i-1] = nx[i-1] + (m // ((n-1)**(i-1)))
+        m = m % (n-1)**(i-1)
 
     return(nx)
 
-def compute_error(d, n, hat_u, u):
+def compute_error(d : int, n : int, hat_u, u : callable):
     """ Computes the error of the numerical solution of the Poisson problem
     with respect to the infinity-norm.
 
@@ -103,3 +103,4 @@ def compute_error(d, n, hat_u, u):
 
 print(idx([36,23,8,1,1],99))
 print(inv_idx(69420,5,99))
+compute_error()
