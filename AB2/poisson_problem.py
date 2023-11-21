@@ -45,6 +45,9 @@ def idx(nx : list, n : int):
         if e > (n-1):
             raise ValueError
     num = nx[0]
+    # Als Alternative wäre es hier nur möglich zu schreiben:
+    # for i,e in enumerate(nx[1:],1):
+    # Durch die Kopierung der Liste (nx[1:]) ist dies unnötige aufwendig.
     for i in range(1,len(nx)):
         num = num + (n-1)**i * (nx[i]-1)
     return num
@@ -72,10 +75,9 @@ def inv_idx(m : int, d : int, n : int):
     m = m-1
     nx = [1] * d
     for i in range(len(nx),0,-1):
-        nx[i-1] = nx[i-1] + (m // ((n-1)**(i-1)))
+        nx[i-1] += (m // ((n-1)**(i-1)))
         m = m % (n-1)**(i-1)
-
-    return(nx)
+    return nx
 
 def compute_error(d : int, n : int, hat_u, u : callable):
     """ Computes the error of the numerical solution of the Poisson problem
@@ -101,6 +103,6 @@ def compute_error(d : int, n : int, hat_u, u : callable):
         maximal absolute error at the discretization points
     """
 
+
 print(idx([36,23,8,1,1],99))
 print(inv_idx(69420,5,99))
-compute_error()
