@@ -75,7 +75,7 @@ def inv_idx(m : int, d : int, n : int):
     m = m-1
     nx = [1] * d
     for i in range(len(nx),0,-1):
-        nx[i-1] += (m // ((n-1)**(i-1)))
+        nx[i-1] = 1 + (m // ((n-1)**(i-1)))
         m = m % (n-1)**(i-1)
     return nx
 
