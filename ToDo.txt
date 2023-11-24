@@ -1,0 +1,16 @@
+file:///C:/Users/basti/Downloads/PPI_PDE+LU.pdf
+https://docs.scipy.org/doc/scipy/reference/sparse.html
+
+Fragen:
+- Jedes Objekt soll eine der Matrizen (d=1, 2, oder 3) repräsentieren, allerdings soll diese erst in get_sparse konstroiert werden?
+  sollte dies nicht in __init__ erstellt werden um sie dann mittels get_sparse auszugeben?
+
+- rhs
+- graphische Darstellung 2.4 (Nicht-Null-Einträge)
+- main()
+
+
+Done
+-----
+- eval_sparsity()
+- get_sparse()
