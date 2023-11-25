@@ -40,12 +40,15 @@ class BlockMatrix:
         return self.a_d.toarray()
     
     def eval_sparsity(self):
-        abs_non_zero = self.a_1.count_nonzero()
-        abs = (self.n-1)**2
+        abs_non_zero = self.a_d.count_nonzero()
+        abs = ((self.n-1)**self.d)**2
         rel_non_zero = abs_non_zero / abs
         return abs_non_zero, rel_non_zero
     
-block = BlockMatrix(3, 3)
+    
+    
+block = BlockMatrix(d = 2, n = 3)
 
-print("------------")
+print("\n-----------------------\n")
 print(block.get_sparse())
+print(block.eval_sparsity())
