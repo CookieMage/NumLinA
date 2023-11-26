@@ -9,9 +9,11 @@ Fragen:
 - rhs
 - graphische Darstellung 2.4 (Nicht-Null-Einträge)
 - main()
+- rhs braucht numpy_array
+- alle errors überprüfen und kommentieren
 
 
 Done
 -----
 - eval_sparsity()
-- get_sparse()
+- get_sparse() ?
