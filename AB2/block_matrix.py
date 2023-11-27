@@ -6,7 +6,9 @@ class BlockMatrix:
     n = None # int
     a_d = None # coo_array
 
-    def __init__(self, d, n):
+    def __init__(self, d : int, n : int):
+        if not isinstance(d, int) or not isinstance(n, int):
+            raise TypeError
         if d < 1 or d > 3:
             raise ValueError
         self.d = d
@@ -29,25 +31,23 @@ class BlockMatrix:
                 # generiere Blockmatrix, welche die Identitätsmatrizen enthält
                 a_3_ident = sparse.diags([-1, -1], [-(self.n-1)**2, (self.n-1)**2], shape=((self.n-1)**3, (self.n-1)**3))
                 # addiere die Matrizen, um die gesuchte Matrix a_2 zu erhalten
-                a_3 = a_3_block + a_3_ident
-                self.a_d = a_3
-        print(type(self.a_d))
-        
+                self.a_d = a_3_block + a_3_ident
+
         # a_d_block = sparse.block_diag([a_1 for _ in range((self.n-1)**d)])
         # a_d_ident = sparse.diags([-1, -1], [-(self.n-1)**(d-1), (self.n-1)**(d-1)], shape=((self.n-1)**d, (self.n-1)**d))
-        
-        
+
+
     def get_sparse(self):
         return self.a_d.toarray()
-    
+
     def eval_sparsity(self):
         abs_non_zero = self.a_d.count_nonzero()
         abs = ((self.n-1)**self.d)**2
         rel_non_zero = abs_non_zero / abs
         return abs_non_zero, rel_non_zero
-    
-    
-    
+
+
+
 block = BlockMatrix(d = 3, n = 4)
 
 print("\n-----------------------\n")

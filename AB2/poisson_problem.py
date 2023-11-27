@@ -24,16 +24,15 @@ def rhs(d : int, n : int, f : callable):
     ValueError
         If d < 1 or n < 2.
     """
-    if not isinstance(d, int) or not isinstance(n, int) or not isinstance(f, callable):
+    if not isinstance(d, int) or not isinstance(n, int) or not callable(f):
         raise TypeError
     if d < 1 or n < 2:
         raise ValueError
     end = (n-1)**d
-    
     nx = np.ndarray([0]*end)
-    for i,e in enumerate(nx):
-        e = inv_idx(i+1, d, n)
-        nx[i] = f(e)
+    for i,_ in enumerate(nx):
+        x = inv_idx(i+1, d, n)
+        nx[i] = f(x)
     return nx
 
 
@@ -88,7 +87,7 @@ def inv_idx(m : int, d : int, n : int):
         raise TypeError
     if m > (n-1)**d:
         raise ValueError
-    m = m-1
+    m -= 1
     nx = [1] * d
     for i in range(len(nx),0,-1):
         nx[i-1] = 1 + (m // ((n-1)**(i-1)))
@@ -126,3 +125,8 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):
 
 print(idx([36,23,8,1,1],99))
 print(inv_idx(69420,5,99))
+
+def f_2(x : np.ndarray):
+    return x[0]*x[1]
+
+print(rhs(3, 2, f_2))
