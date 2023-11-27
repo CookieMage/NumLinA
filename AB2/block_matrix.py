@@ -31,6 +31,7 @@ class BlockMatrix:
                 # addiere die Matrizen, um die gesuchte Matrix a_2 zu erhalten
                 a_3 = a_3_block + a_3_ident
                 self.a_d = a_3
+        print(type(self.a_d))
         
         # a_d_block = sparse.block_diag([a_1 for _ in range((self.n-1)**d)])
         # a_d_ident = sparse.diags([-1, -1], [-(self.n-1)**(d-1), (self.n-1)**(d-1)], shape=((self.n-1)**d, (self.n-1)**d))
@@ -47,7 +48,7 @@ class BlockMatrix:
     
     
     
-block = BlockMatrix(d = 2, n = 3)
+block = BlockMatrix(d = 3, n = 4)
 
 print("\n-----------------------\n")
 print(block.get_sparse())
