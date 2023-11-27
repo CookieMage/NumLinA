@@ -122,11 +122,11 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):
     if not isinstance(d, int) or not isinstance(n, int):
         raise TypeError
 
-
-print(idx([36,23,8,1,1],99))
-print(inv_idx(69420,5,99))
-
-def f_2(x : np.ndarray):
-    return x[0]*x[1]
-
-print(rhs(3, 2, f_2))
+def main():
+    print(idx([36,23,8,1,1],99))
+    print(inv_idx(69420,5,99))
+    
+    def f_2(x : np.ndarray):
+        return x[0]*x[1]
+    
+    print(rhs(3, 2, f_2))

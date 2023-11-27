@@ -4,12 +4,12 @@ from scipy import sparse
 class BlockMatrix:
     d = None # int
     n = None # int
-    a_d = None # coo_array
+    a_d = None # csr_array
 
     def __init__(self, d : int, n : int):
         if not isinstance(d, int) or not isinstance(n, int):
             raise TypeError
-        if d < 1 or d > 3:
+        if d < 1 or d > 3 or n < 2:
             raise ValueError
         self.d = d
         self.n = n
@@ -46,10 +46,3 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs
         return abs_non_zero, rel_non_zero
 
-
-
-block = BlockMatrix(d = 3, n = 4)
-
-print("\n-----------------------\n")
-print(block.get_sparse())
-print(block.eval_sparsity())
