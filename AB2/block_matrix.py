@@ -1,7 +1,29 @@
-import numpy as np
+#import numpy as np
 from scipy import sparse
 
 class BlockMatrix:
+    '''class for representing matrices used to solve the poisson-problem
+
+    Parameters
+    ----------
+    d
+    n
+    
+    Attributes
+    ----------
+    d
+    n
+    a_d
+
+    methods
+    -------
+    __init__()
+        returns an Object of class FiniteDifference
+    get_sparse()
+        returns the matrix represented by the object as a np.ndarray
+    eval_sparsity()
+
+    '''
     d = None # int
     n = None # int
     a_d = None # csr_array
@@ -36,7 +58,6 @@ class BlockMatrix:
         # a_d_block = sparse.block_diag([a_1 for _ in range((self.n-1)**d)])
         # a_d_ident = sparse.diags([-1, -1], [-(self.n-1)**(d-1), (self.n-1)**(d-1)], shape=((self.n-1)**d, (self.n-1)**d))
 
-
     def get_sparse(self):
         return self.a_d.toarray()
 
@@ -46,3 +67,6 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs
         return abs_non_zero, rel_non_zero
 
+block = BlockMatrix(2,2)
+print(type(block.a_d))
+print(type(block.get_sparse()))
