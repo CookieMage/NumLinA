@@ -1,4 +1,5 @@
-"""programm for solving the Poisson problem
+""" Gruppe: 21
+programm for solving the Poisson problem
 
 functions
 ---------
@@ -60,7 +61,6 @@ def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
 
     return np.array(vector)
 
-
 def idx(nx : list, n : int):    # pylint: disable=invalid-name
     """ Calculates the number of an equation in the Poisson problem for
     a given discretization point.
@@ -94,9 +94,9 @@ def idx(nx : list, n : int):    # pylint: disable=invalid-name
     num = nx[0]
     # Als Alternative wäre es hier nur möglich zu schreiben:
     # for i,e in enumerate(nx[1:],1):
-    # Durch die Kopierung der Liste (nx[1:]) ist dies unnötige aufwendig.
+    # Durch das Kopieren der Liste ( durch nx[1:]) ist dies allerdings unnötig aufwendig :(
     for i in range(1,len(nx)):
-        num = num + (n-1)**i * (nx[i]-1)
+        num += (n-1)**i * (nx[i]-1)
     return num
 
 def inv_idx(m : int, d : int, n : int): # pylint: disable=invalid-name
@@ -134,6 +134,7 @@ def inv_idx(m : int, d : int, n : int): # pylint: disable=invalid-name
         raise ValueError('m must be > (n-1)^d')
     m -= 1
     nx = [1] * d    # pylint: disable=invalid-name
+    # calculate coordinates of the discretization point
     for i in range(len(nx),0,-1):
         nx[i-1] = 1 + (m // ((n-1)**(i-1)))
         m = m % (n-1)**(i-1)

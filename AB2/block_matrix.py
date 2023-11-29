@@ -1,6 +1,8 @@
-'''_summary_
+''' Gruppe: 21
+This is an implementation of the class BlockMatrix, which can be used to approximate the
+solution of the Poisson problem.
 
-calsses
+classes
 -------
 BlockMatrix
     class for representing matrices used to solve the poisson-problem
@@ -8,7 +10,7 @@ BlockMatrix
 functions
 ---------
 main()
-
+    Example of code that can be run using the provided functions
 '''
 from scipy import sparse
 
@@ -40,9 +42,9 @@ class BlockMatrix:
     eval_sparsity()
         returns the absolute and relative number of non-zero-entries in the matrix
     '''
-    d = None # int
-    n = None # int
-    a_d = None # csr_array
+    d = None
+    n = None
+    a_d = None
 
     def __init__(self, d : int, n : int):   # pylint: disable=invalid-name
         '''returns an Object of class FiniteDifference
@@ -67,33 +69,34 @@ class BlockMatrix:
             raise TypeError('n must be an int')
         if d < 1 or d > 3 or n < 2:
             raise ValueError
+        
         self.d = d  # pylint: disable=invalid-name
         self.n = n  # pylint: disable=invalid-name
+        
         a_1 = sparse.diags([-1, 2*self.d, -1], [-1, 0, 1], shape=(self.n-1, self.n-1))
+        
+        # assign the right value to self.a_d
         if d == 1:
             self.a_d = a_1
         else:
-            # generiere blockmatrix, welche a_1 enthält
+            # generate block-matrix, which contains a_1 on the main diagonal
             a_2_block = sparse.block_diag([a_1 for _ in range(self.n-1)])
-            # generiere Blockmatrix, welche die Identitätsmatrizen enthält
+            # generate block-matrix, which contains the identity on the corresponding diagonal for a_2
             a_2_ident = sparse.diags([-1, -1], [-(self.n-1), self.n-1],
                                      shape=((self.n-1)**2, (self.n-1)**2))
-            # addiere die Matrizen, um die gesuchte Matrix a_2 zu erhalten
+            # add matrices to get a_2
             a_2 = a_2_block + a_2_ident
+            
             if d == 2:
                 self.a_d = a_2
             else:
-                # generiere blockmatrix, welche a_2 enthält
+                # generate block-matrix, which contains a_2 on the main diagonal
                 a_3_block = sparse.block_diag([a_2 for _ in range(self.n-1)])
-                # generiere Blockmatrix, welche die Identitätsmatrizen enthält
+                # generate block-matrix, which contains the identity on the corresponding diagonal for a_3
                 a_3_ident = sparse.diags([-1, -1], [-(self.n-1)**2, (self.n-1)**2],
                                          shape=((self.n-1)**3, (self.n-1)**3))
-                # addiere die Matrizen, um die gesuchte Matrix a_2 zu erhalten
+                # add matrices to get a_3
                 self.a_d = a_3_block + a_3_ident
-
-        # a_d_block = sparse.block_diag([a_1 for _ in range((self.n-1)**d)])
-        # a_d_ident = sparse.diags([-1, -1], [-(self.n-1)**(d-1), (self.n-1)**(d-1)],
-        #                          shape=((self.n-1)**d, (self.n-1)**d))
 
     def get_sparse(self):
         '''method for returning the matrix as an array

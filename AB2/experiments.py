@@ -1,32 +1,105 @@
-from block_matrix import BlockMatrix
-import poisson_problem
+''' Gruppe: 21
+programm for experimenting with block_matrix.py and poisson_problem.py
+
+functions
+---------
+ploter()
+    plots provided lists on a graph
+graph()
+    creates different graphs for comparing the sparse and numpy matrices
+main()
+    Example of code that can be run using the provided functions
+'''
 from matplotlib import pyplot as plt
+from block_matrix import BlockMatrix
+#import poisson_problem
 
-sparse_data = []
-full_data = []
-ratio = []
-x_values = [i for i in range(2, 100)]
-for i in x_values:
-    matrix = BlockMatrix(3, i)
-    sparse_data += [matrix.eval_sparsity()[0] * 3]
-    full_data += [(matrix.n-1)**(2*matrix.d)]
-    ratio += [sparse_data[i-2] / full_data[i-2]]
+def ploter(x_values : list, plots : list, num : int):
+    '''plots provided lists of plots relative to provided list x_values using num for the title
 
-_, ax1 = plt.subplots(figsize=(5, 5))
-plt.xticks(fontsize=17)
-plt.yticks(fontsize=17)
-plt.xscale("log")
-plt.yscale("log")
-plt.ylabel("y", fontsize = 20, rotation = 0)
-ax1.yaxis.set_label_coords(-0.01, 1)
-plt.xlabel("x", fontsize = 20)
-ax1.xaxis.set_label_coords(1.02, 0.025)
-ax1.yaxis.get_offset_text().set_fontsize(20)
-ax1.grid()
+    Parameters
+    ----------
+    x_values : list
+        list of values for the x-axis
+    plots : list of 3
+        list of lists of y-values for plots
+    num : int
+        used for labeling the graph
+    '''
+    # create the plot
+    _, ax1 = plt.subplots(figsize=(5, 5))
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.title(f"{num}. Dimension", fontsize=20)
+    plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
+    ax1.yaxis.set_label_coords(-0.01, 1)
+    plt.xlabel("Anzahl an Intervallen\npro Dimension", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.02, -0.05)
+    ax1.yaxis.get_offset_text().set_fontsize(20)
+    ax1.grid()
 
-plt.plot(x_values, sparse_data, label = "sparse")
-plt.plot(x_values, full_data, label = "full")
-plt.plot(x_values, ratio, label = "ratio")
+    # plot data
+    plt.plot(x_values, plots[0], label = "sparse-matrix", linewidth=2)
+    plt.plot(x_values, plots[1], label = "full matrix", linewidth=2)
 
-plt.legend(fontsize=20, loc="upper left")
-plt.show()
+    plt.legend(fontsize=20, loc="upper left")
+    plt.show()
+
+def graph(x_values : list):
+    '''creates different graphs for comparing the sparse and numpy matrices
+
+    Parameters
+    ----------
+    x_values : list
+        list of values for the x-axis / experiments
+
+    Returns
+    -------
+    list of 6
+        list containing the experiment-data
+    '''
+    # create lists for organizing the data 
+    sparse_data1 = []
+    sparse_data2 = []
+    sparse_data3 = []
+
+    full_data1 = []
+    full_data2 = []
+    full_data3 = []
+
+    data = [sparse_data1, full_data1, sparse_data2, full_data2, sparse_data3, full_data3]
+
+    # experiment on every n for n in x_values
+    for n in x_values:
+        # create matrices (d= 1, 2, 3)
+        mat1 = BlockMatrix(1, n)
+        mat2 = BlockMatrix(2, n)
+        mat3 = BlockMatrix(3, n)
+
+        # get information of sparsity
+        sparse_data1 += [mat1.eval_sparsity()[0]]
+        sparse_data2 += [mat2.eval_sparsity()[0]]
+        sparse_data3 += [mat3.eval_sparsity()[0]]
+
+        # compute absolute number of entries / number of entries in a full matrix
+        full_data1 += [(mat1.n-1)**(2*mat1.d)]
+        full_data2 += [(mat2.n-1)**(2*mat2.d)]
+        full_data3 += [(mat3.n-1)**(2*mat3.d)]
+
+    return data
+
+def main():
+    '''Example of code that can be run using the provided functions
+    '''
+    x_values = list(range(2, 100, 2))
+    
+    data = graph(x_values)
+    
+    ploter(x_values, data[0:2], 1)
+    ploter(x_values, data[2:4], 2)
+    ploter(x_values, data[4:6], 3)
+
+if __name__ == "__main__":
+    main()
