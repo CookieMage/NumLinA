@@ -1,3 +1,4 @@
+
 """programm for solving the Poisson problem
 
 functions
@@ -59,7 +60,6 @@ def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     vector = [f(x) for x in array_list]
 
     return np.array(vector)
-
 
 def idx(nx : list, n : int):    # pylint: disable=invalid-name
     """ Calculates the number of an equation in the Poisson problem for
@@ -138,6 +138,38 @@ def inv_idx(m : int, d : int, n : int): # pylint: disable=invalid-name
         nx[i-1] = 1 + (m // ((n-1)**(i-1)))
         m = m % (n-1)**(i-1)
     return nx
+
+def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint: disable=invalid-name
+    """ Computes the error of the numerical solution of the Poisson problem
+    with respect to the infinity-norm.
+
+    Parameters
+    ----------
+    d : int
+        Dimension of the space
+    n : int
+        Number of intersections in each dimension
+    hat_u : array_like of 'numpy'
+        Finite difference approximation of the solution of the Poisson problem
+        at the discretization points
+    u : callable
+        Solution of the Poisson problem
+        The calling signature is 'u(x)'. Here 'x' is an array_like of 'numpy'.
+        The return value is a scalar.
+
+    Returns
+    -------
+    float
+        maximal absolute error at the discretization points
+    """
+    if not isinstance(hat_u, np.ndarray):
+        raise TypeError('hat_u must be a np.ndarray')
+    if not callable(u):
+        raise TypeError('u must be a callable function')
+    if not isinstance(d, int):
+        raise TypeError('d must be an int')
+    if not isinstance(n, int):
+        raise TypeError('n must be an int')
 
 def main():
     """ Example of code that can be run using the provided functions
