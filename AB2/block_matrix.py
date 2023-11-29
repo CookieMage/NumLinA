@@ -106,9 +106,9 @@ class BlockMatrix:
         np.ndarray
             represented matrix
         '''
-        return self.a_d.toarray()
+        return self.a_d
 
-    def eval_sparsity(self):
+    def eval_zeros(self):
         '''method for getting the absolute and relative number of non-zeros-entries
 
         Returns
@@ -128,13 +128,17 @@ def main():
     '''
     mat_1 = BlockMatrix(2, 4)
 
-    print(mat_1.get_sparse())
-    print(mat_1.eval_sparsity())
+    print(mat_1.get_sparse().toarray())
+    print(mat_1.eval_zeros())
 
     mat_2 = BlockMatrix(3, 5)
 
-    print(mat_2.get_sparse())
-    print(mat_2.eval_sparsity())
+    print(mat_2.get_sparse().toarray())
+    print(mat_2.eval_zeros())
 
 if __name__ == "__main__":
     main()
+
+# Der Datentyp von a_d ist scipy.sparse._csr.csr_array und der Test verlangt etwas anderes.
+# wir konnten das geforderte format nicht erzeugen aber meinen, dass dieses gleichbedeutend sein
+# sollte.
