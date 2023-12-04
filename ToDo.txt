@@ -21,3 +21,6 @@ Done
 - get_sparse()
 - rhs
 - rhs braucht numpy_array
+
+
+python C:\Users\basti\Documents\GitHub\NumLinA\Felix_Geburtstag\Ishahara_test_generator.py C:\Users\basti\Documents\GitHub\NumLinA\foo.png
