@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 from block_matrix import BlockMatrix
 #import poisson_problem
 
-def ploter(x_values : list, plots : list, num : int):
+def ploter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values using num for the title
 
     Parameters
@@ -32,17 +32,21 @@ def ploter(x_values : list, plots : list, num : int):
     plt.yticks(fontsize=17)
     plt.xscale("log")
     plt.yscale("log")
-    plt.title(f"{num}. Dimension", fontsize=20)
+    #plt.title(f"{num}. Dimension", fontsize=20)
     plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
     ax1.yaxis.set_label_coords(-0.01, 1)
-    plt.xlabel("Anzahl an Intervallen\npro Dimension", fontsize = 20)
-    ax1.xaxis.set_label_coords(1.02, -0.05)
+    plt.xlabel("N", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.01, -0.05)
     ax1.yaxis.get_offset_text().set_fontsize(20)
     ax1.grid()
 
     # plot data
-    plt.plot(x_values, plots[0], label = "sparse-matrix", linewidth=2)
-    plt.plot(x_values, plots[1], label = "full matrix", linewidth=2)
+    plt.plot(x_values[0], plots[0], label = "d = 1 sparse-matrix", linewidth=2, linestyle="solid")
+    plt.plot(x_values[0], plots[1], label = "d = 1 full matrix", linewidth=2, linestyle="solid")
+    plt.plot(x_values[1], plots[2], label = "d = 2 sparse-matrix", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values[1], plots[3], label = "d = 2 full matrix", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values[2], plots[4], label = "d = 3 sparse-matrix", linewidth=2, linestyle="dotted")
+    plt.plot(x_values[2], plots[5], label = "d = 3 full matrix", linewidth=2, linestyle="dotted")
 
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
@@ -73,6 +77,7 @@ def graph(x_values : list):
 
     # experiment on every n for n in x_values
     for n in x_values:
+        print(n)
         # create matrices (d= 1, 2, 3)
         mat1 = BlockMatrix(1, n)
         mat2 = BlockMatrix(2, n)
@@ -93,13 +98,18 @@ def graph(x_values : list):
 def main():
     '''Example of code that can be run using the provided functions
     '''
-    x_values = list(range(2, 100, 2))
+    x_values = list(range(2, 100, 4))
     
     data = graph(x_values)
+
+    print(100)
     
-    ploter(x_values, data[0:2], 1)
-    ploter(x_values, data[2:4], 2)
-    ploter(x_values, data[4:6], 3)
+    x_values = [[x-1 for x in x_values]]
+    x_values += [[(x)**2 for x in x_values[0]]]
+    x_values += [[(x)**3 for x in x_values[0]]]
+
+    ploter(x_values, data)
+
 
 if __name__ == "__main__":
     main()

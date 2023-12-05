@@ -56,8 +56,8 @@ def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     for i in range((n-1)**d):
         sorted_x_d.append(np.array(inv_idx(i+1, d, n)))
 
-    array_list = [((1/n)*x) for x in sorted_x_d]
-    vector = [f(x) for x in array_list]
+    array_list = [x/n for x in sorted_x_d]
+    vector = [f(x)/(n**2) for x in array_list]
 
     return np.array(vector)
 

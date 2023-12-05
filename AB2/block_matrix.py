@@ -106,9 +106,9 @@ class BlockMatrix:
         np.ndarray
             represented matrix
         '''
-        return self.a_d
+        return sparse.csr_array(self.a_d)
 
-    def eval_zeros(self):
+    def eval_sparsity(self):
         '''method for getting the absolute and relative number of non-zeros-entries
 
         Returns
@@ -123,18 +123,28 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
+    def get_lu():
+        pass
+
+    def eval_sparsity_lu():
+        pass
+
+    def graph():
+        pass
+
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
     mat_1 = BlockMatrix(2, 4)
 
     print(mat_1.get_sparse().toarray())
-    print(mat_1.eval_zeros())
+    print(mat_1.eval_sparsity())
 
     mat_2 = BlockMatrix(3, 5)
 
     print(mat_2.get_sparse().toarray())
-    print(mat_2.eval_zeros())
+    print(mat_2.eval_sparsity())
+
 
 if __name__ == "__main__":
     main()
