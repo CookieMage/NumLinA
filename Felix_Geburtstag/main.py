@@ -4,9 +4,9 @@ import convert_black_white
 import Ishahara_test_generator
 import make_transparent
 
-NUM = 10000
-LAYERS = 20
-BACKGROUND = (255, 255, 255)
+NUM = 5000
+LAYERS = 5
+BACKGROUND = (0, 0, 0)
 
 cwd = os.getcwd()
 
@@ -17,7 +17,8 @@ thresh = []
 for i in range(LAYERS):
     ishahara += ["trash\\ishahara" + str(i) + ".png"]
     trans += ["trash\\trans" + str(i) + ".png"]
-    thresh += [i*(100/LAYERS)]
+    #thresh += [(i+1)*(100/LAYERS)]
+    thresh += [100]
 
 for i,e in enumerate(ishahara):
     converted = convert_black_white.convert("Felix_Geburtstag\\Erik_Felixia.jpg", "\\trash", thresh[i])
