@@ -13,6 +13,7 @@ main()
     Example of code that can be run using the provided functions
 '''
 from scipy import sparse
+from scipy import linalg
 
 class BlockMatrix:
     '''class for representing matrices used to solve the poisson-problem
@@ -123,11 +124,18 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
-    def get_lu():
-        pass
+    def get_lu(self):
+        lu = linalg.lu(self.a_d.toarray(), permute_l=True)
+        return [sparse._csr.csr_matrix(x) for x in lu]
 
-    def eval_sparsity_lu():
-        pass
+    def eval_sparsity_lu(self):
+        lu = self.get_lu()
+        sub = sparse.diags([-1], [0], shape = ((self.n-1)**self.d, (self.n-1)**self.d))
+        result = lu[0] + lu[1] + sub
+        abs_non_zero = result.count_nonzero()
+        abs_entries = ((self.n-1)**self.d)**2
+        rel_non_zero = abs_non_zero / abs_entries
+        return abs_non_zero, rel_non_zero
 
     def graph():
         pass
@@ -135,7 +143,7 @@ class BlockMatrix:
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
-    mat_1 = BlockMatrix(2, 4)
+    mat_1 = BlockMatrix(2, 3)
 
     print(mat_1.get_sparse().toarray())
     print(mat_1.eval_sparsity())
@@ -144,6 +152,11 @@ def main():
 
     print(mat_2.get_sparse().toarray())
     print(mat_2.eval_sparsity())
+
+    lu = mat_1.get_lu()
+    print(lu[0], "\n", lu[1])
+    sparsity_lu = mat_1.eval_sparsity_lu()
+    print(sparsity_lu)
 
 
 if __name__ == "__main__":
