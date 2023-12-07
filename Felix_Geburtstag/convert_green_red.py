@@ -37,11 +37,21 @@ def convert(relpath, savepath, thresh = 85, num = 0):
 
     img = Image.open(os.getcwd() + conv)
     img = img.convert("RGB")
+    img.thumbnail((500,500))
 
     pixels = img.load() # create the pixel map
 
+    blue = []
+    for i in range(130, 160, 5):
+        for j in range(130, 160, 5):
+            for k in range(150, 255, 5):
+                blue += [(i, j, k)]
+
     for i in range(img.size[0]): # for every pixel:
         for j in range(img.size[1]):
+            if (i%2==0 and j%2==1) or (i%2==1 and j%2==0):
+                pixels[i,j] = random.choice(blue)
+                continue
             if overlaps_motive(img, i, j):
                 fill_colors = COLORS_ON
             else:
