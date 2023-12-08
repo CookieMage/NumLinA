@@ -21,17 +21,6 @@ def overlaps_motive(image, x, y):
     else:
         return False
 
-def convert(relpath, savepath, thresh = 85):
-    img = Image.open(os.getcwd() + "\\" + relpath)
-    
-    fn = lambda x : 255 if x > thresh else 0
-    r = img.convert('L').point(fn, mode='1')
-    
-    r.save(os.getcwd() + "\\" + savepath + '\\converted.png')
-    return savepath + "\\" + 'converted.png'
-
-
-
 def convert(relpath, savepath, thresh = 85, num = 0):
     conv = convert_black_white.convert(relpath, "\\trash", thresh)
 

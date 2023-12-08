@@ -4,17 +4,18 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 Fragen:
 
 
+- get_lu() 2.6
 - Graphik 2.6
-- lösen linearer Gleichungssysteme 2.7
 - maximaler Fehler 2.8
 - Graphik 2.8
 - 2.9
 - main() mit Nutzerbegleitung im cmd-prompt
 
+Erik:
+- lösen linearer Gleichungssysteme 2.7
 
 Done
 -----
-- get_lu() 2.6
 - eval_sparsity_lu() 2.6
 - graphische Darstellung 2.4 (Nicht-Null-Einträge)
 - main()
