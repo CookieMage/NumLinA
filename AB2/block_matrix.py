@@ -149,7 +149,7 @@ class BlockMatrix:
         return new_mat
 
     def get_lu(self):
-        return linalg.lu(self.a_d.toarray(), permute_l=True)
+        return linalg.lu(self.a_d.toarray(), permute_l=False)
         # Since these matrices have no entries equal to 0 on the main diagonal no swaps are needed
         U = self.a_d.tocsc()
         entry_list = []
