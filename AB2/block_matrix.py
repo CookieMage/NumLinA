@@ -14,6 +14,7 @@ main()
 '''
 from scipy import sparse
 from scipy import linalg
+import numpy as np
 
 class BlockMatrix:
     '''class for representing matrices used to solve the poisson-problem
@@ -124,7 +125,39 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
+    def sparse_swapper(self, mat, a, b, mode="row"):
+        """
+        Reorders the rows and/or columns in a scipy sparse matrix to the specified order.
+        """
+        if mode!="row" and mode!="col":
+            raise ValueError("mode must be 'row' or 'col'!")
+        if max(a,b) > mat.shape[0]:
+            raise ValueError("a and b must relate to rows/columns in the matrix!")
+
+        new_order = [x for x in range(a)] + [b] + [x for x in range(a+1, b)] + [a]
+        new_order += [x for x in range(b+1, mat.shape[0])]
+
+        new_mat = mat
+        if mode == "row":
+            ident = sparse.eye(mat.shape[0]).tocoo()
+            ident.row = ident.row[new_order]
+            new_mat = ident.dot(new_mat)
+        if mode == "col":
+            ident = sparse.eye(mat.shape[1]).tocoo()
+            ident.col = ident.col[new_order]
+            new_mat = new_mat.dot(ident)
+        return new_mat
+
     def get_lu(self):
+        # Since these matrices have no entries equal to 0 on the main diagonal no swaps are needed
+        U = self.a_d.tocsc()
+        for k in range(self.a_d.shape[0]):
+            for l in range(k + 1, self.a_d.shape[0]):
+                mul = U[l, k] / U[k, k]
+                U = add_row_to_row(U, l, k, -mul)
+        print(U.toarray())
+
+
         lu = linalg.lu(self.a_d.toarray(), permute_l=True)
         return [sparse._csr.csr_matrix(x) for x in lu]
 
@@ -140,23 +173,38 @@ class BlockMatrix:
     def graph():
         pass
 
+def add_row_to_row(mat, a, b, value = 1):
+    new_mat = mat
+    ident = sparse.eye(mat.shape[0]).tolil()
+    ident[a,b]=value
+    new_mat = ident.dot(new_mat)
+    return new_mat
+
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
     mat_1 = BlockMatrix(2, 3)
-
-    print(mat_1.get_sparse().toarray())
-    print(mat_1.eval_sparsity())
-
-    mat_2 = BlockMatrix(3, 5)
-
-    print(mat_2.get_sparse().toarray())
-    print(mat_2.eval_sparsity())
+#
+    #print(mat_1.get_sparse().toarray())
+    #print(mat_1.eval_sparsity())
+#
+    #mat_2 = BlockMatrix(3, 5)
+#
+    #print(mat_2.get_sparse().toarray())
+    #print(mat_2.eval_sparsity())
 
     lu = mat_1.get_lu()
-    print(lu[0], "\n", lu[1])
+    #print(lu[0], "\n", lu[1])
     sparsity_lu = mat_1.eval_sparsity_lu()
-    print(sparsity_lu)
+    #print(sparsity_lu)
+
+    #swap = mat_2.sparse_swapper(mat_2.get_sparse(), 0, 1, "row")
+    #swap = swap.toarray()
+    #print(swap)
+#
+    #add = add_row_to_row(mat_2.get_sparse(), 0, 1)
+    #add = add.toarray()
+    #print(add)
 
 
 if __name__ == "__main__":
