@@ -1,3 +1,5 @@
+import scipy
+import numpy as np
 def solve_lu(p, l, u, b):
     """ Solves the linear system Ax = b via forward and backward substitution
     given the decomposition A = p * l * u.
@@ -18,6 +20,22 @@ def solve_lu(p, l, u, b):
     x : numpy.ndarray
         solution of the linear system
     """
+    p_t = p.transpose #p.t geht vlt auch
+    z = p_t * b 
+    #Lösen von Ly = z rekrusiv
+    y = []
+    y[0] = z[0]/ l[0,0]
+    for i in range(1,len(b)):       #vlt len(b)-1 ??    ->bestimmt y_2, .... ,y()
+        for n in range(0,i-1):      #berechnet eine Summe der rechnung
+            old = ([i,n] * y[n]) + old 
+        y[i] = (z[i] + old) / l[i,i]
+    #jetzt sollten wir den Vektor y berechnet haben
+    #als nächstes lösen wir u * x = y rekrusiv
+   
+   
+   
+
+
 
 
 def solve_sor(A, b, x0,
