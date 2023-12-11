@@ -1,5 +1,6 @@
-import scipy
 import numpy as np
+import scipy
+
 def solve_lu(p, l, u, b):
     """ Solves the linear system Ax = b via forward and backward substitution
     given the decomposition A = p * l * u.
