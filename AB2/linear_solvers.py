@@ -1,7 +1,7 @@
 import numpy as np
 import scipy
 
-def solve_lu(p, l, u, b):
+def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
     """ Solves the linear system Ax = b via forward and backward substitution
     given the decomposition A = p * l * u.
 
@@ -21,20 +21,31 @@ def solve_lu(p, l, u, b):
     x : numpy.ndarray
         solution of the linear system
     """
-    p_t = p.transpose #p.t geht vlt auch
-    z = p_t * b 
+    p_t = p.transpose() #p.t geht vlt auch
+    z = p_t * b
     #Lösen von Ly = z rekrusiv
-    y = []
-    y[0] = z[0]/ l[0,0]
+    y = np.ndarray(shape=(0,len(b)))
+    y[0] = z[0]/ l[0][0]
     for i in range(1,len(b)):       #vlt len(b)-1 ??    ->bestimmt y_2, .... ,y()
+        old = 0
         for n in range(0,i-1):      #berechnet eine Summe der rechnung
-            old = ([i,n] * y[n]) + old 
-        y[i] = (z[i] + old) / l[i,i]
+            old = ([i,n] * y[n]) + old
+        y[i] = (z[i] + old) / l[i][i]
+
+    x = np.ndarray(shape=(0,len(b)))
+    m = len(b)-1
+    x[m] = y[m]/ u[m][m]
+    for i in range(m-1,0,-1):
+        old=0
+        for n in range(m,i+1,-1):
+            old = u[i][n]*x[n]
+        x[i] = (y[i]+old)/u[i][i]
     #jetzt sollten wir den Vektor y berechnet haben
     #als nächstes lösen wir u * x = y rekrusiv
-   
-   
-   
+
+
+
+
 
 
 
