@@ -14,6 +14,7 @@ main()
 """
 import numpy as np
 from block_matrix import BlockMatrix
+import linear_solvers as linsol
 
 def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     """ Computes the right-hand side vector `b` for a given function `f`.
@@ -177,7 +178,14 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-    
+    disc = inv_idx(m, d, n) # was ist m???, braucht man disc eigentlich? passt das alles so?
+    block = BlockMatrix(d, n)
+    p, l, u = block.get_lu()
+    b = rhs(d, n, u)
+    solution = linsol.solve_lu(p, l, u, b)
+    return max([solution[i]-e for i,e in enumerate(hat_u)])
+
+
 
 def main():
     """ Example of code that can be run using the provided functions
@@ -185,8 +193,7 @@ def main():
     print(idx([36,23,8,1,1],99))
     print(inv_idx(69420,5,99))
 
-    def f(array : list): # pylint: disable=invalid-name
-        return (array[0]*array[1])/(array[1])**2
+    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
 
     print(rhs(d = 2, n = 3, f=f))
 
