@@ -1,6 +1,6 @@
 import numpy as np
 import scipy
-import block_matrix as bm
+from block_matrix import BlockMatrix
 
 def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
     """ Solves the linear system Ax = b via forward and backward substitution
@@ -33,7 +33,7 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
         for n in range(i):      #berechnet eine Summe der rechnung
             old = (l[i][n] * y[n]) + old
         y[i] = (z[i] + old) / l[i][i]
-    print(y)
+    print(y)    
     y = np.array([8,-8,16,-8])
     x = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     m = len(b)-1

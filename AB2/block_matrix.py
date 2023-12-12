@@ -17,23 +17,22 @@ from scipy import linalg
 import numpy as np
 
 class BlockMatrix:
-    '''class for representing matrices used to solve the poisson-problem
+    '''Represents block matrices arising from finite difference approximations
+    of the Laplace operator.
 
     Parameters
     ----------
     d : int
-        dimension of the space
+        Dimension of the space.
     n : int
-        number of intervals in each dimension
-    
+        Number of intervals in each dimension.
+
     Attributes
     ----------
     d : int
-        dimension of the space
+        Dimension of the space.
     n : int
-        number of intervals in each dimension
-    a_d : sparse.csr
-        the constructed matrix as a sparse._csr.csr_matrix
+        Number of intervals in each dimension.
 
     methods
     -------
@@ -43,6 +42,11 @@ class BlockMatrix:
         returns the matrix represented by the object as a np.ndarray
     eval_sparsity()
         returns the absolute and relative number of non-zero-entries in the matrix
+
+    Raises
+    ------
+    ValueError
+        If d < 1 or n < 2.
     '''
     d = None
     n = None
@@ -101,66 +105,68 @@ class BlockMatrix:
                 self.a_d = a_3_block + a_3_ident
 
     def get_sparse(self):
-        '''method for returning the matrix as an array
+        """ Returns the block matrix as sparse matrix.
 
         Returns
         -------
-        np.ndarray
-            represented matrix
-        '''
+        scipy.sparse.csr_matrix
+            The block_matrix in a sparse data format.
+        """
         return sparse.csr_array(self.a_d)
 
     def eval_sparsity(self):
-        '''method for getting the absolute and relative number of non-zeros-entries
+        """ Returns the absolute and relative numbers of non-zero elements of
+        the matrix. The relative quantities are with respect to the total
+        number of elements of the represented matrix.
 
         Returns
         -------
         int
-            absolute number of non-zero-entries
+            Number of non-zeros
         float
-            relative number of non-zero-entries
-        '''
+            Relative number of non-zeros
+        """
         abs_non_zero = self.a_d.count_nonzero()
         abs_entries = ((self.n-1)**self.d)**2
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
-    def sparse_swapper(self, mat, a, b, mode="row"):
-        """
-        Reorders the rows and/or columns in a scipy sparse matrix to the specified order.
-        """
-        if mode!="row" and mode!="col":
-            raise ValueError("mode must be 'row' or 'col'!")
-        if max(a,b) > mat.shape[0]:
-            raise ValueError("a and b must relate to rows/columns in the matrix!")
-
-        new_order = [x for x in range(a)] + [b] + [x for x in range(a+1, b)] + [a]
-        new_order += [x for x in range(b+1, mat.shape[0])]
-
-        new_mat = mat
-        if mode == "row":
-            ident = sparse.eye(mat.shape[0]).tocoo()
-            ident.row = ident.row[new_order]
-            new_mat = ident.dot(new_mat)
-        if mode == "col":
-            ident = sparse.eye(mat.shape[1]).tocoo()
-            ident.col = ident.col[new_order]
-            new_mat = new_mat.dot(ident)
-        return new_mat
-
     def get_lu(self):
+        """ Provides an LU-Decomposition of the represented matrix A of the
+        form A = p * l * u
+
+        Returns
+        -------
+        p : numpy.ndarray
+            permutation matrix of LU-decomposition
+        l : numpy.ndarray
+            lower triangular unit diagonal matrix of LU-decomposition
+        u : numpy.ndarray
+            upper triangular matrix of LU-decomposition
+        """
         return linalg.lu(self.a_d.toarray(), permute_l=False)
         # Since these matrices have no entries equal to 0 on the main diagonal no swaps are needed
-        U = self.a_d.tocsc()
-        entry_list = []
-        for k in range(self.a_d.shape[0]):
-            for l in range(k + 1, self.a_d.shape[0]):
-                mul = U[l, k] / U[k, k]
-                entry_list += [(k, l, mul)]
-                U = add_row_to_row(U, l, k, -mul)
+        #U = self.a_d.tocsc()
+        #entry_list = []
+        #for k in range(self.a_d.shape[0]):
+        #    for l in range(k + 1, self.a_d.shape[0]):
+        #        mul = U[l, k] / U[k, k]
+        #        entry_list += [(k, l, mul)]
+        #        U = add_row_to_row(U, l, k, -mul)
 
 
     def eval_sparsity_lu(self):
+        """ Returns the absolute and relative numbers of non-zero elements of
+        the LU-Decomposition. The relative quantities are with respect to the
+        total number of elements of the represented matrix.
+
+        Returns
+        -------
+        int
+            Number of non-zeros
+        float
+            Relative number of non-zeros
+        """
         lu = self.get_lu()
         sub = sparse.diags([-1], [0], shape = ((self.n-1)**self.d, (self.n-1)**self.d))
         result = lu[0] + lu[1] + sub
@@ -177,6 +183,29 @@ def add_row_to_row(mat, a, b, value = 1):
     ident = sparse.eye(mat.shape[0]).tolil()
     ident[a,b]=value
     new_mat = ident.dot(new_mat)
+    return new_mat
+
+def sparse_swapper(mat, a, b, mode="row"):
+    """
+    Reorders the rows and/or columns in a scipy sparse matrix to the specified order.
+    """
+    if mode!="row" and mode!="col":
+        raise ValueError("mode must be 'row' or 'col'!")
+    if max(a,b) > mat.shape[0]:
+        raise ValueError("a and b must relate to rows/columns in the matrix!")
+    
+    new_order = [x for x in range(a)] + [b] + [x for x in range(a+1, b)] + [a]
+    new_order += [x for x in range(b+1, mat.shape[0])]
+    
+    new_mat = mat
+    if mode == "row":
+        ident = sparse.eye(mat.shape[0]).tocoo()
+        ident.row = ident.row[new_order]
+        new_mat = ident.dot(new_mat)
+    if mode == "col":
+        ident = sparse.eye(mat.shape[1]).tocoo()
+        ident.col = ident.col[new_order]
+        new_mat = new_mat.dot(ident)
     return new_mat
 
 def main():

@@ -1,5 +1,4 @@
-""" Gruppe: 21
-programm for solving the Poisson problem
+"""programm for solving the Poisson problem
 
 functions
 ---------
@@ -14,6 +13,7 @@ main()
     Example of code that can be run using the provided functions
 """
 import numpy as np
+from block_matrix import BlockMatrix
 
 def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     """ Computes the right-hand side vector `b` for a given function `f`.
@@ -56,8 +56,8 @@ def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     for i in range((n-1)**d):
         sorted_x_d.append(np.array(inv_idx(i+1, d, n)))
 
-    array_list = [x/n for x in sorted_x_d]
-    vector = [f(x)/(n**2) for x in array_list]
+    array_list = [((1/n)*x) for x in sorted_x_d]
+    vector = [f(x) for x in array_list]
 
     return np.array(vector)
 
@@ -94,9 +94,9 @@ def idx(nx : list, n : int):    # pylint: disable=invalid-name
     num = nx[0]
     # Als Alternative wäre es hier nur möglich zu schreiben:
     # for i,e in enumerate(nx[1:],1):
-    # Durch das Kopieren der Liste ( durch nx[1:]) ist dies allerdings unnötig aufwendig :(
+    # Durch die Kopierung der Liste (nx[1:]) ist dies unnötige aufwendig.
     for i in range(1,len(nx)):
-        num += (n-1)**i * (nx[i]-1)
+        num = num + (n-1)**i * (nx[i]-1)
     return num
 
 def inv_idx(m : int, d : int, n : int): # pylint: disable=invalid-name
@@ -134,11 +134,50 @@ def inv_idx(m : int, d : int, n : int): # pylint: disable=invalid-name
         raise ValueError('m must be > (n-1)^d')
     m -= 1
     nx = [1] * d    # pylint: disable=invalid-name
-    # calculate coordinates of the discretization point
     for i in range(len(nx),0,-1):
         nx[i-1] = 1 + (m // ((n-1)**(i-1)))
         m = m % (n-1)**(i-1)
     return nx
+
+def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint: disable=invalid-name
+    """ Computes the error of the numerical solution of the Poisson problem
+    with respect to the infinity-norm.
+
+    Parameters
+    ----------
+    d : int
+        Dimension of the space
+    n : int
+        Number of intersections in each dimension
+    hat_u : array_like of 'numpy'
+        Finite difference approximation of the solution of the Poisson problem
+        at the discretization points
+    u : callable
+        Solution of the Poisson problem
+        The calling signature is 'u(x)'. Here 'x' is an array_like of 'numpy'.
+        The return value is a scalar.
+
+    Returns
+    -------
+    float
+        maximal absolute error at the discretization points
+
+    Raises
+    ------
+    TypeError
+        hat_u must be a ndarray
+        u must be a callable function
+        d and n must be of type int
+    """
+    if not isinstance(hat_u, np.ndarray):
+        raise TypeError('hat_u must be a np.ndarray')
+    if not callable(u):
+        raise TypeError('u must be a callable function')
+    if not isinstance(d, int):
+        raise TypeError('d must be an int')
+    if not isinstance(n, int):
+        raise TypeError('n must be an int')
+    
 
 def main():
     """ Example of code that can be run using the provided functions
