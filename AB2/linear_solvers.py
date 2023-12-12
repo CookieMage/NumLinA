@@ -24,24 +24,27 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
     """
     p_t = p.transpose() #p.t geht vlt auch
     z = p_t.dot(b)
-    print(z)
+    print("z=",z)
+    
     #Lösen von Ly = z rekrusiv
     y = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     y[0] = z[0]/ l[0][0]
     for i in range(1,len(b)):       #vlt len(b)-1 ??    ->bestimmt y_2, .... ,y()
+        print("i=",i)
         old = 0
         for n in range(i):      #berechnet eine Summe der rechnung
-            old = (l[i][n] * y[n]) + old
+            print("n=", n)
+            old = (-l[i][n] * y[n]) + old
         y[i] = (z[i] + old) / l[i][i]
-    print(y)    
-    y = np.array([8,-8,16,-8])
+    print("y=",y)    
+
     x = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     m = len(b)-1
     x[m] = y[m]/ u[m][m]
     for i in range(m-1,-1,-1):
         old=0
         for n in range(m,i,-1):
-            old = u[i][n]*x[n]
+            old = (-u[i][n]*x[n]) + old
         x[i] = (y[i]+old)/u[i][i]
     return np.array(x)
     #jetzt sollten wir den Vektor y berechnet haben
@@ -49,8 +52,8 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
 
 
 
-p = np.array([[0,0,1,0],
-              [0,0,0,1],
+p = np.array([[0,0,0,1],
+              [0,0,1,0],
               [1,0,0,0],
               [0,1,0,0]])
 b = np.array([-10,14,8,-8])
