@@ -22,7 +22,7 @@ N_LIST = [3, 4, 5, 6, 7, 8, 15]
 @pytest.mark.parametrize('d, n', itertools.product(DIM_LIST, N_LIST))
 def test_get_sparse_type(d, n):
     sol_obj = block_matrix.BlockMatrix(d, n)
-#    assert isinstance(sol_obj.get_sparse(), scipy.sparse.csr_matrix)
+    assert isinstance(sol_obj.get_sparse(), scipy.sparse.csr_matrix)
     assert scipy.sparse.issparse(sol_obj.get_sparse())
 
 # Check that values are correct

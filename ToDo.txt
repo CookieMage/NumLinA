@@ -27,3 +27,15 @@ Done
 
 
 python C:\Users\basti\Documents\GitHub\NumLinA\Felix_Geburtstag\Ishahara_test_generator.py C:\Users\basti\Documents\GitHub\NumLinA\foo.png
+
+Motivation:
+Anwendung fehlt
+Wir beschäftigen uns igentlich gar nicht mit dem Lösen der Gleichung
+Tex-Fehler!!!!
+kein besipiel mit d=2 sondern theorie der Rekursion
+A_d und b erklären ist wichtig! Das haben wir nicht gemacht
+Formel für nicht-Null-Einträge und darüber Sparse für diese Anwendung bezüglich der Speicherplatzkomplexität abschätzen
+verschiedene d
+beschränken auf Anwendungsbeispiele also nur d=1,2,3
+
+solve_triangular verwendene!!!!!!!!!!

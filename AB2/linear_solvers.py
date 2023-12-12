@@ -23,7 +23,8 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
         solution of the linear system
     """
     p_t = p.transpose() #p.t geht vlt auch
-    z = p_t * b
+    z = p_t.dot(b)
+    print(z)
     #Lösen von Ly = z rekrusiv
     y = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     y[0] = z[0]/ l[0][0]
@@ -32,7 +33,8 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
         for n in range(i):      #berechnet eine Summe der rechnung
             old = (l[i][n] * y[n]) + old
         y[i] = (z[i] + old) / l[i][i]
-
+    print(y)
+    y = np.array([8,-8,16,-8])
     x = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     m = len(b)-1
     x[m] = y[m]/ u[m][m]
@@ -41,14 +43,24 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
         for n in range(m,i,-1):
             old = u[i][n]*x[n]
         x[i] = (y[i]+old)/u[i][i]
-    return x
+    return np.array(x)
     #jetzt sollten wir den Vektor y berechnet haben
     #als nächstes lösen wir u * x = y rekrusiv
 
-x = np.ndarray([1,2,3])
 
-print(x)
 
-mat_1 = bm.BlockMatrix(2, 3)
-solve = solve_lu(mat_1.get_lu()[0], mat_1.get_lu()[1], mat_1.get_lu()[2], [1, 1, 1, 1])
-print(solve)
+p = np.array([[0,0,1,0],
+              [0,0,0,1],
+              [1,0,0,0],
+              [0,1,0,0]])
+b = np.array([-10,14,8,-8])
+u= np.array([[12,4,4,4],
+             [0,12,0,-8],
+             [0,0,-4,8],
+             [0,0,0,-8]])
+l= np.array([[1,0,0,0],
+             [0,1,0,0],
+             [1/4,1/2,1,0],
+             [1/2,1/4,-1/4,1]])
+
+print(solve_lu(p, l, u, b))

@@ -38,9 +38,9 @@ def convert(relpath, savepath, thresh = 85, num = 0):
 
     for i in range(img.size[0]): # for every pixel:
         for j in range(img.size[1]):
-            if (i%2==0 and j%2==1) or (i%2==1 and j%2==0):
-                pixels[i,j] = random.choice(blue)
-                continue
+            #if (i%2==0 and j%2==1) or (i%2==1 and j%2==0):
+            #    pixels[i,j] = random.choice(blue)
+            #    continue
             if overlaps_motive(img, i, j):
                 fill_colors = COLORS_ON
             else:
