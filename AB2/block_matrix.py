@@ -221,38 +221,32 @@ def data_generator(x_values : list):
     list of 6
         list containing the experiment-data
     '''
-    # create lists for organizing the data 
-    sparse_data1 = []
-    sparse_data2 = []
-    sparse_data3 = []
 
-    data = [sparse_data1, sparse_data2, sparse_data3]
+    data = [[],[],[]]
 
-    # experiment on every n for n in x_values
-    for n in x_values:
-        print(n)
-        # create matrices (d= 1, 2, 3)
-        mat1 = BlockMatrix(1, n)
-        mat2 = BlockMatrix(2, n)
-        mat3 = BlockMatrix(3, n)
+    for i in range(3):
+        # experiment on every n for n in x_values[i]
+        for n in x_values[i]:
+            print(n)
+            # create matrices (d= 1, 2, 3)
+            mat1 = BlockMatrix(i+1, n)
 
-        # get information of sparsity
-        sparse_data1 += [mat1.eval_sparsity()[1]]
-        sparse_data2 += [mat2.eval_sparsity()[1]]
-        sparse_data3 += [mat3.eval_sparsity()[1]]
+            # get information of sparsity
+            data[i] += [mat1.eval_sparsity()[1]]
+
 
     return data
 
-def graph():
-    x_values = list(range(2, 250, 4))
+def graph(x_values):
+    x_values = [[x**3 for x in x_values], [int(x**1.5) for x in x_values], x_values]
 
     data = data_generator(x_values)
-
-    x_values = [[x-1 for x in x_values]]
-    x_values += [[(x)**2 for x in x_values[0]]]
-    x_values += [[(x)**3 for x in x_values[0]]]
     
+    # irgendwas ist hier noch fishy
+
     plotter(x_values, data)
+
+graph(list(range(2, 150, 4)))
 
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat

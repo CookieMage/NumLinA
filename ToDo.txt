@@ -4,10 +4,10 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 Fragen:
 
 
+- Graphik 2.6
 - 2.9
 - main() mit Nutzerbegleitung im cmd-prompt
 - maximaler Fehler 2.8
-- Graphik 2.6
 - Graphik 2.8
 
 Done
