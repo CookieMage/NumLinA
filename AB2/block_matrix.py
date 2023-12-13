@@ -15,7 +15,7 @@ main()
 from scipy import sparse
 from scipy import linalg
 import numpy as np
-import experiments
+import matplotlib.pyplot as plt
 
 class BlockMatrix:
     '''Represents block matrices arising from finite difference approximations
@@ -171,21 +171,88 @@ class BlockMatrix:
         lu = self.get_lu()
         sub = sparse.diags([-1], [0], shape = ((self.n-1)**self.d, (self.n-1)**self.d))
         result = lu[0] + lu[1] + sub
-        abs_non_zero = result.count_nonzero()
+        abs_non_zero = np.count_nonzero(result)
         abs_entries = ((self.n-1)**self.d)**2
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
-def graph():
-    x_values = list(range(2, 100, 4))
+def plotter(x_values : list, plots : list):
+    '''plots provided lists of plots relative to provided list x_values
 
-    data = experiments.graph(x_values)
+    Parameters
+    ----------
+    x_values : list
+        list of values for the x-axis
+    plots : list
+        list of lists of y-values for plots
+    '''
+    # create the plot
+    _, ax1 = plt.subplots(figsize=(5, 5))
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
+    plt.xscale("log")
+    plt.yscale("log")
+    #plt.title(f"{num}. Dimension", fontsize=20)
+    plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
+    ax1.yaxis.set_label_coords(-0.01, 1)
+    plt.xlabel("N", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.01, -0.05)
+    ax1.yaxis.get_offset_text().set_fontsize(20)
+    ax1.grid()
+
+    # plot data
+    plt.plot(x_values[0], plots[0], label = "d = 1", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values[1], plots[1], label = "d = 2", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values[2], plots[2], label = "d = 3", linewidth=2, linestyle="dashdot")
+
+    plt.legend(fontsize=20, loc="upper left")
+    plt.show()
+
+def data_generator(x_values : list):
+    '''creates datasets containing the relative number of zeros for each dimension and n = x_values
+
+    Parameters
+    ----------
+    x_values : list
+        list of values for the x-axis / experiments
+
+    Returns
+    -------
+    list of 6
+        list containing the experiment-data
+    '''
+    # create lists for organizing the data 
+    sparse_data1 = []
+    sparse_data2 = []
+    sparse_data3 = []
+
+    data = [sparse_data1, sparse_data2, sparse_data3]
+
+    # experiment on every n for n in x_values
+    for n in x_values:
+        print(n)
+        # create matrices (d= 1, 2, 3)
+        mat1 = BlockMatrix(1, n)
+        mat2 = BlockMatrix(2, n)
+        mat3 = BlockMatrix(3, n)
+
+        # get information of sparsity
+        sparse_data1 += [mat1.eval_sparsity()[1]]
+        sparse_data2 += [mat2.eval_sparsity()[1]]
+        sparse_data3 += [mat3.eval_sparsity()[1]]
+
+    return data
+
+def graph():
+    x_values = list(range(2, 250, 4))
+
+    data = data_generator(x_values)
 
     x_values = [[x-1 for x in x_values]]
     x_values += [[(x)**2 for x in x_values[0]]]
     x_values += [[(x)**3 for x in x_values[0]]]
     
-    experiments.plotter(x_values, data)
+    plotter(x_values, data)
 
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat
