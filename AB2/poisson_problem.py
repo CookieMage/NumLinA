@@ -15,6 +15,7 @@ main()
 import numpy as np
 from block_matrix import BlockMatrix
 import linear_solvers as linsol
+import matplotlib.pyplot as plt
 
 def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     """ Computes the right-hand side vector `b` for a given function `f`.
@@ -178,12 +179,57 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-    disc = inv_idx(m, d, n) # was ist m???, braucht man disc eigentlich? passt das alles so?
     block = BlockMatrix(d, n)
     p, l, u = block.get_lu()
     b = rhs(d, n, u)
     solution = linsol.solve_lu(p, l, u, b)
     return max([solution[i]-e for i,e in enumerate(hat_u)])
+
+def plotter(x_values : list, plots : list):
+    '''plots provided lists of plots relative to provided list x_values
+
+    Parameters
+    ----------
+    x_values : list
+        list of values for the x-axis
+    plots : list
+        list of lists of y-values for plots
+    '''
+    # create the plot
+    _, ax1 = plt.subplots(figsize=(5, 5))
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
+    plt.xscale("log")
+    plt.yscale("log")
+    #plt.title(f"{num}. Dimension", fontsize=20)
+    plt.ylabel("maximum error", fontsize = 20, rotation = 0)
+    ax1.yaxis.set_label_coords(-0.01, 1)
+    plt.xlabel("N", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.01, -0.05)
+    ax1.yaxis.get_offset_text().set_fontsize(20)
+    ax1.grid()
+
+    # plot data
+    plt.plot(x_values[0], plots[0], label = "d = 1", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values[1], plots[1], label = "d = 2", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values[2], plots[2], label = "d = 3", linewidth=2, linestyle="dashdot")
+
+    plt.legend(fontsize=20, loc="upper left")
+    plt.show()
+
+def graph_error(hat_u, u):
+    d = [1, 2, 3]
+    n = list(range(2, 100, 4))
+    data = []
+    for e in d:
+        data += [[]]
+        for f in n:
+            data[d-1] += compute_error(e, f, hat_u, u)
+    x_values = [[x-1 for x in n]]
+    x_values += [[x**2 for x in x_values]]
+    x_values += [[x**3 for x in x_values]]
+
+    plotter(x_values, data)
 
 
 
@@ -196,6 +242,8 @@ def main():
     f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
 
     print(rhs(d = 2, n = 3, f=f))
+
+
 
 if __name__ == "__main__":
     main()

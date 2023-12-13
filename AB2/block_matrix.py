@@ -15,6 +15,7 @@ main()
 from scipy import sparse
 from scipy import linalg
 import numpy as np
+import experiments
 
 class BlockMatrix:
     '''Represents block matrices arising from finite difference approximations
@@ -175,8 +176,16 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
-    def graph():
-        pass
+def graph():
+    x_values = list(range(2, 100, 4))
+
+    data = experiments.graph(x_values)
+
+    x_values = [[x-1 for x in x_values]]
+    x_values += [[(x)**2 for x in x_values[0]]]
+    x_values += [[(x)**3 for x in x_values[0]]]
+    
+    experiments.plotter(x_values, data)
 
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat

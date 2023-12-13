@@ -14,17 +14,15 @@ from matplotlib import pyplot as plt
 from block_matrix import BlockMatrix
 #import poisson_problem
 
-def ploter(x_values : list, plots : list):
-    '''plots provided lists of plots relative to provided list x_values using num for the title
+def plotter(x_values : list, plots : list):
+    '''plots provided lists of plots relative to provided list x_values
 
     Parameters
     ----------
     x_values : list
         list of values for the x-axis
-    plots : list of 3
+    plots : list
         list of lists of y-values for plots
-    num : int
-        used for labeling the graph
     '''
     # create the plot
     _, ax1 = plt.subplots(figsize=(5, 5))
@@ -77,7 +75,6 @@ def graph(x_values : list):
 
     # experiment on every n for n in x_values
     for n in x_values:
-        print(n)
         # create matrices (d= 1, 2, 3)
         mat1 = BlockMatrix(1, n)
         mat2 = BlockMatrix(2, n)
@@ -101,14 +98,12 @@ def main():
     x_values = list(range(2, 100, 4))
     
     data = graph(x_values)
-
-    print(100)
     
     x_values = [[x-1 for x in x_values]]
     x_values += [[(x)**2 for x in x_values[0]]]
     x_values += [[(x)**3 for x in x_values[0]]]
 
-    ploter(x_values, data)
+    plotter(x_values, data)
 
 
 if __name__ == "__main__":

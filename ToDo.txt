@@ -4,18 +4,15 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 Fragen:
 
 
-- get_lu() 2.6
-- Graphik 2.6
-- maximaler Fehler 2.8
-- Graphik 2.8
 - 2.9
 - main() mit Nutzerbegleitung im cmd-prompt
-
-Erik:
-- lösen linearer Gleichungssysteme 2.7
+- maximaler Fehler 2.8
+- Graphik 2.6
+- Graphik 2.8
 
 Done
 -----
+- get_lu() 2.6
 - eval_sparsity_lu() 2.6
 - graphische Darstellung 2.4 (Nicht-Null-Einträge)
 - main()
@@ -24,6 +21,12 @@ Done
 - get_sparse()
 - rhs
 - rhs braucht numpy_array
+
+Erik:
+
+Done:
+-----
+- lösen linearer Gleichungssysteme 2.7
 
 
 python C:\Users\basti\Documents\GitHub\NumLinA\Felix_Geburtstag\Ishahara_test_generator.py C:\Users\basti\Documents\GitHub\NumLinA\foo.png
