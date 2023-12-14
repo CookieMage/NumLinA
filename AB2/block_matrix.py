@@ -16,6 +16,7 @@ from scipy import sparse
 from scipy import linalg
 import numpy as np
 import matplotlib.pyplot as plt
+import warnings
 
 class BlockMatrix:
     '''Represents block matrices arising from finite difference approximations
@@ -72,7 +73,7 @@ class BlockMatrix:
         '''
         if not isinstance(d, int):
             raise TypeError('d must be an int')
-        if not isinstance(n, int):
+        if not isinstance(n, (int, np.integer)):
             raise TypeError('n must be an int')
         if d < 1 or d > 3 or n < 2:
             raise ValueError
@@ -129,6 +130,13 @@ class BlockMatrix:
         """
         abs_non_zero = self.a_d.count_nonzero()
         abs_entries = ((self.n-1)**self.d)**2
+        if abs_entries <= 0:
+            abs_entries, rel_non_zero = 0, 0
+            error_message = "The absolute number of entries in the matrix has been "
+            error_message += "calculated to be negative. In order to continue the program"
+            error_message += " returns 0, 0."
+            warnings.warn(str(OverflowError(error_message)))
+            return 0, 0
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
@@ -227,7 +235,9 @@ def data_generator(x_values : list):
     for i in range(3):
         # experiment on every n for n in x_values[i]
         for n in x_values[i]:
-            print(n)
+            if n == x_values[i][17]:
+                print()
+            #print(n)
             # create matrices (d= 1, 2, 3)
             mat1 = BlockMatrix(i+1, n)
 
@@ -238,12 +248,14 @@ def data_generator(x_values : list):
     return data
 
 def graph(x=3, n=25):
-    x_values = np.logspace(2, x, dtype=int, num=n)
+    x_values = np.logspace(0.4, x, dtype=int, num=n)
     x_values = [[x**3 for x in x_values], [int(x**1.5) for x in x_values], x_values]
 
-    for x in [inner for inner in (outer for outer in x_values)]:
-        if not isinstance(x, int):
-            print(x)
+    #print(x_values)
+
+    #for x in [inner for outer in x_values for inner in outer]:
+    #    if not isinstance(x, int):
+    #        print(type(x))
 
     data = data_generator(x_values)
     
