@@ -231,17 +231,29 @@ def graph_error(hat_u, u):
 
     plotter(x_values, data)
 
+def bsp_1(x : np.array, k :int):
+    """calculates the funktion u(x)_n in examplee 2.2 for a vector of the dimension d"""
+    d = len(x)
+    y = 1
+    for i in range(0,d):
+        y = y * x[i] * np.sin(k * np.pi * x[i]) 
+    return y 
+
 
 
 def main():
     """ Example of code that can be run using the provided functions
     """
-    print(idx([36,23,8,1,1],99))
-    print(inv_idx(69420,5,99))
+   # print(idx([36,23,8,1,1],99))
+    #print(inv_idx(69420,5,99))
 
-    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
+    #f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
 
-    print(rhs(d = 2, n = 3, f=f))
+    #print(rhs(d = 2, n = 3, f=f))
+    y= bsp_1([0,0,0] , 1)
+    print(y , " BSP 1.--------")
+
+    
 
 
 
