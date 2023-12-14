@@ -237,8 +237,13 @@ def data_generator(x_values : list):
 
     return data
 
-def graph(x_values):
+def graph(x=3, n=25):
+    x_values = np.logspace(2, x, dtype=int, num=n)
     x_values = [[x**3 for x in x_values], [int(x**1.5) for x in x_values], x_values]
+
+    for x in [inner for inner in (outer for outer in x_values)]:
+        if not isinstance(x, int):
+            print(x)
 
     data = data_generator(x_values)
     
@@ -246,7 +251,7 @@ def graph(x_values):
 
     plotter(x_values, data)
 
-graph(list(range(2, 150, 4)))
+graph(2)
 
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat
