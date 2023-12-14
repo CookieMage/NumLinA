@@ -79,7 +79,7 @@ class BlockMatrix:
             raise ValueError
         
         self.d = d  # pylint: disable=invalid-name
-        self.n = n  # pylint: disable=invalid-name
+        self.n = int(n)  # pylint: disable=invalid-name
         
         a_1 = sparse.diags([-1, 2*self.d, -1], [-1, 0, 1], shape=(self.n-1, self.n-1))
         
@@ -130,13 +130,6 @@ class BlockMatrix:
         """
         abs_non_zero = self.a_d.count_nonzero()
         abs_entries = ((self.n-1)**self.d)**2
-        if abs_entries <= 0:
-            abs_entries, rel_non_zero = 0, 0
-            error_message = "The absolute number of entries in the matrix has been "
-            error_message += "calculated to be negative. In order to continue the program"
-            error_message += " returns 0, 0."
-            warnings.warn(str(OverflowError(error_message)))
-            return 0, 0
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
@@ -235,8 +228,6 @@ def data_generator(x_values : list):
     for i in range(3):
         # experiment on every n for n in x_values[i]
         for n in x_values[i]:
-            if n == x_values[i][17]:
-                print()
             #print(n)
             # create matrices (d= 1, 2, 3)
             mat1 = BlockMatrix(i+1, n)
