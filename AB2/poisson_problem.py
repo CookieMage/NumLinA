@@ -231,17 +231,42 @@ def graph_error(hat_u, u):
 
     plotter(x_values, data)
 
+def bsp_1(x : np.array, k :int):
+    """calculates the funktion u(x)_n in examplee 2.2 for a vector of the dimension d"""
+    d = len(x)
+    y = 1
+    for i in range(0,d):
+        y = y * x[i] * np.sin(k * np.pi * x[i]) 
+    return y 
 
+def pp_zu_bsp_1(x : np.array, k :int):
+    z = 0
+    for i in range(0,len(x)):
+        y = k * np.pi * (2 * np.cos(k * np.pi * x[i])-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
+        pro = 1
+        for j in range(0,len(x)):
+            if i == j:
+                continue
+            pro = x[j] * np.sin(k * np.pi * x[j]) * pro
+        y = y * pro 
+        z = z + y 
+    return z
 
 def main():
     """ Example of code that can be run using the provided functions
     """
-    print(idx([36,23,8,1,1],99))
-    print(inv_idx(69420,5,99))
+   # print(idx([36,23,8,1,1],99))
+    #print(inv_idx(69420,5,99))
 
-    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
+    #f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
 
-    print(rhs(d = 2, n = 3, f=f))
+    #print(rhs(d = 2, n = 3, f=f))
+    y= bsp_1([1],1)
+    print(y , " BSP 1.--------")
+    z = pp_zu_bsp_1([1], 1)
+    print(z, "<----- pp_bs1")
+
+    
 
 
 
