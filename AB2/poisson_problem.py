@@ -239,7 +239,18 @@ def bsp_1(x : np.array, k :int):
         y = y * x[i] * np.sin(k * np.pi * x[i]) 
     return y 
 
-
+def pp_zu_bsp_1(x : np.array, k :int ,d :int):
+    z = 0
+    for i in range(0,d):
+        y = k * np.pi * (2 * np.cos(k * np.pi * x(i))-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
+        pro = 1
+        for j in range(0,d):
+            if i == j:
+                continue
+            pro = x[j] * np.sin(k * np.pi * x[j]) * pro
+        y = y * pro
+        z = z + y 
+    return z
 
 def main():
     """ Example of code that can be run using the provided functions
