@@ -12,7 +12,11 @@ Fragen:
 
 Done
 -----
-- get_lu() 2.6
+
+Erik:
+
+Done:
+-----
 - eval_sparsity_lu() 2.6
 - graphische Darstellung 2.4 (Nicht-Null-Einträge)
 - main()
@@ -21,11 +25,7 @@ Done
 - get_sparse()
 - rhs
 - rhs braucht numpy_array
-
-Erik:
-
-Done:
------
+- get_lu() 2.6
 - lösen linearer Gleichungssysteme 2.7
 
 

@@ -235,7 +235,6 @@ def data_generator(x_values : list):
             # get information of sparsity
             data[i] += [mat1.eval_sparsity()[1]]
 
-
     return data
 
 def graph(x=3, n=25):
@@ -253,8 +252,6 @@ def graph(x=3, n=25):
     # irgendwas ist hier noch fishy
 
     plotter(x_values, data)
-
-graph(2)
 
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat
