@@ -239,16 +239,16 @@ def bsp_1(x : np.array, k :int):
         y = y * x[i] * np.sin(k * np.pi * x[i]) 
     return y 
 
-def pp_zu_bsp_1(x : np.array, k :int ,d :int):
+def pp_zu_bsp_1(x : np.array, k :int):
     z = 0
-    for i in range(0,d):
-        y = k * np.pi * (2 * np.cos(k * np.pi * x(i))-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
+    for i in range(0,len(x)):
+        y = k * np.pi * (2 * np.cos(k * np.pi * x[i])-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
         pro = 1
-        for j in range(0,d):
+        for j in range(0,len(x)):
             if i == j:
                 continue
             pro = x[j] * np.sin(k * np.pi * x[j]) * pro
-        y = y * pro
+        y = y * pro 
         z = z + y 
     return z
 
@@ -261,8 +261,10 @@ def main():
     #f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
 
     #print(rhs(d = 2, n = 3, f=f))
-    y= bsp_1([0,0,0] , 1)
+    y= bsp_1([1],1)
     print(y , " BSP 1.--------")
+    z = pp_zu_bsp_1([1], 1)
+    print(z, "<----- pp_bs1")
 
     
 
