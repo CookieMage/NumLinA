@@ -1,6 +1,6 @@
 import random
 
-SYMBOLS = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöü,.-;:_#+*~1234567890!§$%&/()=?²³{[]}\^°@€|<>"
+SYMBOLS = r" ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzäöü,.-;:_#+*~1234567890!§$%&/()=?²³{[]}\^°@€|<>"
 LEN_SYMBOLS = len(SYMBOLS)
 
 def encrypt(text, password):
@@ -42,7 +42,14 @@ def conv_to_int(text):
     return int(letter)
 
 def main():
-    password = "123"
-    message = encrypt("Hallo mein Name ist Basti", password)
+    password_1 = 123
+    password_2 = 234
+    message = encrypt("Hallo mein Name ist Basti", password_1)
+    message = encrypt(message, password_2)
     print(message)
-    print(decrypt(message, password))
+    message = decrypt(message, password_1)
+    message = decrypt(message, password_2)
+    print(message)
+
+if __name__ == "__main__":
+    main()
