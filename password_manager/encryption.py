@@ -46,3 +46,6 @@ def main():
     message = encrypt("Hallo mein Name ist Basti", password)
     print(message)
     print(decrypt(message, password))
+
+if __name__ == "__main__":
+    main()
