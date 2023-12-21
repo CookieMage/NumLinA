@@ -180,11 +180,7 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
     if not isinstance(n, int):
         raise TypeError('n must be an int')
 
-    x_value = []
-    for i in range((n-1)**d):
-        x_value += [x/n for x in inv_idx(i, d, n)]
-
-    return max([u(x_value[i])-e for i,e in enumerate(hat_u)])
+    return max([rhs(d, n, u)[i]-e for i,e in enumerate(hat_u)])
 
 def plotter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values
@@ -218,14 +214,18 @@ def plotter(x_values : list, plots : list):
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
-def graph_error(hat_u, u):
+def graph_error(u):
     d = [1, 2, 3]
     n = list(range(2, 100, 4))
     data = []
     for e in d:
         data += [[]]
+        solutions = []
         for f in n:
-            data[d-1] += compute_error(e, f, hat_u, u)
+            block = BlockMatrix(e, f)
+            p_mat, l_mat, u_mat = block.get_lu()
+            solutions += linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in [inv_idx(m, e, f) for m in range((n-1)**d)]])
+            data[d-1] += compute_error(e, f, solutions, u)
     x_values = [[x-1 for x in n]]
     x_values += [[x**2 for x in x_values]]
     x_values += [[x**3 for x in x_values]]
