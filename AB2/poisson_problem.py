@@ -214,7 +214,7 @@ def plotter(x_values : list, plots : list):
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
-def graph_error(u):
+def graph_error(u, pp_u):
     d = [1, 2, 3]
     n = list(range(2, 100, 4))
     data = []
@@ -224,15 +224,15 @@ def graph_error(u):
         for f in n:
             block = BlockMatrix(e, f)
             p_mat, l_mat, u_mat = block.get_lu()
-            solutions += linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in [inv_idx(m, e, f) for m in range((n-1)**d)]])
-            data[d-1] += compute_error(e, f, solutions, u)
+            solutions += linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in [inv_idx(m, e, f) for m in range((f-1)**e)]]) # irgendwas ist hier falsch (da kommt ne leere liste raus)
+            data[e-1] += compute_error(e, f, solutions, pp_u)
     x_values = [[x-1 for x in n]]
     x_values += [[x**2 for x in x_values]]
     x_values += [[x**3 for x in x_values]]
 
     plotter(x_values, data)
 
-def bsp_1(x : np.array, k :int):
+def bsp_1(x : np.array, k=1):
     """calculates the funktion u(x)_n in examplee 2.2 for a vector of the dimension d"""
     d = len(x)
     y = 1
@@ -240,7 +240,7 @@ def bsp_1(x : np.array, k :int):
         y = y * x[i] * np.sin(k * np.pi * x[i])
     return y
 
-def pp_zu_bsp_1(x : np.array, k :int):
+def pp_zu_bsp_1(x : np.array, k=1):
     z = 0
     for i,_ in enumerate(x):
         y = k * np.pi * (2 * np.cos(k * np.pi * x[i])-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
@@ -251,6 +251,8 @@ def pp_zu_bsp_1(x : np.array, k :int):
         y *= pro
         z += y
     return z
+
+graph_error(bsp_1, pp_zu_bsp_1)
 
 def main():
     """ Example of code that can be run using the provided functions
