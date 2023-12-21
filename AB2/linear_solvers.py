@@ -25,7 +25,6 @@ def solve_lu_alt(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray)
     """
     p_t = p.transpose() #p.t geht vlt auch
     z = p_t.dot(b)
-    print("z=",z)
 
     #Lösen von Ly = z rekrusiv
     y = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
@@ -37,7 +36,6 @@ def solve_lu_alt(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray)
             print("n=", n)
             old = (-l[i][n] * y[n]) + old
         y[i] = (z[i] + old) / l[i][i]
-    print("y=",y)    
 
     x = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     m = len(b)-1
@@ -81,20 +79,23 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
     return np.array(x)
 
 
+def main():
+    p = np.array([[0,0,0,1],
+                  [0,0,1,0],
+                  [1,0,0,0],
+                  [0,1,0,0]])
+    b = np.array([-10,14,8,-8])
+    u= np.array([[12,4,4,4],
+                 [0,12,0,-8],
+                 [0,0,-4,8],
+                 [0,0,0,-8]])
+    l= np.array([[1,0,0,0],
+                 [0,1,0,0],
+                 [1/4,1/2,1,0],
+                 [1/2,1/4,-1/4,1]])
 
-p = np.array([[0,0,0,1],
-              [0,0,1,0],
-              [1,0,0,0],
-              [0,1,0,0]])
-b = np.array([-10,14,8,-8])
-u= np.array([[12,4,4,4],
-             [0,12,0,-8],
-             [0,0,-4,8],
-             [0,0,0,-8]])
-l= np.array([[1,0,0,0],
-             [0,1,0,0],
-             [1/4,1/2,1,0],
-             [1/2,1/4,-1/4,1]])
+    print("Lösung von uns" , solve_lu_alt(p, l, u, b))
+    print("Lösung von scipy", solve_lu(p, l, u, b))
 
-print("Lösung von uns" , solve_lu_alt(p, l, u, b))
-print("Lösung von scipy", solve_lu(p, l, u, b))
+if __name__ == "__main__":
+    main()

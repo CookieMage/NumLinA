@@ -179,11 +179,12 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-    block = BlockMatrix(d, n)
-    p, l, u = block.get_lu()
-    b = rhs(d, n, u)
-    solution = linsol.solve_lu(p, l, u, b)
-    return max([solution[i]-e for i,e in enumerate(hat_u)])
+
+    x_value = []
+    for i in range((n-1)**d):
+        x_value += [x/n for x in inv_idx(i, d, n)]
+
+    return max([u(x_value[i])-e for i,e in enumerate(hat_u)])
 
 def plotter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values
@@ -236,20 +237,19 @@ def bsp_1(x : np.array, k :int):
     d = len(x)
     y = 1
     for i in range(0,d):
-        y = y * x[i] * np.sin(k * np.pi * x[i]) 
-    return y 
+        y = y * x[i] * np.sin(k * np.pi * x[i])
+    return y
 
 def pp_zu_bsp_1(x : np.array, k :int):
     z = 0
-    for i in range(0,len(x)):
+    for i,_ in enumerate(x):
         y = k * np.pi * (2 * np.cos(k * np.pi * x[i])-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
         pro = 1
-        for j in range(0,len(x)):
-            if i == j:
-                continue
-            pro = x[j] * np.sin(k * np.pi * x[j]) * pro
-        y = y * pro 
-        z = z + y 
+        for j,_ in enumerate(x):
+            if i != j:
+                pro *= x[j] * np.sin(k * np.pi * x[j])
+        y *= pro
+        z += y
     return z
 
 def main():
@@ -261,10 +261,10 @@ def main():
     #f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
 
     #print(rhs(d = 2, n = 3, f=f))
-    y= bsp_1([1],1)
-    print(y , " BSP 1.--------")
-    z = pp_zu_bsp_1([1], 1)
-    print(z, "<----- pp_bs1")
+    #y= bsp_1([1],1)
+    #print(y , " BSP 1.--------")
+    #z = pp_zu_bsp_1([1], 1)
+    #print(z, "<----- pp_bs1")
 
     
 
