@@ -180,7 +180,8 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
     if not isinstance(n, int):
         raise TypeError('n must be an int')
     solution = rhs(d, n, u)
-    return max([solution[i]-e for i,e in enumerate(hat_u)])
+    max_list = [solution[i]-e for i,e in enumerate(hat_u)]
+    return max(max_list)
 
 def plotter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values
@@ -214,6 +215,8 @@ def plotter(x_values : list, plots : list):
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
+
+
 def graph_error(u, pp_u):
     d = [1, 2, 3]
     n = list(range(2, 100, 4))
@@ -228,6 +231,7 @@ def graph_error(u, pp_u):
             disc_points = [[x/f for x in y] for y in disc_points]
             np.append(solutions, linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])) # irgendwas ist hier falsch (da kommt ne leere liste raus)
             data[e-1] += compute_error(d=e, n=f, hat_u=np.array(solutions), u=pp_u)
+
     x_values = [[x-1 for x in n]]
     x_values += [[x**2 for x in x_values]]
     x_values += [[x**3 for x in x_values]]
@@ -254,11 +258,12 @@ def pp_zu_bsp_1(x : np.array, k=1):
         z += y
     return z
 
-graph_error(bsp_1, pp_zu_bsp_1)
+
 
 def main():
     """ Example of code that can be run using the provided functions
     """
+    graph_error(bsp_1, pp_zu_bsp_1)
    # print(idx([36,23,8,1,1],99))
     #print(inv_idx(69420,5,99))
 
