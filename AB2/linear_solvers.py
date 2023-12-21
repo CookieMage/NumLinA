@@ -72,10 +72,11 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
     p_t = p.transpose()
     
     z = p_t.dot(b)
-    print("z=",z)
+    
     y = linalg.solve_triangular(l,z,trans = 0,lower = True)
-    print("y scipy=", y)
+    
     x = linalg.solve_triangular(u,y,trans=0,lower = False)
+    print(x)
     return np.array(x)
 
 

@@ -179,8 +179,8 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-
-    return max([rhs(d, n, u)[i]-e for i,e in enumerate(hat_u)])
+    solution = rhs(d, n, u)
+    return max([solution[i]-e for i,e in enumerate(hat_u)])
 
 def plotter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values
@@ -220,12 +220,14 @@ def graph_error(u, pp_u):
     data = []
     for e in d:
         data += [[]]
-        solutions = []
+        solutions = np.array([])
         for f in n:
             block = BlockMatrix(e, f)
             p_mat, l_mat, u_mat = block.get_lu()
-            solutions += linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in [inv_idx(m, e, f) for m in range((f-1)**e)]]) # irgendwas ist hier falsch (da kommt ne leere liste raus)
-            data[e-1] += compute_error(e, f, solutions, pp_u)
+            disc_points = [inv_idx(m, e, f) for m in range(1, (f-1)**e+1)]
+            disc_points = [[x/f for x in y] for y in disc_points]
+            np.append(solutions, linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])) # irgendwas ist hier falsch (da kommt ne leere liste raus)
+            data[e-1] += compute_error(d=e, n=f, hat_u=np.array(solutions), u=pp_u)
     x_values = [[x-1 for x in n]]
     x_values += [[x**2 for x in x_values]]
     x_values += [[x**3 for x in x_values]]
@@ -267,8 +269,6 @@ def main():
     #print(y , " BSP 1.--------")
     #z = pp_zu_bsp_1([1], 1)
     #print(z, "<----- pp_bs1")
-
-    
 
 
 
