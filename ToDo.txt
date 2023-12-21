@@ -3,7 +3,7 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 
 Fragen:
 
-
+- Linien für Speicherkomplexitätsklassen
 - Graphik 2.6
 - 2.9
 - main() mit Nutzerbegleitung im cmd-prompt
