@@ -225,21 +225,21 @@ def data_generator(x_values : list):
 
     data = [[],[],[]]
 
-    for i in range(3):
+    for d in range(1, 4):
         # experiment on every n for n in x_values[i]
-        for n in x_values[i]:
+        for n in x_values[d-1]:
             #print(n)
             # create matrices (d= 1, 2, 3)
-            mat1 = BlockMatrix(i+1, n)
+            abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
 
             # get information of sparsity
-            data[i] += [mat1.eval_sparsity()[1]]
+            data[d-1] += [abs_non_zero]
 
     return data
 
-def graph(x=3, n=25):
+def graph(x=3, n=15):
     x_values = np.logspace(0.4, x, dtype=int, num=n)
-    x_values = [[x**3 for x in x_values], [int(x**1.5) for x in x_values], x_values]
+    x_values = [[int(x)**3 for x in x_values], [int(x)**1.5 for x in x_values], [int(x) for x in x_values]]
 
     #print(x_values)
 
@@ -248,7 +248,7 @@ def graph(x=3, n=25):
     #        print(type(x))
 
     data = data_generator(x_values)
-    
+
     # irgendwas ist hier noch fishy
 
     plotter(x_values, data)
@@ -308,6 +308,7 @@ def main():
     #add = add_row_to_row(mat_2.get_sparse(), 0, 1)
     #add = add.toarray()
     #print(add)
+    graph()
 
 
 if __name__ == "__main__":

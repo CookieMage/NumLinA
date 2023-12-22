@@ -238,6 +238,8 @@ def graph_error(u, pp_u):
 
     plotter(x_values, data)
 
+
+
 def bsp_1(x : np.array, k=1):
     """calculates the funktion u(x)_n in examplee 2.2 for a vector of the dimension d"""
     d = len(x)
