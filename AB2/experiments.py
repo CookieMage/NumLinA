@@ -53,9 +53,39 @@ def graph_sparse_dense(d=1, x=5, n=25):
     plt.show()
 
 def main():
-    graph_sparse_dense(d=1)
-    graph_sparse_dense(d=2)
-    graph_sparse_dense(d=3)
+    # graph_sparse_dense(d=1)
+    # graph_sparse_dense(d=2)
+    # graph_sparse_dense(d=3)
 
+    if True: 
+        n =  5   #anzahl an intervallen pro dimension
+        d =  2     #dimension
+        values_of_b_vecotor = []
+        for i in range(1,1+(n-1)**d):
+            x = pp.inv_idx(i,d,n)
+            x = [j/n for j in x]
+            values_of_b_vecotor.append(pp.pp_zu_bsp_1(x))
+        print(values_of_b_vecotor)
+        print(len(values_of_b_vecotor))
+
+        MatrixA = BlockMatrix(d,n)
+        print(MatrixA.get_sparse().toarray())
+        p,l,u = MatrixA.get_lu()
+        print("------------------- \n" )
+        print(p)
+        print("------------------- \n" )
+        print(l)
+        print("------------------- \n" )
+        print(u)
+
+        lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor)
+        print(lösung ,  " vektor von u")
+
+        values_of_u_vecotor = []
+        for i in range(1,1+(n-1)**d):
+            x = pp.inv_idx(i,d,n)
+            x = [j/n for j in x]
+            values_of_u_vecotor.append(pp.bsp_1(x))
+        print(values_of_u_vecotor , " values of u vector")
 if __name__ == "__main__":
     main()
