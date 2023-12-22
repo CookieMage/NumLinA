@@ -81,22 +81,38 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
 
 
 def main():
-    p = np.array([[0,0,0,1],
-                  [0,0,1,0],
-                  [1,0,0,0],
-                  [0,1,0,0]])
-    b = np.array([-10,14,8,-8])
-    u= np.array([[12,4,4,4],
-                 [0,12,0,-8],
-                 [0,0,-4,8],
-                 [0,0,0,-8]])
-    l= np.array([[1,0,0,0],
-                 [0,1,0,0],
-                 [1/4,1/2,1,0],
-                 [1/2,1/4,-1/4,1]])
+    # p = np.array([[0,0,0,1],
+    #               [0,0,1,0],
+    #               [1,0,0,0],
+    #               [0,1,0,0]])
+    # b = np.array([-10,1,-8,-8,])
+    # u= np.array([[12,4,4,4],
+    #              [0,12,0,-8],
+    #              [0,0,-4,8],
+    #              [0,0,0,-8]])
+    # l= np.array([[1,0,0,0],
+    #              [0,1,0,0],
+    #              [1/4,1/2,1,0],
+    #              [1/2,1/4,-1/4,1]])
+    if True:
+        p = np.array([[1,0,0],
+                     [0,0,1],
+                     [0,1,0]])
+        b= np.array([1,1,1])
+        u = np.array([[3,2,1],
+                      [0,2,4],
+                      [0,0,-6]])
+        l = np.array([[1,0,0],
+                      [7,1,0],
+                      [9,2,1]])
 
     print("Lösung von uns" , solve_lu_alt(p, l, u, b))
     print("Lösung von scipy", solve_lu(p, l, u, b))
+    f=[1.66666666666666, -1.6666666666 , -0.66666666666]
+    testa = np.dot(p,l)
+    testb = np.dot(testa,u)
+    testc = np.dot(testb,f)
+    print(testc)
 
 if __name__ == "__main__":
     main()

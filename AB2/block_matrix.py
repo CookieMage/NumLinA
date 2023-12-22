@@ -308,6 +308,7 @@ def main():
     #add = add_row_to_row(mat_2.get_sparse(), 0, 1)
     #add = add.toarray()
     #print(add)
+    #print(lu)
 
 
 if __name__ == "__main__":
