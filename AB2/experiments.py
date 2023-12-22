@@ -20,16 +20,19 @@ def graph_sparse_dense(d=1, x=5, n=25):
     x_values = np.logspace(0.4, x, dtype=int, num=n)
     x_values = [int(x)**d for x in x_values]
     
-    data = [[],[]]
+    data = [[],[],[],[]]
     for x in x_values:
         #print(n)
         # create matrices (d= 1, 2, 3)
         abs_non_zero = (x-1)**d+2*d*(x-2)*(x-1)**(d-1)
         abs_entries = ((x-1)**d)**2
         
+        
         # get information of sparsity
         data[0] += [abs_non_zero]
         data[1] += [abs_entries]
+        data[2] += [x**d]
+        data[3] += [(x**d)**2]
     # create the plot
     _, ax1 = plt.subplots(figsize=(5, 5))
     plt.xticks(fontsize=17)
@@ -47,6 +50,8 @@ def graph_sparse_dense(d=1, x=5, n=25):
     # plot data
     plt.plot(x_values, data[0], label = f"sparse matrix d = {d}", linewidth=2, linestyle="dashdot")
     plt.plot(x_values, data[1], label = f"dense matrix  d = {d}", linewidth=2, linestyle="dashdot")
+    plt.plot(x_values, data[2], label = f"O(n)=n^{d}", linewidth=2, linestyle="dotted")
+    plt.plot(x_values, data[3], label = f"O(n)=(n^{d})^2", linewidth=2, linestyle="dotted")
     
 
     plt.legend(fontsize=20, loc="upper left")
