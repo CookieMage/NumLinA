@@ -26,8 +26,8 @@ def graph_sparse_dense(d=1, x=5, n=25):
         # create matrices (d= 1, 2, 3)
         abs_non_zero = (x-1)**d+2*d*(x-2)*(x-1)**(d-1)
         abs_entries = ((x-1)**d)**2
-        
-        
+
+
         # get information of sparsity
         data[0] += [abs_non_zero]
         data[1] += [abs_entries]

@@ -128,7 +128,7 @@ class BlockMatrix:
         float
             Relative number of non-zeros
         """
-        abs_non_zero = self.a_d.count_nonzero()
+        abs_non_zero = (self.n-1)**self.d+2*self.d*(self.n-2)*(self.n-1)**(self.d-1)
         abs_entries = ((self.n-1)**self.d)**2
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
@@ -177,14 +177,16 @@ class BlockMatrix:
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
+
+
 def plotter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values
 
     Parameters
     ----------
-    x_values : list
-        list of values for the x-axis
-    plots : list
+    x_values : list of 3 lists of int or float
+        list of lists of values for the x-axis
+    plots : list of 3 lists of int or float
         list of lists of y-values for plots
     '''
     # create the plot
@@ -209,19 +211,16 @@ def plotter(x_values : list, plots : list):
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
-def data_generator(x_values : list):
-    '''creates datasets containing the relative number of zeros for each dimension and n = x_values
 
-    Parameters
-    ----------
-    x_values : list
-        list of values for the x-axis / experiments
+def graph_sparse_dense(x=5, n=25):
+    x_values = np.logspace(0.4, x, dtype=int, num=n)
+    x_values = [[int(x)**3 for x in x_values], [int(x)**1.5 for x in x_values], [int(x) for x in x_values]]
 
-    Returns
-    -------
-    list of 6
-        list containing the experiment-data
-    '''
+    #print(x_values)
+
+    #for x in [inner for outer in x_values for inner in outer]:
+    #    if not isinstance(x, int):
+    #        print(type(x))
 
     data = [[],[],[]]
 
@@ -235,23 +234,31 @@ def data_generator(x_values : list):
             # get information of sparsity
             data[d-1] += [abs_non_zero]
 
-    return data
+    # irgendwas ist hier noch fishy
 
-def graph(x=3, n=15):
+    plotter(x_values, data)
+
+def graph_lu(x=1, n=10):
     x_values = np.logspace(0.4, x, dtype=int, num=n)
-    x_values = [[int(x)**3 for x in x_values], [int(x)**1.5 for x in x_values], [int(x) for x in x_values]]
+    x_values = [[int(int(x)**3) for x in x_values], [int(int(x)**1.5) for x in x_values], [int(x) for x in x_values]]
+    data = [[],[],[]]
 
-    #print(x_values)
-
-    #for x in [inner for outer in x_values for inner in outer]:
-    #    if not isinstance(x, int):
-    #        print(type(x))
-
-    data = data_generator(x_values)
+    for d in range(1, 4):
+        # experiment on every n for n in x_values[i]
+        for n in x_values[d-1]:
+            #print(n)
+            # create matrices (d= 1, 2, 3)
+            abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
+            mat = BlockMatrix(d, n)
+            absolute, relative = mat.eval_sparsity_lu()
+            
+            # get information of sparsity
+            data[d-1] += [absolute]
 
     # irgendwas ist hier noch fishy
 
     plotter(x_values, data)
+
 
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat
@@ -300,6 +307,7 @@ def main():
     #print(lu[0], "\n", lu[1])
     sparsity_lu = mat_1.eval_sparsity_lu()
     #print(sparsity_lu)
+    graph_lu()
 
     #swap = mat_2.sparse_swapper(mat_2.get_sparse(), 0, 1, "row")
     #swap = swap.toarray()
