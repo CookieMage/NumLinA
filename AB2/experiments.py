@@ -65,42 +65,43 @@ def main():
     if True: 
         n =  100  #anzahl an intervallen pro dimension
         d =  2     #dimension
-        h = 1/n
-        values_of_b_vecotor = []
+        h = 1/n    #Intervalllänge
+        values_of_b_vecotor = []  #erstellt Vektor für rechte Seite der gleichung
         for i in range(1,1+(n-1)**d):
-            x = pp.inv_idx(i,d,n)
-            x = [j/n for j in x]
-            values_of_b_vecotor.append(pp.pp_zu_bsp_1(x)*(-h**2))
-        print(values_of_b_vecotor)
-        print(len(values_of_b_vecotor))
+            x = pp.inv_idx(i,d,n)       #erzeugt eine liste mit den Disrkretisierungspunkten * n
+            x = [j/n for j in x]        #bereitet die Diskretisierungspunkte für das einsetzen in die funktion vor
+            values_of_b_vecotor.append(pp.pp_zu_bsp_1(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine funktion f ein (rechte seite)
+        print(values_of_b_vecotor)              #debuggen
+        print(len(values_of_b_vecotor))         #debuggen
 
-        MatrixA = BlockMatrix(d,n)
-        print(MatrixA.get_sparse().toarray())
-                  #  MatrixA = MatrixA * 1/h**2
-        p,l,u = MatrixA.get_lu()
-        print("------------------- P: \n" )
-        print(p)
-        print("------------------- l: \n" )
-        print(l)
-        print("------------------- u: \n" )
+        MatrixA = BlockMatrix(d,n)          #erzeugt die koeffizientenmatrix A zu gegebenen n und d
+        print(MatrixA.get_sparse().toarray()) #debuggen
+        p,l,u = MatrixA.get_lu()        #zerlegt A in p, l und u
+        print("------------------- P: \n" )  #debuggen
+        print(p)                                #debuggen
+        print("------------------- l: \n" )     #debuggen
+        print(l)                                #debuggen
+        print("------------------- u: \n" ) #debuggen
         print(u)
-
-        lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor)
+        if False:  #(True or False) wahlz zwischen lösung durch pyscy oder selbst programierte
+            lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor) #löst das lineare gleichungssystem mit pyscy       
+        else:
+                lösung = linsol.solve_lu_alt(p,l,u,values_of_b_vecotor) #löst das LGS mit eigener Funktion
         print(lösung ,  " OUR vektor von u")
-
-        values_of_u_vecotor = []
-        for i in range(1,1+(n-1)**d):
-            x = pp.inv_idx(i,d,n)
-            x = [j/n for j in x]
-            values_of_u_vecotor.append(pp.bsp_1(x))
         
-        print(values_of_u_vecotor , " SOLL values of u vector")
+        values_of_u_vecotor = []    #erstellt vektor für analytisch bestimmte werte der Funktion u an den Diskretisierungspunkte
+        for i in range(1,1+(n-1)**d):
+            x = pp.inv_idx(i,d,n)   
+            x = [j/n for j in x]
+            values_of_u_vecotor.append(pp.bsp_1(x))  #Soll werte von u an diskretisierungspunkten (analytisch)
+        
+        print(values_of_u_vecotor , " SOLL values of u vector")  
         
         Max = 0
-        for i in range(0, len(lösung)):
-            if Max < abs(lösung[i]-values_of_u_vecotor[i]):
+        for i in range(0, len(lösung)):         #berechnet Maximalen fehler zwischen unsere Lösung und Soll
+            if Max < abs(lösung[i]-values_of_u_vecotor[i]):     
                 Max = abs(lösung[i]-values_of_u_vecotor[i])
-        print(Max , " maximaler Fehler")
+        print(Max , " maximaler Fehler")       
        # testa = np.dot(p,l)
         #testb = np.dot(testa,u)
         #testc = np.dot(testb,lösung)
