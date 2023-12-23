@@ -71,6 +71,7 @@ def main():
             x = pp.inv_idx(i,d,n)       #erzeugt eine liste mit den Disrkretisierungspunkten * n
             x = [j/n for j in x]        #bereitet die Diskretisierungspunkte für das einsetzen in die funktion vor
             values_of_b_vecotor.append(pp.pp_zu_bsp_1(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine funktion f ein (rechte seite)
+                                                                    #und rechnet f*((-h)^2) statt A * (-1/h^2)
         print(values_of_b_vecotor)              #debuggen
         print(len(values_of_b_vecotor))         #debuggen
 
@@ -88,7 +89,7 @@ def main():
         else:
                 lösung = linsol.solve_lu_alt(p,l,u,values_of_b_vecotor) #löst das LGS mit eigener Funktion
         print(lösung ,  " OUR vektor von u")
-        
+
         values_of_u_vecotor = []    #erstellt vektor für analytisch bestimmte werte der Funktion u an den Diskretisierungspunkte
         for i in range(1,1+(n-1)**d):
             x = pp.inv_idx(i,d,n)   
