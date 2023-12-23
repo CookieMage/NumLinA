@@ -63,7 +63,7 @@ def main():
     # graph_sparse_dense(d=3)
 
     if True: 
-        n =  200  #anzahl an intervallen pro dimension
+        n =  100  #anzahl an intervallen pro dimension
         d =  2     #dimension
         h = 1/n
         values_of_b_vecotor = []

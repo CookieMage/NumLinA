@@ -30,10 +30,10 @@ def solve_lu_alt(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray)
     y = [0] * len(b)    #np.ndarray(shape=(0,len(b)))
     y[0] = z[0]/ l[0][0]
     for i in range(1,len(b)):       #vlt len(b)-1 ??    ->bestimmt y_2, .... ,y()
-        print("i=",i)
+        #print("i=",i)
         old = 0
         for n in range(i):      #berechnet eine Summe der rechnung
-            print("n=", n)
+            #print("n=", n)
             old = (-l[i][n] * y[n]) + old
         y[i] = (z[i] + old) / l[i][i]
 
