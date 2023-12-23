@@ -260,6 +260,14 @@ def pp_zu_bsp_1(x : np.array, k=1):
         z += y
     return z
 
+def bsp_2(x : np.array, k=1):
+    l = (x[0]+x[1])**3
+    return l
+
+def pp_zu_bsp_2(x : np.array, k=1):
+    l = 12*( x[0] + x[1])
+    return l
+
 
 
 def main():

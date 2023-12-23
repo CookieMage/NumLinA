@@ -76,7 +76,6 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
     y = linalg.solve_triangular(l,z,trans = 0,lower = True)
     
     x = linalg.solve_triangular(u,y,trans=0,lower = False)
-    print(x)
     return np.array(x)
 
 
