@@ -63,34 +63,53 @@ def main():
     # graph_sparse_dense(d=3)
 
     if True: 
-        n =  5   #anzahl an intervallen pro dimension
+        n =  200  #anzahl an intervallen pro dimension
         d =  2     #dimension
+        h = 1/n
         values_of_b_vecotor = []
         for i in range(1,1+(n-1)**d):
             x = pp.inv_idx(i,d,n)
             x = [j/n for j in x]
-            values_of_b_vecotor.append(pp.pp_zu_bsp_1(x))
+            values_of_b_vecotor.append(pp.pp_zu_bsp_1(x)*(-h**2))
         print(values_of_b_vecotor)
         print(len(values_of_b_vecotor))
 
         MatrixA = BlockMatrix(d,n)
         print(MatrixA.get_sparse().toarray())
+                  #  MatrixA = MatrixA * 1/h**2
         p,l,u = MatrixA.get_lu()
-        print("------------------- \n" )
+        print("------------------- P: \n" )
         print(p)
-        print("------------------- \n" )
+        print("------------------- l: \n" )
         print(l)
-        print("------------------- \n" )
+        print("------------------- u: \n" )
         print(u)
 
         lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor)
-        print(lösung ,  " vektor von u")
+        print(lösung ,  " OUR vektor von u")
 
         values_of_u_vecotor = []
         for i in range(1,1+(n-1)**d):
             x = pp.inv_idx(i,d,n)
             x = [j/n for j in x]
             values_of_u_vecotor.append(pp.bsp_1(x))
-        print(values_of_u_vecotor , " values of u vector")
+        
+        print(values_of_u_vecotor , " SOLL values of u vector")
+        
+        Max = 0
+        for i in range(0, len(lösung)):
+            if Max < abs(lösung[i]-values_of_u_vecotor[i]):
+                Max = abs(lösung[i]-values_of_u_vecotor[i])
+        print(Max , " maximaler Fehler")
+       # testa = np.dot(p,l)
+        #testb = np.dot(testa,u)
+        #testc = np.dot(testb,lösung)
+        #print(testc,"testc")
+        #print(values_of_b_vecotor)
+    
+            
+
+
+    
 if __name__ == "__main__":
     main()
