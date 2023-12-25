@@ -17,6 +17,8 @@ from block_matrix import BlockMatrix
 import linear_solvers as linsol
 import matplotlib.pyplot as plt
 
+MODE = "fast"
+
 def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     """ Computes the right-hand side vector `b` for a given function `f`.
 
@@ -179,9 +181,30 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-    solution = rhs(d, n, u)
-    max_list = [solution[i]-e for i,e in enumerate(hat_u)]
-    return max(max_list)
+    h = 1/n    #Intervalllänge
+    values_of_b_vecotor = []  #erstellt Vektor für rechte Seite der gleichung
+    for i in range(1, (n-1)**d+1):
+        x = inv_idx(i,d,n)       #erzeugt eine liste mit den Disrkretisierungspunkten * n
+        x = [j/n for j in x]        #bereitet die Diskretisierungspunkte für das einsetzen in die funktion vor
+        values_of_b_vecotor.append(u(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine funktion f ein (rechte seite)
+                                                                #und rechnet f*((-h)^2) statt A * (-1/h^2)
+
+    mat = BlockMatrix(d,n)          #erzeugt die koeffizientenmatrix A zu gegebenen n und d
+    p, l, u = mat.get_lu()        #zerlegt A in p, l und u
+    
+    if MODE == "fast":  #(True or False) wahlz zwischen lösung durch pyscy oder selbst programierte
+        lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor) #löst das lineare gleichungssystem mit pyscy       
+    else:
+        lösung = linsol.solve_lu_alt(p,l,u,values_of_b_vecotor) #löst das LGS mit eigener Funktion
+    print(lösung ,  " OUR vektor von u")
+
+    values_of_u_vecotor = hat_u    #erstellt vektor für analytisch bestimmte werte der Funktion u an den Diskretisierungspunkte
+      #Soll werte von u an diskretisierungspunkten (analytisch)
+
+    maximum = max([abs(e-values_of_u_vecotor[i]) for i,e in enumerate(lösung)])
+
+    return maximum
+
 
 def plotter(x_values : list, plots : list):
     '''plots provided lists of plots relative to provided list x_values
@@ -276,6 +299,13 @@ def main():
     #print(y , " BSP 1.--------")
     #z = pp_zu_bsp_1([1], 1)
     #print(z, "<----- pp_bs1")
+    n= 20
+    d = 2
+    values_of_u_vector = []
+    for i in range(1,1+(n-1)**d):
+        x = inv_idx(i,d,n)   
+        x = [j/n for j in x]
+        values_of_u_vector.append(bsp_1(x))
 
 
 
