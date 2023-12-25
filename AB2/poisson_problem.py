@@ -96,9 +96,9 @@ def idx(nx : list, n : int):    # pylint: disable=invalid-name
         if e >= n:
             raise ValueError(f'Every element of nx must be >= n. The problem was {e} < {n}')
     num = nx[0]
-    # Als Alternative wäre es hier nur möglich zu schreiben:
+    # Als Alternative waere es hier nur moeglich zu schreiben:
     # for i,e in enumerate(nx[1:],1):
-    # Durch die Kopierung der Liste (nx[1:]) ist dies unnötige aufwendig.
+    # Durch die Kopierung der Liste (nx[1:]) ist dies unnoetige aufwendig.
     for i in range(1,len(nx)):
         num = num + (n-1)**i * (nx[i]-1)
     return num
@@ -181,28 +181,22 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-    h = 1/n    #Intervalllänge
-    values_of_b_vecotor = []  #erstellt Vektor für rechte Seite der gleichung
+    h = 1/n    #Intervalllaenge
+    values_of_b_vecotor = []  #erstellt Vektor fuer rechte Seite der gleichung
     for i in range(1, (n-1)**d+1):
         x = inv_idx(i,d,n)       #erzeugt eine liste mit den Disrkretisierungspunkten * n
-        x = [j/n for j in x]        #bereitet die Diskretisierungspunkte für das einsetzen in die funktion vor
+        x = [j/n for j in x]        #bereitet die Diskretisierungspunkte fuer das einsetzen in die funktion vor
         values_of_b_vecotor.append(u(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine funktion f ein (rechte seite)
-                                                                #und rechnet f*((-h)^2) statt A * (-1/h^2)
-
+                                                    #und rechnet f*((-h)^2) statt A * (-1/h^2)
     mat = BlockMatrix(d,n)          #erzeugt die koeffizientenmatrix A zu gegebenen n und d
     p, l, u = mat.get_lu()        #zerlegt A in p, l und u
     
-    if MODE == "fast":  #(True or False) wahlz zwischen lösung durch pyscy oder selbst programierte
-        lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor) #löst das lineare gleichungssystem mit pyscy       
+    if MODE == "fast":  #(True or False) wahlz zwischen loesung durch pyscy oder selbst programierte
+        loesung = linsol.solve_lu(p, l, u, values_of_b_vecotor) #loest das lineare gleichungssystem mit pyscy       
     else:
-        lösung = linsol.solve_lu_alt(p,l,u,values_of_b_vecotor) #löst das LGS mit eigener Funktion
-    print(lösung ,  " OUR vektor von u")
-
-    values_of_u_vecotor = hat_u    #erstellt vektor für analytisch bestimmte werte der Funktion u an den Diskretisierungspunkte
-      #Soll werte von u an diskretisierungspunkten (analytisch)
-
-    maximum = max([abs(e-values_of_u_vecotor[i]) for i,e in enumerate(lösung)])
-
+        loesung = linsol.solve_lu_alt(p, l, u, values_of_b_vecotor) #loest das LGS mit eigener Funktion
+      
+    maximum = max([abs(e-hat_u[i]) for i,e in enumerate(loesung)])
     return maximum
 
 

@@ -7,10 +7,10 @@ Fragen:
 - Graphik 2.8
 - main() mit Nutzerbegleitung im cmd-prompt
 - 2.9
-- Graphik 2.6
 
 Done
 -----
+- Graphik 2.6
 - maximaler Fehler 2.8
 
 Erik:

@@ -179,7 +179,7 @@ class BlockMatrix:
 
 
 
-def plotter(x_values : list, plots : list):
+def plotter(x_values : list, plots : list, labels : list, linestyles : list):
     '''plots provided lists of plots relative to provided list x_values
 
     Parameters
@@ -204,9 +204,8 @@ def plotter(x_values : list, plots : list):
     ax1.grid()
 
     # plot data
-    plt.plot(x_values[0], plots[0], label = "d = 1", linewidth=2, linestyle="dashdot")
-    plt.plot(x_values[1], plots[1], label = "d = 2", linewidth=2, linestyle="dashdot")
-    plt.plot(x_values[2], plots[2], label = "d = 3", linewidth=2, linestyle="dashdot")
+    for i,e in enumerate(plots):
+        plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i])
 
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
@@ -236,21 +235,29 @@ def graph_sparse_dense(x=5, n=25):
 
     # irgendwas ist hier noch fishy
 
-    plotter(x_values, data)
+    plotter(x_values, data, ["d=1", "d=2", "d=3"], ["dashdot"]*3)
 
 def graph_lu(x=1, n=10):
     x_values = np.logspace(0.4, x, dtype=int, num=n)
     x_values = [[int(int(x)**3) for x in x_values], [int(int(x)**1.5) for x in x_values], [int(x) for x in x_values]]
-    data = [[],[],[]]
+    data_lu = [[],[],[]]
+    data_sparse = [[], [], []]
 
     for d in range(1, 4):
         for n in x_values[d-1]:
             mat = BlockMatrix(d, n)
             absolute, _ = mat.eval_sparsity_lu()
-            
-            data[d-1] += [absolute]
+            abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
+            data_lu[d-1] += [absolute]
+            data_sparse[d-1] += [abs_non_zero]
 
-    plotter(x_values, data)
+    data = data_lu + data_sparse
+    labels = ["lu d=1", "lu d=2", "lu d=3", "sparse d=1", "sparse d=2", "sparse d=3"]
+    linestyles = ["dotted"]*3 + ["dashdot"]*3
+    # Farben!!!!!!
+    print("farben aendern!!!!")
+
+    plotter(x_values, data, labels, linestyles)
 
 
 def add_row_to_row(mat, a, b, value = 1):
@@ -300,6 +307,7 @@ def main():
     #print(lu[0], "\n", lu[1])
     sparsity_lu = mat_1.eval_sparsity_lu()
     #print(sparsity_lu)
+    graph_sparse_dense()
     graph_lu()
 
     #swap = mat_2.sparse_swapper(mat_2.get_sparse(), 0, 1, "row")
