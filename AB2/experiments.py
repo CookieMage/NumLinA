@@ -63,13 +63,13 @@ def main():
     # graph_sparse_dense(d=3)
 
     if True: 
-        n =  100  #anzahl an intervallen pro dimension
+        n =  150  #anzahl an intervallen pro dimension
         d =  2     #dimension
-        h = 1/n    #Intervalllänge
-        values_of_b_vecotor = []  #erstellt Vektor für rechte Seite der gleichung
+        h = 1/n    #Intervalllaenge
+        values_of_b_vecotor = []  #erstellt Vektor fuer rechte Seite der gleichung
         for i in range(1,1+(n-1)**d):
             x = pp.inv_idx(i,d,n)       #erzeugt eine liste mit den Disrkretisierungspunkten * n
-            x = [j/n for j in x]        #bereitet die Diskretisierungspunkte für das einsetzen in die funktion vor
+            x = [j/n for j in x]        #bereitet die Diskretisierungspunkte fuer das einsetzen in die funktion vor
             values_of_b_vecotor.append(pp.pp_zu_bsp_1(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine funktion f ein (rechte seite)
                                                                     #und rechnet f*((-h)^2) statt A * (-1/h^2)
         print(values_of_b_vecotor)              #debuggen
@@ -84,13 +84,13 @@ def main():
         print(l)                                #debuggen
         print("------------------- u: \n" ) #debuggen
         print(u)
-        if False:  #(True or False) wahlz zwischen lösung durch pyscy oder selbst programierte
-            lösung = linsol.solve_lu(p,l,u,values_of_b_vecotor) #löst das lineare gleichungssystem mit pyscy       
+        if True:  #(True or False) wahlz zwischen loesung durch pyscy oder selbst programierte
+            loesung = linsol.solve_lu(p,l,u,values_of_b_vecotor) #loest das lineare gleichungssystem mit pyscy       
         else:
-                lösung = linsol.solve_lu_alt(p,l,u,values_of_b_vecotor) #löst das LGS mit eigener Funktion
-        print(lösung ,  " OUR vektor von u")
+                loesung = linsol.solve_lu_alt(p,l,u,values_of_b_vecotor) #loest das LGS mit eigener Funktion
+        print(loesung ,  " OUR vektor von u")
 
-        values_of_u_vecotor = []    #erstellt vektor für analytisch bestimmte werte der Funktion u an den Diskretisierungspunkte
+        values_of_u_vecotor = []    #erstellt vektor fuer analytisch bestimmte werte der Funktion u an den Diskretisierungspunkte
         for i in range(1,1+(n-1)**d):
             x = pp.inv_idx(i,d,n)   
             x = [j/n for j in x]
@@ -99,13 +99,13 @@ def main():
         print(values_of_u_vecotor , " SOLL values of u vector")  
         
         Max = 0
-        for i in range(0, len(lösung)):         #berechnet Maximalen fehler zwischen unsere Lösung und Soll
-            if Max < abs(lösung[i]-values_of_u_vecotor[i]):     
-                Max = abs(lösung[i]-values_of_u_vecotor[i])
+        for i in range(0, len(loesung)):         #berechnet Maximalen fehler zwischen unsere Loesung und Soll
+            if Max < abs(loesung[i]-values_of_u_vecotor[i]):     
+                Max = abs(loesung[i]-values_of_u_vecotor[i])
         print(Max , " maximaler Fehler")       
        # testa = np.dot(p,l)
         #testb = np.dot(testa,u)
-        #testc = np.dot(testb,lösung)
+        #testc = np.dot(testb,loesung)
         #print(testc,"testc")
         #print(values_of_b_vecotor)
     
