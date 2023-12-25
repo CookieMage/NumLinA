@@ -244,18 +244,11 @@ def graph_lu(x=1, n=10):
     data = [[],[],[]]
 
     for d in range(1, 4):
-        # experiment on every n for n in x_values[i]
         for n in x_values[d-1]:
-            #print(n)
-            # create matrices (d= 1, 2, 3)
-            abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
             mat = BlockMatrix(d, n)
-            absolute, relative = mat.eval_sparsity_lu()
+            absolute, _ = mat.eval_sparsity_lu()
             
-            # get information of sparsity
             data[d-1] += [absolute]
-
-    # irgendwas ist hier noch fishy
 
     plotter(x_values, data)
 
