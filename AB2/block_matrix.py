@@ -130,7 +130,6 @@ class BlockMatrix:
         scipy.sparse.csr_matrix
             The block_matrix in a sparse data format.
         """
-        print(type(self.a_d))
         return sparse.csr_matrix(self.a_d)
 
 
@@ -146,7 +145,9 @@ class BlockMatrix:
         float
             Relative number of non-zeros
         """
+        # calculate non-zero-entries of the matrix
         abs_non_zero = (self.n-1)**self.d+2*self.d*(self.n-2)*(self.n-1)**(self.d-1)
+        # calculate number of entries of the matrix
         abs_entries = ((self.n-1)**self.d)**2
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
@@ -188,10 +189,14 @@ class BlockMatrix:
             Relative number of non-zeros
         """
         lu = self.get_lu()  #pylint: disable=invalid-name
+        # create negativ identity
         sub = sparse.diags([-1], [0], shape = ((self.n-1)**self.d, (self.n-1)**self.d))
+        # create matrix as specified above
         result = lu[0] + lu[1] + sub
+        # get number non-zero-entries and entries
         abs_non_zero = np.count_nonzero(result)
         abs_entries = ((self.n-1)**self.d)**2
+        # calculate relative number of non-zero-entries
         rel_non_zero = abs_non_zero / abs_entries
         return abs_non_zero, rel_non_zero
 
@@ -209,31 +214,35 @@ def graph_sparse_dense(maximum=2, n=25, dim = [1,2,3]):   #pylint: disable=inval
     dim : list, optional
         list of dimensions that should be shown in the plot, by default [1,2,3]
     '''
+    # create logarithmic list of int from 10^0.4 to 10^maximum
     x_values = np.logspace(0.4, maximum, dtype=int, num=n)
+    # convert numpy.int to int in order to prevent stackoverflow
     x_values = [[int(x)**3 for x in x_values], [int(x)**1.5 for x in x_values],
                 [int(x) for x in x_values]]
 
+    # create lists for saving data for the plot
     data = []
     labels = []
 
     for i,d in enumerate(dim):  #pylint: disable=invalid-name
         data += [[],[]]
         labels += [f"sparse d={d}", f"dense d={d}"]
-        # experiment on every n for n in x_values[i]
+        # save sparsity information for each value of n
         for n in x_values[d-1]: #pylint: disable=redefined-argument-from-local
-            #print(n)
-            # create matrices (d= 1, 2, 3)
             abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
 
-            # get information of sparsity
+            # save sparsity information
             data[2*i] += [abs_non_zero]
             data[2*i+1] += [((n-1)**d)**2]
 
-    # irgendwas ist hier noch fishy
+    # create lists for plotting the data
     linestyles = ["dashdot", "dotted"]*3
-    colors = ["b", "b", "r", "r", "c", "c"]
+    # if only on dimension is plotted make both of the plots a different color
     if len(dim) == 1:
         colors = ["b", "r"]
+    else:
+        # make every graph of one dimension the same color
+        colors = ["b", "b", "r", "r", "c", "c"]
 
     plotter(x_values, data, labels, linestyles, colors)
 

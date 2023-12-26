@@ -12,6 +12,7 @@ Done
 - Graphik 2.8
 - Graphik 2.6
 - maximaler Fehler 2.8
+- get_lu()
 
 Erik:
 
