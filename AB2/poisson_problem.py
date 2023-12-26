@@ -1,4 +1,6 @@
-"""programm for solving the Poisson problem
+"""Gruppe: 21
+
+programm for solving the Poisson problem
 
 functions
 ---------
@@ -15,8 +17,10 @@ main()
 import numpy as np
 from block_matrix import BlockMatrix
 import linear_solvers as linsol
-import matplotlib.pyplot as plt
+from plotter import plotter
 
+# this programm has a fast mode which uses predefined functions of scipy to solve the linear system
+# in compute_error() and a slow mode which uses our own function for calculating the solution
 FAST_MODE = True
 
 def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
@@ -181,75 +185,62 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
-    h = 1/n    #Intervalllaenge
+    h = 1/n #pylint: disable=invalid-name
     values_of_b_vecotor = []  #erstellt Vektor fuer rechte Seite der gleichung
     for i in range(1, (n-1)**d+1):
-        x = inv_idx(i,d,n)       #erzeugt eine liste mit den Disrkretisierungspunkten * n
-        x = [j/n for j in x]        #bereitet die Diskretisierungspunkte fuer das einsetzen in die funktion vor
-        values_of_b_vecotor.append(u(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine funktion f ein (rechte seite)
+        #erzeugt eine liste mit den Disrkretisierungspunkten * n
+        x = inv_idx(i,d,n)  #pylint: disable=invalid-name
+        #bereitet die Diskretisierungspunkte fuer das einsetzen in die funktion vor
+        x = [j/n for j in x]    #pylint: disable=invalid-name
+        values_of_b_vecotor.append(u(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine
+        # funktion f ein (rechte seite)
                                                     #und rechnet f*((-h)^2) statt A * (-1/h^2)
     mat = BlockMatrix(d,n)          #erzeugt die koeffizientenmatrix A zu gegebenen n und d
-    p, l, u = mat.get_lu()        #zerlegt A in p, l und u
+    p, l, u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
 
     if FAST_MODE:  #(True or False) wahlz zwischen loesung durch pyscy oder selbst programierte
-        loesung = linsol.solve_lu(p, l, u, values_of_b_vecotor) #loest das lineare gleichungssystem mit pyscy
+        loesung = linsol.solve_lu(p, l, u, values_of_b_vecotor) #loest das lineare gleichungssystem
+        # mit pyscy
     else:
-        loesung = linsol.solve_lu_alt(p, l, u, values_of_b_vecotor) #loest das LGS mit eigener Funktion
+        loesung = linsol.solve_lu_alt(p, l, u, values_of_b_vecotor) #loest das LGS mit eigener
+        # Funktion
 
-    maximum = max([abs(e-hat_u[i]) for i,e in enumerate(loesung)])
+    maximum = max(abs(e-hat_u[i]) for i,e in enumerate(loesung))  #pylint: disable=invalid-name
     return maximum
 
 
-def plotter(x_values : list, plots : list, labels : list, linestyles : list, colors : list):
-    '''plots provided lists of plots relative to provided list x_values
+def graph_error(u : callable, pp_u : callable):   #pylint: disable=invalid-name
+    '''graphs the error of the numerical solution of the Poisson problem
+    with respect to the infinity-norm
 
     Parameters
     ----------
-    x_values : list of 3 lists of int or float
-        list of lists of values for the x-axis
-    plots : list of 3 lists of int or float
-        list of lists of y-values for plots
+    u : callable
+        function that is used for the numerical solution of the Poisson problem
+    pp_u : callable
+        analytic solution of the Poisson problem
     '''
-    # create the plot
-    _, ax1 = plt.subplots(figsize=(5, 5))
-    plt.xticks(fontsize=17)
-    plt.yticks(fontsize=17)
-    plt.xscale("log")
-    plt.yscale("log")
-    #plt.title(f"{num}. Dimension", fontsize=20)
-    plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
-    ax1.yaxis.set_label_coords(-0.01, 1)
-    plt.xlabel("N", fontsize = 20)
-    ax1.xaxis.set_label_coords(1.01, -0.05)
-    ax1.yaxis.get_offset_text().set_fontsize(20)
-    ax1.grid()
-
-    # plot data
-    for i,e in enumerate(plots):
-        plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i], color=colors[i])
-
-    plt.legend(fontsize=20, loc="upper left")
-    plt.show()
-
-
-def graph_error(u, pp_u):
     dim = [1, 2, 3]
-    n = np.logspace(0.4, 1.4, 5, dtype=int)
-    n = [int(e) for e in n]
+    n = np.logspace(0.4, 1.4, 5, dtype=int) #pylint: disable=invalid-name
+    n = [int(e) for e in n] #pylint: disable=invalid-name
     data = []
 
-    for d in dim:
+    for d in dim:   #pylint: disable=invalid-name
         data += [[]]
-        for e in n:
+        for e in n: #pylint: disable=invalid-name
             block = BlockMatrix(d, e)
-            p_mat, l_mat, u_mat = block.get_lu()
+            p_mat, l_mat, u_mat = block.get_lu()    #pylint: disable=unbalanced-tuple-unpacking
             disc_points = [inv_idx(m, d, e) for m in range(1, (e-1)**d+1)]
             disc_points = [[x/e for x in y] for y in disc_points]
-            solutions = np.append([], linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])) # irgendwas ist hier falsch (da kommt ne leere liste raus)
-            data[d-1] = np.append(data[d-1], compute_error(d=d, n=e, hat_u=np.array(solutions), u=pp_u))
+            solutions = np.append([], linsol.solve_lu(p_mat, l_mat, u_mat,
+                                                      [u(x) for x in disc_points]))
+            data[d-1] = np.append(data[d-1], compute_error(d=d, n=e, hat_u=np.array(solutions),
+                                                           u=pp_u))
 
     x_values = n
-    x_values = [[int(x)**3 for x in x_values], [int(int(x)**1.5) for x in x_values], [int(x) for x in x_values]]
+    x_values = [[int(x)**3 for x in x_values],
+                [int(int(x)**1.5) for x in x_values],
+                [int(x) for x in x_values]]
 
     labels = [f"error d={d}" for d in dim]
     linestyles = ["dashdot"]*3
@@ -259,24 +250,22 @@ def graph_error(u, pp_u):
 
 
 
-def bsp_1(x : np.array, k=1):
-    """calculates the funktion u(x)_n in examplee 2.2 for a vector of the dimension d"""
-    d = len(x)
-    y = 1
-    for i in range(0,d):
-        y = y * x[i] * np.sin(k * np.pi * x[i])
+def bsp_1(x : np.array, k=1): #pylint: disable=missing-function-docstring, disable=invalid-name
+    y = 1   #pylint: disable=invalid-name
+    for e in x: #pylint: disable=invalid-name
+        y = y * e * np.sin(k * np.pi * e)   #pylint: disable=invalid-name
     return y
 
-def pp_zu_bsp_1(x : np.array, k=1):
-    z = 0
-    for i,_ in enumerate(x):
-        y = k * np.pi * (2 * np.cos(k * np.pi * x[i])-k * np.pi * x[i] * np.sin(k * np.pi *x[i]))
+def pp_zu_bsp_1(x : np.array, k=1): #pylint: disable=missing-function-docstring, disable=invalid-name
+    z = 0   #pylint: disable=invalid-name
+    for i,e in enumerate(x):    #pylint: disable=invalid-name
+        y = k * np.pi * (2 * np.cos(k * np.pi * e)-k * np.pi * e * np.sin(k * np.pi *e))    #pylint: disable=invalid-name
         pro = 1
-        for j,_ in enumerate(x):
+        for j,f in enumerate(x):    #pylint: disable=invalid-name
             if i != j:
-                pro *= x[j] * np.sin(k * np.pi * x[j])
-        y *= pro
-        z += y
+                pro *= f * np.sin(k * np.pi * f)
+        y *= pro    #pylint: disable=invalid-name
+        z += y  #pylint: disable=invalid-name
     return z
 
 
@@ -299,7 +288,7 @@ def main():
     #d = 2
     #values_of_u_vector = []
     #for i in range(1,1+(n-1)**d):
-    #    x = inv_idx(i,d,n)   
+    #    x = inv_idx(i,d,n)
     #    x = [j/n for j in x]
     #    values_of_u_vector.append(bsp_1(x))
 

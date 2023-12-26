@@ -3,13 +3,13 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 
 Fragen:
 
-
-- Graphik 2.8
+- code kommentieren / ueberarbeiten
 - main() mit Nutzerbegleitung im cmd-prompt
 - 2.9
 
 Done
 -----
+- Graphik 2.8
 - Graphik 2.6
 - maximaler Fehler 2.8
 

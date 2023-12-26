@@ -1,32 +1,38 @@
+'''Gruppe: 21
+
+program for conduction experiments on block_matrix, linear_solvers and poisson_problem
+
+functions
+---------
+graph_sparse_dense()
+    creates a plot representing the number of non-zero-entries for sparse and non-sparse matrices
+    of type BlockMatrix
+main()
+    Example of code that can be run using the provided class and methods
+'''
+
 import matplotlib.pyplot as plt
-import linear_solvers as linsol
-import poisson_problem as pp
-from block_matrix import BlockMatrix
 import numpy as np
 
-def test_1(max_n, slices_n, max_d, slices_d):
-    n_list = np.logspace(2, max_n, slices_n, dtype=int)
-    d_list = np.logspace(1, max_d, slices_d, dtype=int)
+def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
+    '''creates a plot representing the number of non-zero-entries for sparse and non-sparse
+    matrices of type BlockMatrix; the data is calculated to reduce runtime and needed resources;
+    additional graphs are plotted in order to show the space complexity class
 
-    hat_u = []
-    for i in range(1,1+(n-1)**d):
-        x = pp.inv_idx(i,d,n)   
-        x = [j/n for j in x]
-        hat_u.append(pp.bsp_1(x))
-
-    errors = []
-    for n in n_list:
-        for d in d_list:
-            errors += pp.compute_error(d, n, hat_u, pp.pp_zu_bsp_1)
-    return errors
-
-
-def graph_sparse_dense(d=1, x=5, n=25):
-    x_values = np.logspace(0.4, x, dtype=int, num=n)
+    Parameters
+    ----------
+    d : int, optional
+        the dimension that is represented in the graph, by default 1
+    maximum : int, optional
+        10**maximum is the maximum number slices for a BlockMatrix, by default 2
+    n : int, optional
+        describes the number of datapoints for each graph, by default 25
+    '''
+    x_values = np.logspace(0.4, maximum, dtype=int, num=n)
     x_values = [int(x)**d for x in x_values]
 
     data = [[],[],[],[]]
-    for x in x_values:
+    for x in x_values:  #pylint: disable=invalid-name
         abs_non_zero = (x-1)**d+2*d*(x-2)*(x-1)**(d-1)
         abs_entries = ((x-1)**d)**2
 
@@ -57,6 +63,8 @@ def graph_sparse_dense(d=1, x=5, n=25):
     plt.show()
 
 def main():
+    '''Example of code that can be run using the provided class and methods
+    '''
     graph_sparse_dense(d=3)
 
 if __name__ == "__main__":
