@@ -254,31 +254,22 @@ def graph():
 
 def graph_error(u, pp_u):
     dim = [1, 2, 3]
-    n = np.logspace(2, 100, 20, dtype=int)
+    n = np.logspace(0.4, 1.4, 5, dtype=int)
     n = [int(e) for e in n]
     data = []
-    
-    hat_u = []
-    for i in range(1,1+(n-1)**d):
-        x = inv_idx(i,d,n)   
-        x = [j/n for j in x]
-        hat_u.append(bsp_1(x))
-        
+
     for d in dim:
         data += [[]]
-        solutions = np.array([])
         for e in n:
             block = BlockMatrix(d, e)
             p_mat, l_mat, u_mat = block.get_lu()
             disc_points = [inv_idx(m, d, e) for m in range(1, (e-1)**d+1)]
             disc_points = [[x/e for x in y] for y in disc_points]
-            print(hat_u == disc_points)
-            np.append(solutions, linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])) # irgendwas ist hier falsch (da kommt ne leere liste raus)
-            data[d-1] += compute_error(d=d, n=e, hat_u=np.array(solutions), u=pp_u)
+            solutions = np.append([], linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])) # irgendwas ist hier falsch (da kommt ne leere liste raus)
+            data[d-1] = np.append(data[d-1], compute_error(d=d, n=e, hat_u=np.array(solutions), u=pp_u))
 
-    x_values = [[x-1 for x in n]]
-    x_values += [[x**2 for x in x_values]]
-    x_values += [[x**3 for x in x_values]]
+    x_values = n
+    x_values = [[int(x)**3 for x in x_values], [int(int(x)**1.5) for x in x_values], [int(x) for x in x_values]]
 
     labels = [f"error d={d}" for d in dim]
     linestyles = ["dashdot"]*3

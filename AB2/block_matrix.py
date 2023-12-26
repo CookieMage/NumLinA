@@ -264,29 +264,25 @@ def graph_lu(x=1, n=10):
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
-    mat_1 = BlockMatrix(2, 3)
-#
+    #mat_1 = BlockMatrix(2, 3)
+
     #print(mat_1.get_sparse().toarray())
     #print(mat_1.eval_sparsity())
-#
+
     #mat_2 = BlockMatrix(3, 5)
-#
+
     #print(mat_2.get_sparse().toarray())
     #print(mat_2.eval_sparsity())
 
-    lu = mat_1.get_lu()
+    #lu = mat_1.get_lu()
     #print(lu[0], "\n", lu[1])
-    sparsity_lu = mat_1.eval_sparsity_lu()
+    #sparsity_lu = mat_1.eval_sparsity_lu()
     #print(sparsity_lu)
     graph_sparse_dense(dim = [2])
-    print("Nun folgt die LU-Zerlegung der Matrix.")
-    graph_lu()
+    #print("Nun folgt die LU-Zerlegung der Matrix.")
+    #graph_lu()
 
 
 
 if __name__ == "__main__":
     main()
-
-# Der Datentyp von a_d ist scipy.sparse._csr.csr_array und der Test verlangt etwas anderes.
-# wir konnten das geforderte format nicht erzeugen aber meinen, dass dieses gleichbedeutend sein
-# sollte.
