@@ -33,7 +33,6 @@ def plotter(x_values : list, plots : list, labels : list, linestyles : list, col
     plt.yticks(fontsize=17)
     plt.xscale("log")
     plt.yscale("log")
-    #plt.title(f"{num}. Dimension", fontsize=20)
     plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
     ax1.yaxis.set_label_coords(-0.01, 1)
     plt.xlabel("N", fontsize = 20)
@@ -41,7 +40,7 @@ def plotter(x_values : list, plots : list, labels : list, linestyles : list, col
     ax1.yaxis.get_offset_text().set_fontsize(20)
     ax1.grid()
 
-    # plot data
+    # plot datasets
     for i,e in enumerate(plots):    #pylint: disable=invalid-name
         plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i],
                  color=colors[i])

@@ -216,7 +216,8 @@ def graph_sparse_dense(maximum=2, n=25, dim = [1,2,3]):   #pylint: disable=inval
     '''
     # create logarithmic list of int from 10^0.4 to 10^maximum
     x_values = np.logspace(0.4, maximum, dtype=int, num=n)
-    # convert numpy.int to int in order to prevent stackoverflow
+    # convert numpy.int to int in order to prevent stackoverflow and format a list in order to
+    # setup later computations
     x_values = [[int(x)**3 for x in x_values], [int(x)**1.5 for x in x_values],
                 [int(x) for x in x_values]]
 
@@ -244,6 +245,7 @@ def graph_sparse_dense(maximum=2, n=25, dim = [1,2,3]):   #pylint: disable=inval
         # make every graph of one dimension the same color
         colors = ["b", "b", "r", "r", "c", "c"]
 
+    # plot data
     plotter(x_values, data, labels, linestyles, colors)
 
 
@@ -259,25 +261,35 @@ def graph_lu(maximum=1, n=10):  #pylint: disable=invalid-name
     n : int, optional
         describes the number of datapoints for each graph, by default 25
     '''
+    # create logarithmic list of int from 10^0.4 to 10^maximum
     x_values = np.logspace(0.4, maximum, dtype=int, num=n)
+    # convert numpy.int to int in order to prevent stackoverflow and format a list in order to
+    # setup later computations
     x_values = [[int(int(x)**3) for x in x_values], [int(int(x)**1.5) for x in x_values],
                 [int(x) for x in x_values]]
+    
+    # create lists for saving data for the plot
     data_lu = [[],[],[]]
     data_sparse = [[], [], []]
 
     for d in range(1, 4):   #pylint: disable=invalid-name
         for n in x_values[d-1]: #pylint: disable=redefined-argument-from-local
+            # create matrix for evaluating the sparsity of the lu-decomposition
             mat = BlockMatrix(d, n)
             absolute, _ = mat.eval_sparsity_lu()
+            # calculate number of non-zero-entries in the matrix itself
             abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
+            # save generated data
             data_lu[d-1] += [absolute]
             data_sparse[d-1] += [abs_non_zero]
 
+    # create lists for ploting
     data = data_lu + data_sparse
     labels = ["lu d=1", "lu d=2", "lu d=3", "sparse d=1", "sparse d=2", "sparse d=3"]
     linestyles = ["dotted"]*3 + ["dashdot"]*3
     colors = ["b", "r", "c"]*2
 
+    # plot data
     plotter(x_values, data, labels, linestyles, colors)
 
 

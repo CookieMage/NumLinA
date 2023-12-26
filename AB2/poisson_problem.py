@@ -185,26 +185,28 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
         raise TypeError('d must be an int')
     if not isinstance(n, int):
         raise TypeError('n must be an int')
+
     h = 1/n #pylint: disable=invalid-name
-    values_of_b_vecotor = []  #erstellt Vektor fuer rechte Seite der gleichung
+    b_vecotor = []
+
     for i in range(1, (n-1)**d+1):
-        #erzeugt eine liste mit den Disrkretisierungspunkten * n
+        # create list of discretization points
         x = inv_idx(i,d,n)  #pylint: disable=invalid-name
-        #bereitet die Diskretisierungspunkte fuer das einsetzen in die funktion vor
         x = [j/n for j in x]    #pylint: disable=invalid-name
-        values_of_b_vecotor.append(u(x)*(-h**2))   #setzt die Diskretisierungspunkte in eine
-        # funktion f ein (rechte seite)
-                                                    #und rechnet f*((-h)^2) statt A * (-1/h^2)
-    mat = BlockMatrix(d,n)          #erzeugt die koeffizientenmatrix A zu gegebenen n und d
+        # calculate right side of f(x)*(-h^2)=b
+        b_vecotor.append(u(x)*(-h**2))
+
+    # create coefficient matrix A for given n and d
+    mat = BlockMatrix(d,n)
     p, l, u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
 
-    if FAST_MODE:  #(True or False) wahlz zwischen loesung durch pyscy oder selbst programierte
-        loesung = linsol.solve_lu(p, l, u, values_of_b_vecotor) #loest das lineare gleichungssystem
-        # mit pyscy
+    # use fast mode or not as specified above
+    if FAST_MODE:
+        loesung = linsol.solve_lu(p, l, u, b_vecotor)
     else:
-        loesung = linsol.solve_lu_alt(p, l, u, values_of_b_vecotor) #loest das LGS mit eigener
-        # Funktion
+        loesung = linsol.solve_lu_alt(p, l, u, b_vecotor)
 
+    # returns maximum difference between corresponding entries of loesung and hat_u
     maximum = max(abs(e-hat_u[i]) for i,e in enumerate(loesung))  #pylint: disable=invalid-name
     return maximum
 
@@ -221,19 +223,26 @@ def graph_error(u : callable, pp_u : callable):   #pylint: disable=invalid-name
         analytic solution of the Poisson problem
     '''
     dim = [1, 2, 3]
+    # create logarithmic list of int from 10^0.4 to 10^maximum
     n = np.logspace(0.4, 1.4, 5, dtype=int) #pylint: disable=invalid-name
+    # convert numpy.int to int in order to prevent stackoverflow
     n = [int(e) for e in n] #pylint: disable=invalid-name
     data = []
 
+    # save each dataset for one dimension in a sublist of data
     for d in dim:   #pylint: disable=invalid-name
         data += [[]]
         for e in n: #pylint: disable=invalid-name
+            # Initialize BlockMatrix for calculating it lu-decomposition
             block = BlockMatrix(d, e)
             p_mat, l_mat, u_mat = block.get_lu()    #pylint: disable=unbalanced-tuple-unpacking
+            # creat list of discretization points
             disc_points = [inv_idx(m, d, e) for m in range(1, (e-1)**d+1)]
             disc_points = [[x/e for x in y] for y in disc_points]
-            solutions = np.append([], linsol.solve_lu(p_mat, l_mat, u_mat,
-                                                      [u(x) for x in disc_points]))
+            
+            # solve Ax=b for x
+            solutions = linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])
+            # save error of this calculation
             data[d-1] = np.append(data[d-1], compute_error(d=d, n=e, hat_u=np.array(solutions),
                                                            u=pp_u))
 

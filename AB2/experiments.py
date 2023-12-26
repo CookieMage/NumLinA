@@ -47,7 +47,7 @@ def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
     plt.xscale("log")
     plt.yscale("log")
 
-    plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
+    plt.ylabel("y", fontsize = 20, rotation = 0)
     ax1.yaxis.set_label_coords(-0.01, 1)
     plt.xlabel("N", fontsize = 20)
     ax1.xaxis.set_label_coords(1.01, -0.05)

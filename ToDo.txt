@@ -3,7 +3,8 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 
 Fragen:
 
-- code kommentieren / ueberarbeiten
+- pp kommentieren
+- experiments kommentieren
 - main() mit Nutzerbegleitung im cmd-prompt
 - 2.9
 
