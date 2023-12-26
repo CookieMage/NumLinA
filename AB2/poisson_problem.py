@@ -231,26 +231,6 @@ def plotter(x_values : list, plots : list, labels : list, linestyles : list, col
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
-def graph():
-    x_values = np.logspace(0.4, x, dtype=int, num=n)
-    x_values = [[int(int(x)**3) for x in x_values], [int(int(x)**1.5) for x in x_values], [int(x) for x in x_values]]
-    data_lu = [[],[],[]]
-    data_sparse = [[], [], []]
-
-    for d in range(1, 4):
-        for n in x_values[d-1]:
-            mat = BlockMatrix(d, n)
-            absolute, _ = mat.eval_sparsity_lu()
-            abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
-            data_lu[d-1] += [absolute]
-            data_sparse[d-1] += [abs_non_zero]
-
-    data = data_lu + data_sparse
-    labels = ["lu d=1", "lu d=2", "lu d=3", "sparse d=1", "sparse d=2", "sparse d=3"]
-    linestyles = ["dotted"]*3 + ["dashdot"]*3
-    colors = ["b", "r", "c"]*2
-
-    plotter(x_values, data, labels, linestyles, colors)
 
 def graph_error(u, pp_u):
     dim = [1, 2, 3]
