@@ -179,7 +179,7 @@ class BlockMatrix:
 
 
 
-def plotter(x_values : list, plots : list, labels : list, linestyles : list):
+def plotter(x_values : list, plots : list, labels : list, linestyles : list, colors : list):
     '''plots provided lists of plots relative to provided list x_values
 
     Parameters
@@ -205,25 +205,22 @@ def plotter(x_values : list, plots : list, labels : list, linestyles : list):
 
     # plot data
     for i,e in enumerate(plots):
-        plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i])
+        plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i], color=colors[i])
 
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
 
-def graph_sparse_dense(x=5, n=25):
+def graph_sparse_dense(x=2, n=25, dim = [1,2,3]):
     x_values = np.logspace(0.4, x, dtype=int, num=n)
     x_values = [[int(x)**3 for x in x_values], [int(x)**1.5 for x in x_values], [int(x) for x in x_values]]
 
-    #print(x_values)
+    data = []
+    labels = []
 
-    #for x in [inner for outer in x_values for inner in outer]:
-    #    if not isinstance(x, int):
-    #        print(type(x))
-
-    data = [[],[],[]]
-
-    for d in range(1, 4):
+    for i,d in enumerate(dim):
+        data += [[],[]]
+        labels += [f"sparse d={d}", f"dense d={d}"]
         # experiment on every n for n in x_values[i]
         for n in x_values[d-1]:
             #print(n)
@@ -231,11 +228,16 @@ def graph_sparse_dense(x=5, n=25):
             abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
 
             # get information of sparsity
-            data[d-1] += [abs_non_zero]
+            data[2*i] += [abs_non_zero]
+            data[2*i+1] += [((n-1)**d)**2]
 
     # irgendwas ist hier noch fishy
-
-    plotter(x_values, data, ["d=1", "d=2", "d=3"], ["dashdot"]*3)
+    linestyles = ["dashdot", "dotted"]*3
+    colors = ["b", "b", "r", "r", "c", "c"]
+    if len(dim) == 1:
+        colors = ["b", "r"]
+   
+    plotter(x_values, data, labels, linestyles, colors)
 
 def graph_lu(x=1, n=10):
     x_values = np.logspace(0.4, x, dtype=int, num=n)
@@ -254,41 +256,10 @@ def graph_lu(x=1, n=10):
     data = data_lu + data_sparse
     labels = ["lu d=1", "lu d=2", "lu d=3", "sparse d=1", "sparse d=2", "sparse d=3"]
     linestyles = ["dotted"]*3 + ["dashdot"]*3
-    # Farben!!!!!!
-    print("farben aendern!!!!")
+    colors = ["b", "r", "c"]*2
 
-    plotter(x_values, data, labels, linestyles)
+    plotter(x_values, data, labels, linestyles, colors)
 
-
-def add_row_to_row(mat, a, b, value = 1):
-    new_mat = mat
-    ident = sparse.eye(mat.shape[0]).tolil()
-    ident[a,b]=value
-    new_mat = ident.dot(new_mat)
-    return new_mat
-
-def sparse_swapper(mat, a, b, mode="row"):
-    """
-    Reorders the rows and/or columns in a scipy sparse matrix to the specified order.
-    """
-    if mode!="row" and mode!="col":
-        raise ValueError("mode must be 'row' or 'col'!")
-    if max(a,b) > mat.shape[0]:
-        raise ValueError("a and b must relate to rows/columns in the matrix!")
-    
-    new_order = [x for x in range(a)] + [b] + [x for x in range(a+1, b)] + [a]
-    new_order += [x for x in range(b+1, mat.shape[0])]
-    
-    new_mat = mat
-    if mode == "row":
-        ident = sparse.eye(mat.shape[0]).tocoo()
-        ident.row = ident.row[new_order]
-        new_mat = ident.dot(new_mat)
-    if mode == "col":
-        ident = sparse.eye(mat.shape[1]).tocoo()
-        ident.col = ident.col[new_order]
-        new_mat = new_mat.dot(ident)
-    return new_mat
 
 def main():
     '''Example of code that can be run using the provided class and methods
@@ -307,18 +278,10 @@ def main():
     #print(lu[0], "\n", lu[1])
     sparsity_lu = mat_1.eval_sparsity_lu()
     #print(sparsity_lu)
-    graph_sparse_dense()
+    graph_sparse_dense(dim = [2])
+    print("Nun folgt die LU-Zerlegung der Matrix.")
     graph_lu()
 
-    #swap = mat_2.sparse_swapper(mat_2.get_sparse(), 0, 1, "row")
-    #swap = swap.toarray()
-    #print(swap)
-#
-    #add = add_row_to_row(mat_2.get_sparse(), 0, 1)
-    #add = add.toarray()
-    #print(add)
-    #print(lu)
-    #graph()
 
 
 if __name__ == "__main__":

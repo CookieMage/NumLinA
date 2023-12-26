@@ -50,14 +50,14 @@ def graph_sparse_dense(d=1, x=5, n=25):
 
     plt.plot(x_values, data[0], label = f"sparse matrix d = {d}", linewidth=2, linestyle="dashdot")
     plt.plot(x_values, data[1], label = f"dense matrix  d = {d}", linewidth=2, linestyle="dashdot")
-    plt.plot(x_values, data[2], label = f"O(n)=n^{d}", linewidth=2, linestyle="dotted")
-    plt.plot(x_values, data[3], label = f"O(n)=(n^{d})^2", linewidth=2, linestyle="dotted")
+    plt.plot(x_values, data[2], label = f"Referenzwert n^{d}", linewidth=2, linestyle="dotted")
+    plt.plot(x_values, data[3], label = f"Referenzwert (n^{d})^2", linewidth=2, linestyle="dotted")
 
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
 def main():
-    graph_sparse_dense()
-    
+    graph_sparse_dense(d=3)
+
 if __name__ == "__main__":
     main()

@@ -17,7 +17,7 @@ from block_matrix import BlockMatrix
 import linear_solvers as linsol
 import matplotlib.pyplot as plt
 
-MODE = "fast"
+FAST_MODE = True
 
 def rhs(d : int, n : int, f : callable):    # pylint: disable=invalid-name
     """ Computes the right-hand side vector `b` for a given function `f`.
@@ -190,24 +190,24 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
                                                     #und rechnet f*((-h)^2) statt A * (-1/h^2)
     mat = BlockMatrix(d,n)          #erzeugt die koeffizientenmatrix A zu gegebenen n und d
     p, l, u = mat.get_lu()        #zerlegt A in p, l und u
-    
-    if MODE == "fast":  #(True or False) wahlz zwischen loesung durch pyscy oder selbst programierte
-        loesung = linsol.solve_lu(p, l, u, values_of_b_vecotor) #loest das lineare gleichungssystem mit pyscy       
+
+    if FAST_MODE:  #(True or False) wahlz zwischen loesung durch pyscy oder selbst programierte
+        loesung = linsol.solve_lu(p, l, u, values_of_b_vecotor) #loest das lineare gleichungssystem mit pyscy
     else:
         loesung = linsol.solve_lu_alt(p, l, u, values_of_b_vecotor) #loest das LGS mit eigener Funktion
-      
+
     maximum = max([abs(e-hat_u[i]) for i,e in enumerate(loesung)])
     return maximum
 
 
-def plotter(x_values : list, plots : list):
+def plotter(x_values : list, plots : list, labels : list, linestyles : list, colors : list):
     '''plots provided lists of plots relative to provided list x_values
 
     Parameters
     ----------
-    x_values : list
-        list of values for the x-axis
-    plots : list
+    x_values : list of 3 lists of int or float
+        list of lists of values for the x-axis
+    plots : list of 3 lists of int or float
         list of lists of y-values for plots
     '''
     # create the plot
@@ -217,7 +217,7 @@ def plotter(x_values : list, plots : list):
     plt.xscale("log")
     plt.yscale("log")
     #plt.title(f"{num}. Dimension", fontsize=20)
-    plt.ylabel("maximum error", fontsize = 20, rotation = 0)
+    plt.ylabel("Eintraege", fontsize = 20, rotation = 0)
     ax1.yaxis.set_label_coords(-0.01, 1)
     plt.xlabel("N", fontsize = 20)
     ax1.xaxis.set_label_coords(1.01, -0.05)
@@ -225,35 +225,66 @@ def plotter(x_values : list, plots : list):
     ax1.grid()
 
     # plot data
-    plt.plot(x_values[0], plots[0], label = "d = 1", linewidth=2, linestyle="dashdot")
-    plt.plot(x_values[1], plots[1], label = "d = 2", linewidth=2, linestyle="dashdot")
-    plt.plot(x_values[2], plots[2], label = "d = 3", linewidth=2, linestyle="dashdot")
+    for i,e in enumerate(plots):
+        plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i], color=colors[i])
 
     plt.legend(fontsize=20, loc="upper left")
     plt.show()
 
+def graph():
+    x_values = np.logspace(0.4, x, dtype=int, num=n)
+    x_values = [[int(int(x)**3) for x in x_values], [int(int(x)**1.5) for x in x_values], [int(x) for x in x_values]]
+    data_lu = [[],[],[]]
+    data_sparse = [[], [], []]
 
+    for d in range(1, 4):
+        for n in x_values[d-1]:
+            mat = BlockMatrix(d, n)
+            absolute, _ = mat.eval_sparsity_lu()
+            abs_non_zero = (n-1)**d+2*d*(n-2)*(n-1)**(d-1)
+            data_lu[d-1] += [absolute]
+            data_sparse[d-1] += [abs_non_zero]
+
+    data = data_lu + data_sparse
+    labels = ["lu d=1", "lu d=2", "lu d=3", "sparse d=1", "sparse d=2", "sparse d=3"]
+    linestyles = ["dotted"]*3 + ["dashdot"]*3
+    colors = ["b", "r", "c"]*2
+
+    plotter(x_values, data, labels, linestyles, colors)
 
 def graph_error(u, pp_u):
-    d = [1, 2, 3]
-    n = list(range(2, 100, 4))
+    dim = [1, 2, 3]
+    n = np.logspace(2, 100, 20, dtype=int)
+    n = [int(e) for e in n]
     data = []
-    for e in d:
+    
+    hat_u = []
+    for i in range(1,1+(n-1)**d):
+        x = inv_idx(i,d,n)   
+        x = [j/n for j in x]
+        hat_u.append(bsp_1(x))
+        
+    for d in dim:
         data += [[]]
         solutions = np.array([])
-        for f in n:
-            block = BlockMatrix(e, f)
+        for e in n:
+            block = BlockMatrix(d, e)
             p_mat, l_mat, u_mat = block.get_lu()
-            disc_points = [inv_idx(m, e, f) for m in range(1, (f-1)**e+1)]
-            disc_points = [[x/f for x in y] for y in disc_points]
+            disc_points = [inv_idx(m, d, e) for m in range(1, (e-1)**d+1)]
+            disc_points = [[x/e for x in y] for y in disc_points]
+            print(hat_u == disc_points)
             np.append(solutions, linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])) # irgendwas ist hier falsch (da kommt ne leere liste raus)
-            data[e-1] += compute_error(d=e, n=f, hat_u=np.array(solutions), u=pp_u)
+            data[d-1] += compute_error(d=d, n=e, hat_u=np.array(solutions), u=pp_u)
 
     x_values = [[x-1 for x in n]]
     x_values += [[x**2 for x in x_values]]
     x_values += [[x**3 for x in x_values]]
 
-    plotter(x_values, data)
+    labels = [f"error d={d}" for d in dim]
+    linestyles = ["dashdot"]*3
+    colors = ["b", "r", "c"]
+
+    plotter(x_values, data, labels, linestyles, colors)
 
 
 
@@ -293,13 +324,13 @@ def main():
     #print(y , " BSP 1.--------")
     #z = pp_zu_bsp_1([1], 1)
     #print(z, "<----- pp_bs1")
-    n= 20
-    d = 2
-    values_of_u_vector = []
-    for i in range(1,1+(n-1)**d):
-        x = inv_idx(i,d,n)   
-        x = [j/n for j in x]
-        values_of_u_vector.append(bsp_1(x))
+    #n= 20
+    #d = 2
+    #values_of_u_vector = []
+    #for i in range(1,1+(n-1)**d):
+    #    x = inv_idx(i,d,n)   
+    #    x = [j/n for j in x]
+    #    values_of_u_vector.append(bsp_1(x))
 
 
 
