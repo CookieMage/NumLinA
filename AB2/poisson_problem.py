@@ -277,25 +277,20 @@ def pp_zu_bsp_1(x : np.array, k=1): #pylint: disable=invalid-name
 def main():
     """ Example of code that can be run using the provided functions
     """
+    print("\n-------------------------MAIN-START-------------------------\n")
+    print("Die Koordinaten [36, 23, 8, 1, 1] gehoeren bei 99 Unterintervallen zum",
+          f"{idx([36,23,8,1,1],99)}. Diskretisierungspunkt.")
+    print("Der 69420. Diskretisierungpunkt hat im 5-dimensionalen Raum und 99 Unterintervallen die",
+          f"Koordinaten {inv_idx(69420, 5, 99)}")
+    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
+    print("Der Verktor b aus dem Poisson Problem sieht folgendermaßen aus:",
+          rhs(d = 2, n = 3, f=f))
+    input_text_1 = "Es folgt eine graphische Darstellung der Fehler der numerischen Loesung "
+    input_text_1 += "des Poisson Problems. Dies kann einen Moment dauern. "
+    input_text_1 += "Bitte bestaetigen Sie dies mit ENTER."
+    input(input_text_1)
     graph_error(pp_zu_bsp_1, bsp_1)
-   # print(idx([36,23,8,1,1],99))
-    #print(inv_idx(69420,5,99))
-
-    #f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
-
-    #print(rhs(d = 2, n = 3, f=f))
-    #y= bsp_1([1],1)
-    #print(y , " BSP 1.--------")
-    #z = pp_zu_bsp_1([1], 1)
-    #print(z, "<----- pp_bs1")
-    #n= 20
-    #d = 2
-    #values_of_u_vector = []
-    #for i in range(1,1+(n-1)**d):
-    #    x = inv_idx(i,d,n)
-    #    x = [j/n for j in x]
-    #    values_of_u_vector.append(bsp_1(x))
-
+    print("\n--------------------------MAIN-END--------------------------\n")
 
 
 if __name__ == "__main__":

@@ -288,23 +288,52 @@ def graph_lu(maximum=1, n=10):  #pylint: disable=invalid-name
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
-    mat_1 = BlockMatrix(2, 3)
-
-    print(mat_1.get_sparse().toarray())
-    #print(mat_1.eval_sparsity())
-
-    #mat_2 = BlockMatrix(3, 5)
-
-    #print(mat_2.get_sparse().toarray())
-    #print(mat_2.eval_sparsity())
-
-    #lu = mat_1.get_lu()
-    #print(lu[0], "\n", lu[1])
-    #sparsity_lu = mat_1.eval_sparsity_lu()
-    #print(sparsity_lu)
-    graph_sparse_dense(dim = [2])
-    #print("Nun folgt die LU-Zerlegung der Matrix.")
-    #graph_lu()
+    d, n = None, None
+    print("\n-------------------------MAIN-START-------------------------\n")
+    print("Es wird empfohlen d<3 und n<4 zu waehlen, um das Lesen des Terminals zu vereinfachen.")
+    while not isinstance(d, int):
+        input_text_d = "Bitte geben Sie eine Dimension fuer die zu erstellende Matrix an,"
+        input_text_d += " wobei gilt 0<d<4.\n"
+        d = input(input_text_d)
+        try:
+            d=int(d)
+            if 0>=d or d>=4:
+                d = "Mach ich nicht"
+        except ValueError:
+            continue
+    while not isinstance(n, int):
+        input_text_n = "Bitte geben Sie die Anzahl an Approximationsintervallen fuer die zu "
+        input_text_n += "erstellende Matrix an, wobei gilt 1<n.\n"
+        n = input(input_text_n)
+        try:
+            n = int(n)
+            if 0>=n:
+                n = "Mach ich nicht"
+        except ValueError:
+            continue
+    dimensions = [1,2,3]
+    mat_1 = BlockMatrix(d, n)
+    sparsity_mat_1 = mat_1.eval_sparsity()
+    plu = mat_1.get_lu()
+    sparsity_plu = mat_1.eval_sparsity_lu()
+    print("Die Matrix sieht folgendermaßen aus:\n", mat_1.get_sparse().toarray())
+    print(f"Sie hat {sparsity_mat_1[0]} Nicht-Null-Eintraege. Das entspricht",
+          f"{sparsity_mat_1[1]*100}% aller Eintraege.")
+    input("Als naechstes wird die LU-Zerlegung ausgegeben. Bitte bestaetigen Sie mit ENTER.")
+    print("Die LU-Zerlegung der Matrix sieht folgendermaßen aus:",
+          f"\n P=\n{plu[0]}\nL=\n{plu[1]}\nU=\n{plu[2]}")
+    print("Wenn P, L und U in einer Matrix gespeichert werden, so hat diese ",
+          f"{sparsity_plu[0]} Nicht-Null-Eintraege. Das sind {sparsity_plu[1]*100}% der Matrix.")
+    input_text_1 = "Es wird nun eine Grafik zur Darstellung der Nicht-Null-Eintraege bezueglich "
+    input_text_1 += "verschiedener Dimensionen und Intervall-Anzahlen erstellt. "
+    input_text_1 += "Bitte bestaetigen Sie dies mit ENTER."
+    input(input_text_1)
+    graph_sparse_dense(dim = dimensions)
+    input_text_2 = "Das gleiche geschieht nun zur Anzahl der Nicht-Null-Eintraege der "
+    input_text_2 += "LU-Zerlegung. Bitte bestaetigen Sie mit ENTER."
+    input(input_text_2)
+    graph_lu()
+    print("\n--------------------------MAIN-END--------------------------\n")
 
 
 if __name__ == "__main__":

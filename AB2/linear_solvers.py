@@ -90,39 +90,25 @@ def solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):   
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
-    # p = np.array([[0,0,0,1],
-    #               [0,0,1,0],
-    #               [1,0,0,0],
-    #               [0,1,0,0]])
-    # b = np.array([-10,1,-8,-8,])
-    # u= np.array([[12,4,4,4],
-    #              [0,12,0,-8],
-    #              [0,0,-4,8],
-    #              [0,0,0,-8]])
-    # l= np.array([[1,0,0,0],
-    #              [0,1,0,0],
-    #              [1/4,1/2,1,0],
-    #              [1/2,1/4,-1/4,1]])
-    true = True
-    if true:
-        p = np.array([[1,0,0],  #pylint: disable=invalid-name
-                     [0,0,1],
-                     [0,1,0]])
-        b= np.array([1,1,1])    #pylint: disable=invalid-name
-        u = np.array([[3,2,1],  #pylint: disable=invalid-name
-                      [0,2,4],
-                      [0,0,-6]])
-        l = np.array([[1,0,0],  #pylint: disable=invalid-name
-                      [7,1,0],
-                      [9,2,1]])
+    p = np.array([[0,0,0,1],        #pylint: disable=invalid-name
+                  [0,0,1,0],
+                  [1,0,0,0],
+                  [0,1,0,0]])
+    b = np.array([-10,1,-8,-8,])    #pylint: disable=invalid-name
+    u= np.array([[12,4,4,4],        #pylint: disable=invalid-name
+                 [0,12,0,-8],
+                 [0,0,-4,8],
+                 [0,0,0,-8]])
+    l= np.array([[1,0,0,0],         #pylint: disable=invalid-name
+                 [0,1,0,0],
+                 [1/4,1/2,1,0],
+                 [1/2,1/4,-1/4,1]])
+    same = (solve_lu(p,l,u,b) == solve_lu_alt(p,l,u,b))
+    print("\n-------------------------MAIN-START-------------------------\n")
+    print("Die Loesung x des linearen Systems Ax=b lautet: ", solve_lu(p, l, u, b))
+    print("Diese Loesung stimmt mit unserer alternativen Methode ueberein: ", all(same))
+    print("\n--------------------------MAIN-END--------------------------\n")
 
-    print("Loesung von uns" , solve_lu_alt(p, l, u, b))
-    print("Loesung von scipy", solve_lu(p, l, u, b))
-    f=[1.66666666666666, -1.6666666666 , -0.66666666666]    #pylint: disable=invalid-name
-    test_a = np.dot(p,l)
-    test_b = np.dot(test_a,u)
-    test_c = np.dot(test_b,f)
-    print(test_c)
 
 if __name__ == "__main__":
     main()

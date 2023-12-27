@@ -51,7 +51,18 @@ def plotter(x_values : list, plots : list, labels : list, linestyles : list, col
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
-    pass
+    x_values = list(range(1, 100))
+    y_values = [[x for x in x_values]]
+    y_values += [[x**2 for x in x_values]]
+    y_values += [[1/x for x in x_values]]
+    x_values = [x_values]*3
+    labels = ["f(x)=x", "f(x)=x^2", "f(x)=1/x"]
+    linestyles = ["dotted", "dashed", "dashdot"]
+    colors = ["b", "r", "c"]
+    print("\n-------------------------MAIN-START-------------------------\n")
+    print(f"Dies ist eine mittels plotter() erstellte Graphik, welche {labels} darstellt.")
+    plotter(x_values, y_values, labels, linestyles, colors)
+    print("\n--------------------------MAIN-END--------------------------\n")
 
 if __name__ == "__main__":
     main()
