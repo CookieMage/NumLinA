@@ -138,12 +138,10 @@ def Hallo(d: int , n : int ):
 
 def main():
 
-    print(Hallo(1,100))
-
     N_plot = []
     M_plot = []
-    d = 2 
-    n = np.logspace(0.4, 1.7, 20, dtype=int)
+    d = 2
+    n = np.logspace(0.4, 2.0, 100, dtype=int)
     n = [int(e) for e in n]
     for e in n:
         print(e)
