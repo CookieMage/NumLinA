@@ -5,7 +5,6 @@ Fragen:
 
 - pp kommentieren
 - experiments kommentieren
-- main() mit Nutzerbegleitung im cmd-prompt
 - 2.9
 
 Done

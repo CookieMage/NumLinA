@@ -14,11 +14,7 @@ main()
 import time
 import numpy as np
 import matplotlib.pyplot as plt
-import numpy as np
 import linear_solvers as linsol
-from block_matrix import BlockMatrix
-import poisson_problem as pp
-from plotter import plotter
 
 def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
     '''creates a plot representing the number of non-zero-entries for sparse and non-sparse
@@ -72,7 +68,7 @@ def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
     plt.show()
 
 
-def comp_alt_solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):
+def comp_alt_solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):  #pylint: disable=invalid-name
     '''function for comparing the runtime of linsol.solve_lu() and linsol.solve_lu_alt()
 
     Parameters
@@ -94,18 +90,20 @@ def comp_alt_solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.nda
     start = time.time()
     linsol.solve_lu(p, l, u, b)
     end = time.time()
-    
+
     start_alt = time.time()
     linsol.solve_lu_alt(p, l, u, b)
     end_alt = time.time()
-    
+
     time_alt = end_alt - start_alt
     time_normal = end - start
-    
+
     return time_alt-time_normal
 
 
 def main():
+    '''Example of code that can be run using the provided class and methods
+    '''
     p = np.array([[1,0,0],  #pylint: disable=invalid-name
                   [0,0,1],
                   [0,1,0]])

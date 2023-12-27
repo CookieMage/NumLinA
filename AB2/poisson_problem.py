@@ -200,8 +200,29 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
     return maximum
 
 
-def graph_error_helper(d: int , n : int, pp_u : callable, u: callable):
-    h = 1/n
+def graph_error_helper(d: int , n : int, pp_u : callable, u: callable): #pylint: disable=invalid-name
+    '''support function for graph_error()
+
+    Parameters
+    ----------
+    d : int
+        Dimension of the space
+    n : int
+        Number of intersections in each dimension
+    pp_u : callable
+        function used to creat Finite difference approximation of the solution of the Poisson
+        problem at the discretization points
+    u : callable
+        Solution of the Poisson problem
+        The calling signature is 'u(x)'. Here 'x' is an array_like of 'numpy'.
+        The return value is a scalar.
+
+    Returns
+    -------
+    float
+        maximum error for one d and one n
+    '''
+    h = 1/n #pylint: disable=invalid-name
     # create coefficient matrix A for given n and d
     mat = BlockMatrix(d,n)
     mat_p, mat_l, mat_u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
@@ -225,7 +246,7 @@ def graph_error_helper(d: int , n : int, pp_u : callable, u: callable):
     return maximum
 
 
-def graph_error(n_max : int, pp_u : callable, u: callable):
+def graph_error(n_max : int, pp_u : callable, u: callable): #pylint: disable=invalid-name
     '''graphs the error of the numerical solution of the Poisson problem
     with respect to the infinity-norm
 
@@ -240,13 +261,13 @@ def graph_error(n_max : int, pp_u : callable, u: callable):
     '''
     x_values = [[],[],[]]
     y_values = [[],[],[]]
-    n = np.logspace(0.4, n_max, 20, dtype=int)
-    n = [int(e) for e in n]
+    n = np.logspace(0.4, n_max, 20, dtype=int)  #pylint: disable=invalid-name
+    n = [int(e) for e in n] #pylint: disable=invalid-name
     labels = []
-    for d in [1,2,3]:
-        for e in n:
-            x = (e-1)**d
-            y = graph_error_helper(d,e, pp_u, u)
+    for d in [1,2,3]:   #pylint: disable=invalid-name
+        for e in n: #pylint: disable=invalid-name
+            x = (e-1)**d    #pylint: disable=invalid-name
+            y = graph_error_helper(d,e, pp_u, u)    #pylint: disable=invalid-name
             x_values[d-1].append(x)
             y_values[d-1].append(y)
         labels += [f"Maximalfehler d={d}"]
@@ -287,7 +308,7 @@ def main():
           f"{idx([36,23,8,1,1],99)}. Diskretisierungspunkt.")
     print("Der 69420. Diskretisierungpunkt hat im 5-dimensionalen Raum und 99 Unterintervallen die",
           f"Koordinaten {inv_idx(69420, 5, 99)}")
-    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment
+    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment, disable=invalid-name
     print("Der Verktor b aus dem Poisson Problem sieht folgendermaßen aus:",
           rhs(d = 2, n = 3, f=f))
     input_text_1 = "Es folgt eine graphische Darstellung der Fehler der numerischen Loesung "

@@ -18,8 +18,8 @@ import numpy as np
 from scipy import linalg
 
 def solve_lu_alt(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray):   #pylint: disable=invalid-name
-    """ alternative function that solves the linear system Ax = b via forward and backward substitution
-    given the decomposition A = p * l * u
+    """ alternative function that solves the linear system Ax = b via forward and backward
+    substitution given the decomposition A = p * l * u
 
     Parameters
     ----------

@@ -52,7 +52,7 @@ def main():
     '''Example of code that can be run using the provided class and methods
     '''
     x_values = list(range(1, 100))
-    y_values = [[x for x in x_values]]
+    y_values = [x_values]
     y_values += [[x**2 for x in x_values]]
     y_values += [[1/x for x in x_values]]
     x_values = [x_values]*3

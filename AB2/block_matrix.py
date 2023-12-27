@@ -260,7 +260,7 @@ def graph_lu(maximum=1, n=10):  #pylint: disable=invalid-name
     # setup later computations
     x_values = [[int(x)**3 for x in x_values], [int(x**1.5) for x in x_values],
                 [int(x) for x in x_values]]
-    
+
     # create lists for saving data for the plot
     data_lu = [[],[],[]]
     data_sparse = [[], [], []]
@@ -290,27 +290,27 @@ def graph_lu(maximum=1, n=10):  #pylint: disable=invalid-name
 def main():
     '''Example of code that can be run using the provided class and methods
     '''
-    d, n = None, None
+    d, n = None, None   #pylint: disable=invalid-name
     print("\n-------------------------MAIN-START-------------------------\n")
     print("Es wird empfohlen d<3 und n<4 zu waehlen, um das Lesen des Terminals zu vereinfachen.")
     while not isinstance(d, int):
         input_text_d = "Bitte geben Sie eine Dimension fuer die zu erstellende Matrix an,"
         input_text_d += " wobei gilt 0<d<4.\n"
-        d = input(input_text_d)
+        d = input(input_text_d) #pylint: disable=invalid-name
         try:
-            d=int(d)
+            d=int(d)    #pylint: disable=invalid-name
             if 0>=d or d>=4:
-                d = "Mach ich nicht"
+                d = "Mach ich nicht"    #pylint: disable=invalid-name
         except ValueError:
             continue
     while not isinstance(n, int):
         input_text_n = "Bitte geben Sie die Anzahl an Approximationsintervallen fuer die zu "
         input_text_n += "erstellende Matrix an, wobei gilt 1<n.\n"
-        n = input(input_text_n)
+        n = input(input_text_n) #pylint: disable=invalid-name
         try:
-            n = int(n)
+            n = int(n)  #pylint: disable=invalid-name
             if 0>=n:
-                n = "Mach ich nicht"
+                n = "Mach ich nicht"    #pylint: disable=invalid-name
         except ValueError:
             continue
     dimensions = [1,2,3]
