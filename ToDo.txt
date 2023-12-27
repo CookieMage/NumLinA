@@ -3,6 +3,7 @@ https://docs.scipy.org/doc/scipy/reference/sparse.html
 
 Fragen:
 
+
 - pp kommentieren
 - experiments kommentieren
 - 2.9

@@ -15,6 +15,57 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import linear_solvers as linsol
+import block_matrix
+import poisson_problem as pp
+from plotter import plotter
+
+FAST_MODE = True
+
+def graph_approx_anal(pp_u : callable, u : callable, n=20, d = 1):
+    h = 1/n #pylint: disable=invalid-name
+    # create coefficient matrix A for given n and d
+    mat = block_matrix.BlockMatrix(d,n)
+    mat_p, mat_l, mat_u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
+
+    #b_vector = pp.rhs(n,d,pp.pp_zu_bsp_1)
+    b_vector = []
+    disc_points = []
+    for i in range(1, (n-1)**d+1):
+        # create list of discretization points
+        x = pp.inv_idx(i,d,n)  #pylint: disable=invalid-name
+        x = [j/n for j in x]    #pylint: disable=invalid-name
+        #calculate right side of f(x)*(-h^2)=b
+        b_vector.append(pp_u(x)*(-h**2))
+        disc_points.append(x)
+
+    # use fast mode or not as specified above
+    if FAST_MODE:
+        loesung = linsol.solve_lu(mat_p, mat_l, mat_u, b_vector)
+    else:
+        loesung = linsol.solve_lu_alt(mat_p, mat_l, mat_u, b_vector)
+
+    labels = ["numerische Loesung", "analytische Loesung"]
+    linestyles = ["solid", "dashdot"]
+    colors = ["b", "r"]
+    
+    # create the plot
+    _, ax1 = plt.subplots(figsize=(5, 5))
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
+    plt.ylabel("y", fontsize = 20, rotation = 0)
+    ax1.yaxis.set_label_coords(-0.01, 1)
+    plt.xlabel("x", fontsize = 20)
+    ax1.xaxis.set_label_coords(1.01, -0.05)
+    ax1.yaxis.get_offset_text().set_fontsize(20)
+    ax1.grid()
+    
+    for i,e in enumerate([loesung, [u(x) for x in disc_points]]):    #pylint: disable=invalid-name
+        plt.plot(disc_points, e, label = labels[i], linewidth=2, linestyle=linestyles[i],
+                 color=colors[i])
+
+    plt.legend(fontsize=20)
+    plt.show()
+
 
 def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
     '''creates a plot representing the number of non-zero-entries for sparse and non-sparse
@@ -119,7 +170,7 @@ def main():
     faster = 0
     slower = 0
     # we can statistically test which function is faster most of the time
-    for _ in range(1000):
+    for _ in range(10000):
         time_dif = comp_alt_solve_lu(p, l, u, b)
         if time_dif < 0:
             # add 1 if the alternative function ist faster
@@ -140,13 +191,29 @@ def main():
         except ValueError:
             continue
     graph_sparse_dense(d=dim)
-    print("Nun wird unsere alternative Implementation von solve_lu() mit der ",
+
+    print("\nEs folgt die Graphik der Approximation des Poisson Problems und die analytische",
+          "Loesung von diesem.")
+    input("Bitte bestaetigen Sie dies mit ENTER")
+    graph_approx_anal(pp.pp_zu_bsp_1, pp.bsp_1)
+
+    print("\nEs folgt die Graphik, welche die Nicht-Null-Eintraege der LU-Zerlegung",
+          "und der Matrix selbst vergleicht.")
+    input("Bitte bestaetigen Sie dies mit ENTER")
+    block_matrix.graph_lu()
+    
+    input("Es folgen die sparse-vs-dense-Graphiken fue verschieden Dimensionen. Bitte bestaetigen Sie mit dies ENTER.")
+    block_matrix.graph_sparse_dense(dim=[1])
+    block_matrix.graph_sparse_dense(dim=[2])
+    block_matrix.graph_sparse_dense(dim=[3])
+    block_matrix.graph_sparse_dense(dim=[1,2,3])
+
+    print("\nNun wird unsere alternative Implementation von solve_lu() mit der ",
           "Standardimplementation verglichen:")
     text_0 = "Die alternative Funktion war in diesem Test "
-    text_1 = text_0 + f"schneller in {faster/10}% der Versuche.\n"
-    text_1 += text_0 + f"langsamer in {slower/10}% of der Versuche.\n"
-    text_1 += text_0 + f"gleichschnell wie die Standardimplementation in {same/10}% der Versuche.\n"
-
+    text_1 = text_0+f"schneller in {faster/100}% der Versuche.\n"
+    text_1 += text_0+f"langsamer in {slower/100}% of der Versuche.\n"
+    text_1 += text_0+f"gleichschnell wie die Standardimplementation in {same/100}% der Versuche.\n"
     print(text_1)
     print("\n--------------------------MAIN-END--------------------------\n")
 
