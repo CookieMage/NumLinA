@@ -207,15 +207,15 @@ def main():
 
     print("\nEs folgt die Graphik der Approximation des Poisson Problems und die analytische",
           "Loesung von diesem.")
-    input("Bitte bestaetigen Sie dies mit ENTER")
+    input("Bitte bestaetigen Sie dies mit ENTER.")
     graph_approx_anal(pp.pp_zu_bsp_1, pp.bsp_1)
 
     print("\nEs folgt die Graphik, welche die Nicht-Null-Eintraege der LU-Zerlegung",
           "und der Matrix selbst vergleicht.")
-    input("Bitte bestaetigen Sie dies mit ENTER")
+    input("Bitte bestaetigen Sie dies mit ENTER.")
     block_matrix.graph_lu()
 
-    print("\nEs folgen die sparse-vs-dense-Graphiken fue verschieden Dimensionen.")
+    print("\nEs folgen die sparse-vs-dense-Graphiken fuer verschieden Dimensionen.")
     input("Bitte bestaetigen Sie mit dies ENTER.")
     block_matrix.graph_sparse_dense(dim=[1])
     block_matrix.graph_sparse_dense(dim=[2])
