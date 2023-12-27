@@ -6,7 +6,7 @@ solution of the Poisson problem.
 classes
 -------
 BlockMatrix
-    class for representing matrices used to solve the poisson-problem
+    class for representing matrices used to solve the Poisson problem
 
 functions
 ---------

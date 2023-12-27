@@ -186,32 +186,21 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
     if not isinstance(n, int):
         raise TypeError('n must be an int')
 
-    h = 1/n #pylint: disable=invalid-name
-    b_vecotor = []
+    loesung = []
 
     for i in range(1, (n-1)**d+1):
         # create list of discretization points
         x = inv_idx(i,d,n)  #pylint: disable=invalid-name
         x = [j/n for j in x]    #pylint: disable=invalid-name
         # calculate right side of f(x)*(-h^2)=b
-        b_vecotor.append(u(x)*(-h**2))
-
-    # create coefficient matrix A for given n and d
-    mat = BlockMatrix(d,n)
-    p, l, u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
-
-    # use fast mode or not as specified above
-    if FAST_MODE:
-        loesung = linsol.solve_lu(p, l, u, b_vecotor)
-    else:
-        loesung = linsol.solve_lu_alt(p, l, u, b_vecotor)
+        loesung.append(u(x))
 
     # returns maximum difference between corresponding entries of loesung and hat_u
     maximum = max(abs(e-hat_u[i]) for i,e in enumerate(loesung))  #pylint: disable=invalid-name
     return maximum
 
 
-def graph_error(u : callable, pp_u : callable):   #pylint: disable=invalid-name
+def graph_error(pp_u : callable, u : callable):   #pylint: disable=invalid-name
     '''graphs the error of the numerical solution of the Poisson problem
     with respect to the infinity-norm
 
@@ -224,7 +213,7 @@ def graph_error(u : callable, pp_u : callable):   #pylint: disable=invalid-name
     '''
     dim = [1, 2, 3]
     # create logarithmic list of int from 10^0.4 to 10^maximum
-    n = np.logspace(0.4, 1.4, 5, dtype=int) #pylint: disable=invalid-name
+    n = np.logspace(0.4, 1.4, 40, dtype=int) #pylint: disable=invalid-name
     # convert numpy.int to int in order to prevent stackoverflow
     n = [int(e) for e in n] #pylint: disable=invalid-name
     data = []
@@ -239,33 +228,39 @@ def graph_error(u : callable, pp_u : callable):   #pylint: disable=invalid-name
             # creat list of discretization points
             disc_points = [inv_idx(m, d, e) for m in range(1, (e-1)**d+1)]
             disc_points = [[x/e for x in y] for y in disc_points]
-            
+
             # solve Ax=b for x
             solutions = linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])
             # save error of this calculation
             data[d-1] = np.append(data[d-1], compute_error(d=d, n=e, hat_u=np.array(solutions),
-                                                           u=pp_u))
+                                                           u=u))
 
-    x_values = n
-    x_values = [[int(x)**3 for x in x_values],
-                [int(int(x)**1.5) for x in x_values],
-                [int(x) for x in x_values]]
+    # create a list formated for use in plotter()
+    x_values = [[int(x)**3 for x in n],
+                [int(int(x)**1.5) for x in n],
+                [int(x) for x in n]]
 
+    # create lists used for plotter()
     labels = [f"error d={d}" for d in dim]
     linestyles = ["dashdot"]*3
     colors = ["b", "r", "c"]
 
+    # plot graph
     plotter(x_values, data, labels, linestyles, colors)
 
 
 
-def bsp_1(x : np.array, k=1): #pylint: disable=missing-function-docstring, disable=invalid-name
+def bsp_1(x : np.array, k=1): #pylint: disable=invalid-name
+    ''' solution to the Poisson problem of u
+    '''
     y = 1   #pylint: disable=invalid-name
     for e in x: #pylint: disable=invalid-name
         y = y * e * np.sin(k * np.pi * e)   #pylint: disable=invalid-name
     return y
 
-def pp_zu_bsp_1(x : np.array, k=1): #pylint: disable=missing-function-docstring, disable=invalid-name
+def pp_zu_bsp_1(x : np.array, k=1): #pylint: disable=invalid-name
+    ''' Poisson problem of u
+    '''
     z = 0   #pylint: disable=invalid-name
     for i,e in enumerate(x):    #pylint: disable=invalid-name
         y = k * np.pi * (2 * np.cos(k * np.pi * e)-k * np.pi * e * np.sin(k * np.pi *e))    #pylint: disable=invalid-name

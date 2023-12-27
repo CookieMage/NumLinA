@@ -40,7 +40,7 @@ def solve_lu_alt(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.ndarray)
     p_t = p.transpose()
     z = p_t.dot(b)  #pylint: disable=invalid-name
 
-    #Lösen von Ly = z rekrusiv
+    #Loesen von Ly = z rekrusiv
     y = [0] * len(b)    #pylint: disable=invalid-name
     y[0] = z[0]/ l[0][0]
     for i in range(1,len(b)):
@@ -116,8 +116,8 @@ def main():
                       [7,1,0],
                       [9,2,1]])
 
-    print("Lösung von uns" , solve_lu_alt(p, l, u, b))
-    print("Lösung von scipy", solve_lu(p, l, u, b))
+    print("Loesung von uns" , solve_lu_alt(p, l, u, b))
+    print("Loesung von scipy", solve_lu(p, l, u, b))
     f=[1.66666666666666, -1.6666666666 , -0.66666666666]    #pylint: disable=invalid-name
     test_a = np.dot(p,l)
     test_b = np.dot(test_a,u)
