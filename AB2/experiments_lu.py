@@ -79,7 +79,7 @@ def graph_approx_anal(pp_u : callable, u : callable, n=20, d = 1):  #pylint: dis
     plt.show()
 
 
-def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
+def graph_sparse_dense(d=1, maximum=5, num=25): #pylint: disable=invalid-name
     '''creates a plot representing the number of non-zero-entries for sparse and non-sparse
     matrices of type BlockMatrix; the data is calculated to reduce runtime and needed resources;
     additional graphs are plotted in order to show the space complexity class
@@ -94,7 +94,7 @@ def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
         describes the number of datapoints for each graph, by default 25
     '''
     # create list for plotting the data
-    x_values = np.logspace(0.4, maximum, dtype=int, num=n)
+    x_values = np.logspace(0.4, maximum, dtype=int, num=num)
     x_values = [int(x)**d for x in x_values]
 
     data = [[],[],[],[]]
@@ -194,6 +194,7 @@ def main():
 
     print("\n-------------------------MAIN-START-------------------------\n")
     dim = None
+    print("Es wird nun der Speicherplatzbedarf von sparse und dense Matrizen verglichen.")
     while not isinstance(dim, int):
         dim = input("Fuer welche Dimension soll die sparsity geplottet werden? (0<d<4)\n")
         try:
@@ -214,7 +215,7 @@ def main():
     input("Bitte bestaetigen Sie dies mit ENTER")
     block_matrix.graph_lu()
 
-    print("Es folgen die sparse-vs-dense-Graphiken fue verschieden Dimensionen.")
+    print("\nEs folgen die sparse-vs-dense-Graphiken fue verschieden Dimensionen.")
     input("Bitte bestaetigen Sie mit dies ENTER.")
     block_matrix.graph_sparse_dense(dim=[1])
     block_matrix.graph_sparse_dense(dim=[2])
