@@ -206,14 +206,14 @@ def graph_error(pp_u : callable, u : callable):   #pylint: disable=invalid-name
 
     Parameters
     ----------
-    u : callable
-        function that is used for the numerical solution of the Poisson problem
     pp_u : callable
+        function that is used for the numerical solution of the Poisson problem
+    u : callable
         analytic solution of the Poisson problem
     '''
     dim = [1, 2, 3]
     # create logarithmic list of int from 10^0.4 to 10^maximum
-    n = np.logspace(0.4, 1.4, 40, dtype=int) #pylint: disable=invalid-name
+    n = np.logspace(0.4, 1.4, 20, dtype=int) #pylint: disable=invalid-name
     # convert numpy.int to int in order to prevent stackoverflow
     n = [int(e) for e in n] #pylint: disable=invalid-name
     data = []
@@ -277,7 +277,7 @@ def pp_zu_bsp_1(x : np.array, k=1): #pylint: disable=invalid-name
 def main():
     """ Example of code that can be run using the provided functions
     """
-    graph_error(bsp_1, pp_zu_bsp_1)
+    graph_error(pp_zu_bsp_1, bsp_1)
    # print(idx([36,23,8,1,1],99))
     #print(inv_idx(69420,5,99))
 

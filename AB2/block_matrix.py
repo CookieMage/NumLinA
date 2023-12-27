@@ -166,14 +166,6 @@ class BlockMatrix:
             upper triangular matrix of LU-decomposition
         """
         return linalg.lu(self.a_d.toarray(), permute_l=False)
-        # Since these matrices have no entries equal to 0 on the main diagonal no swaps are needed
-        #U = self.a_d.tocsc()
-        #entry_list = []
-        #for k in range(self.a_d.shape[0]):
-        #    for l in range(k + 1, self.a_d.shape[0]):
-        #        mul = U[l, k] / U[k, k]
-        #        entry_list += [(k, l, mul)]
-        #        U = add_row_to_row(U, l, k, -mul)
 
 
     def eval_sparsity_lu(self):
