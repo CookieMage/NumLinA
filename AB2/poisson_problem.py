@@ -308,8 +308,9 @@ def main():
           f"{idx([36,23,8,1,1],99)}. Diskretisierungspunkt.")
     print("Der 69420. Diskretisierungpunkt hat im 5-dimensionalen Raum und 99 Unterintervallen die",
           f"Koordinaten {inv_idx(69420, 5, 99)}")
-    f = lambda array: (array[0]*array[1])/array[1]**2 #pylint: disable=unnecessary-lambda-assignment, disable=invalid-name
-    print("Der Verktor b aus dem Poisson Problem sieht folgendermaßen aus:",
+    f = lambda array: (array[0]*array[1])/2 #pylint: disable=unnecessary-lambda-assignment, disable=invalid-name
+    print("Der Verktor b aus dem Poisson Problem in welchem die Funktion nach dem Laplace-Operator",
+          "die Durchschnitts-Funktion in der Dimension 2 ist sieht folgendermaßen aus:",
           rhs(d = 2, n = 3, f=f))
     input_text_1 = "Es folgt eine graphische Darstellung der Fehler der numerischen Loesung "
     input_text_1 += "des Poisson Problems. Dies kann einen Moment dauern. "

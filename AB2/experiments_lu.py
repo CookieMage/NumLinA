@@ -17,11 +17,23 @@ import matplotlib.pyplot as plt
 import linear_solvers as linsol
 import block_matrix
 import poisson_problem as pp
-from plotter import plotter
 
 FAST_MODE = True
 
-def graph_approx_anal(pp_u : callable, u : callable, n=20, d = 1):
+def graph_approx_anal(pp_u : callable, u : callable, n=20, d = 1):  #pylint: disable=(invalid-name, disable=too-many-locals
+    '''creates a plot representing the approximative and analytic solution of the Poisson-problem
+
+    Parameters
+    ----------
+    pp_u : callable
+        functions within the Poisson-problem
+    u : callable
+        analyitic solution of the Poisson-problem
+    n : int, optional
+        number of intervals of approximation, by default 20
+    d : int, optional
+        dimension of the space, by default 1
+    '''
     h = 1/n #pylint: disable=invalid-name
     # create coefficient matrix A for given n and d
     mat = block_matrix.BlockMatrix(d,n)
@@ -47,7 +59,7 @@ def graph_approx_anal(pp_u : callable, u : callable, n=20, d = 1):
     labels = ["numerische Loesung", "analytische Loesung"]
     linestyles = ["solid", "dashdot"]
     colors = ["b", "r"]
-    
+
     # create the plot
     _, ax1 = plt.subplots(figsize=(5, 5))
     plt.xticks(fontsize=17)
@@ -58,7 +70,7 @@ def graph_approx_anal(pp_u : callable, u : callable, n=20, d = 1):
     ax1.xaxis.set_label_coords(1.01, -0.05)
     ax1.yaxis.get_offset_text().set_fontsize(20)
     ax1.grid()
-    
+
     for i,e in enumerate([loesung, [u(x) for x in disc_points]]):    #pylint: disable=invalid-name
         plt.plot(disc_points, e, label = labels[i], linewidth=2, linestyle=linestyles[i],
                  color=colors[i])
@@ -201,8 +213,9 @@ def main():
           "und der Matrix selbst vergleicht.")
     input("Bitte bestaetigen Sie dies mit ENTER")
     block_matrix.graph_lu()
-    
-    input("Es folgen die sparse-vs-dense-Graphiken fue verschieden Dimensionen. Bitte bestaetigen Sie mit dies ENTER.")
+
+    print("Es folgen die sparse-vs-dense-Graphiken fue verschieden Dimensionen.")
+    input("Bitte bestaetigen Sie mit dies ENTER.")
     block_matrix.graph_sparse_dense(dim=[1])
     block_matrix.graph_sparse_dense(dim=[2])
     block_matrix.graph_sparse_dense(dim=[3])
