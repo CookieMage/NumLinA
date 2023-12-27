@@ -18,6 +18,7 @@ import numpy as np
 import linear_solvers as linsol
 from block_matrix import BlockMatrix
 import poisson_problem as pp
+from plotter import plotter
 
 def graph_sparse_dense(d=1, maximum=5, n=25): #pylint: disable=invalid-name
     '''creates a plot representing the number of non-zero-entries for sparse and non-sparse
@@ -105,31 +106,62 @@ def comp_alt_solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.nda
 
 FAST_MODE=True
 
-def main():
-    '''Example of code that can be run using the provided class and methods
+def Hallo(d: int , n : int ):
     '''
-    d, n = 2, 5
+    ''' 
     h = 1/n
     # create coefficient matrix A for given n and d
     mat = BlockMatrix(d,n)
     mat_p, mat_l, mat_u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
 
+    #b_vector = pp.rhs(n,d,pp.pp_zu_bsp_1)
     b_vector = []
     for i in range(1, (n-1)**d+1):
         # create list of discretization points
-        x = pp.inv_idx(i,d,n)  #pylint: disable=invalid-name
-        x = [j/n for j in x]    #pylint: disable=invalid-name
-        # calculate right side of f(x)*(-h^2)=b
-        b_vector.append(u(x)*(-h**2))
+         x = pp.inv_idx(i,d,n)  #pylint: disable=invalid-name
+         x = [j/n for j in x]    #pylint: disable=invalid-name
+         #calculate right side of f(x)*(-h^2)=b
+         b_vector.append(pp.pp_zu_bsp_1(x)*(-h**2))
 
     # use fast mode or not as specified above
     if FAST_MODE:
-        loesung = linsol.solve_lu(mat_p, mat_l, mat_u, b_vecotor)
+        loesung = linsol.solve_lu(mat_p, mat_l, mat_u, b_vector)
     else:
-        loesung = linsol.solve_lu_alt(mat_p, mat_l, mat_u, b_vecotor)
+        loesung = linsol.solve_lu_alt(mat_p, mat_l, mat_u, b_vector)
+
+    maximum = pp.compute_error(d,n,loesung,pp.bsp_1)
+    return maximum
+
+
+
+
+
+def main():
+
+    print(Hallo(1,100))
+
+    N_plot = []
+    M_plot = []
+    d = 2 
+    n = np.logspace(0.4, 1.7, 20, dtype=int)
+    n = [int(e) for e in n]
+    for e in n:
+        print(e)
+        N = (e-1)**d
+        M = Hallo(d,e)
+        N_plot.append(N)
+        M_plot.append(M)
+    print("N:" ,N_plot)
+    print("M:" , M_plot)
+    print(len(M_plot))
+    print(len(N_plot))
+
+    plotter([N_plot],[M_plot], ["Maximalfehler"], ["solid"],["b"])
+
     
-    pp.graph_error()
-    
+
+ 
+
     graph_sparse_dense(d=3)
 
     p = np.array([[1,0,0],  #pylint: disable=invalid-name
