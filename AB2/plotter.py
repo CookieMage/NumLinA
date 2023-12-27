@@ -42,10 +42,10 @@ def plotter(x_values : list, plots : list, labels : list, linestyles : list, col
 
     # plot datasets
     for i,e in enumerate(plots):    #pylint: disable=invalid-name
-        plt.plot(x_values[0], e, label = labels[i], linewidth=2, linestyle=linestyles[i],
+        plt.plot(x_values[i], e, label = labels[i], linewidth=2, linestyle=linestyles[i],
                  color=colors[i])
 
-    plt.legend(fontsize=20, loc="upper left")
+    plt.legend(fontsize=20)
     plt.show()
 
 def main():

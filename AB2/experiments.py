@@ -104,64 +104,8 @@ def comp_alt_solve_lu(p : np.ndarray, l : np.ndarray, u : np.ndarray, b : np.nda
     
     return time_alt-time_normal
 
-FAST_MODE=True
-
-def Hallo(d: int , n : int ):
-    '''
-    ''' 
-    h = 1/n
-    # create coefficient matrix A for given n and d
-    mat = BlockMatrix(d,n)
-    mat_p, mat_l, mat_u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
-
-    #b_vector = pp.rhs(n,d,pp.pp_zu_bsp_1)
-    b_vector = []
-    for i in range(1, (n-1)**d+1):
-        # create list of discretization points
-         x = pp.inv_idx(i,d,n)  #pylint: disable=invalid-name
-         x = [j/n for j in x]    #pylint: disable=invalid-name
-         #calculate right side of f(x)*(-h^2)=b
-         b_vector.append(pp.pp_zu_bsp_1(x)*(-h**2))
-
-    # use fast mode or not as specified above
-    if FAST_MODE:
-        loesung = linsol.solve_lu(mat_p, mat_l, mat_u, b_vector)
-    else:
-        loesung = linsol.solve_lu_alt(mat_p, mat_l, mat_u, b_vector)
-
-    maximum = pp.compute_error(d,n,loesung,pp.bsp_1)
-    return maximum
-
-
-
-
 
 def main():
-
-    N_plot = []
-    M_plot = []
-    d = 2
-    n = np.logspace(0.4, 2.0, 100, dtype=int)
-    n = [int(e) for e in n]
-    for e in n:
-        print(e)
-        N = (e-1)**d
-        M = Hallo(d,e)
-        N_plot.append(N)
-        M_plot.append(M)
-    print("N:" ,N_plot)
-    print("M:" , M_plot)
-    print(len(M_plot))
-    print(len(N_plot))
-
-    plotter([N_plot],[M_plot], ["Maximalfehler"], ["solid"],["b"])
-
-    
-
- 
-
-    graph_sparse_dense(d=3)
-
     p = np.array([[1,0,0],  #pylint: disable=invalid-name
                   [0,0,1],
                   [0,1,0]])
@@ -187,12 +131,26 @@ def main():
         else:
             same += 1
 
-    print("-------------------------MAIN-START-------------------------")
-    text_1 = "\nThe alternative function was "
-    print(text_1 + f"faster in this test about {faster/10}% of the time.",
-          text_1 + f"slower in this test about {slower/10}% of the time.",
-          text_1 + f"as fast as the normal function in this test about {same/10}% of the time.")
-    print("\n--------------------------MAIN-END--------------------------")
+    print("\n-------------------------MAIN-START-------------------------\n")
+    dim = None
+    while not isinstance(dim, int):
+        dim = input("Fuer welche Dimension soll die sparsity geplottet werden? (0<d<4)\n")
+        try:
+            dim=int(dim)
+            if 1>dim or 3<dim:
+                dim = "Mach ich nicht"
+        except ValueError:
+            continue
+    graph_sparse_dense(d=dim)
+    print("Nun wird unsere alternative Implementation von solve_lu() mit der ",
+          "Standardimplementation verglichen:")
+    text_0 = "Die alternative Funktion war in diesem Test "
+    text_1 = text_0 + f"schneller in {faster/10}% der Versuche.\n"
+    text_1 += text_0 + f"langsamer in {slower/10}% of der Versuche.\n"
+    text_1 += text_0 + f"gleichschnell wie die Standardimplementation in {same/10}% der Versuche.\n"
+
+    print(text_1)
+    print("\n--------------------------MAIN-END--------------------------\n")
 
 if __name__ == "__main__":
     main()

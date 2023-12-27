@@ -238,6 +238,7 @@ def graph_sparse_dense(maximum=2, n=25, dim = [1,2,3]):   #pylint: disable=inval
         colors = ["b", "b", "r", "r", "c", "c"]
 
     # plot data
+    x_values = [x_values[0], x_values[0], x_values[1], x_values[1], x_values[2], x_values[2]]
     plotter(x_values, data, labels, linestyles, colors)
 
 
@@ -257,7 +258,7 @@ def graph_lu(maximum=1, n=10):  #pylint: disable=invalid-name
     x_values = np.logspace(0.4, maximum, dtype=int, num=n)
     # convert numpy.int to int in order to prevent stackoverflow and format a list in order to
     # setup later computations
-    x_values = [[int(int(x)**3) for x in x_values], [int(int(x)**1.5) for x in x_values],
+    x_values = [[int(x)**3 for x in x_values], [int(x**1.5) for x in x_values],
                 [int(x) for x in x_values]]
     
     # create lists for saving data for the plot
@@ -282,6 +283,7 @@ def graph_lu(maximum=1, n=10):  #pylint: disable=invalid-name
     colors = ["b", "r", "c"]*2
 
     # plot data
+    x_values = [x_values[0], x_values[1], x_values[2], x_values[0], x_values[1], x_values[2]]
     plotter(x_values, data, labels, linestyles, colors)
 
 

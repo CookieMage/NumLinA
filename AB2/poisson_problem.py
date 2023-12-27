@@ -200,53 +200,58 @@ def compute_error(d : int, n : int, hat_u : np.ndarray, u : callable):  # pylint
     return maximum
 
 
-def graph_error(pp_u : callable, u : callable):   #pylint: disable=invalid-name
+def graph_error_helper(d: int , n : int, pp_u : callable, u: callable):
+    h = 1/n
+    # create coefficient matrix A for given n and d
+    mat = BlockMatrix(d,n)
+    mat_p, mat_l, mat_u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
+
+    #b_vector = pp.rhs(n,d,pp.pp_zu_bsp_1)
+    b_vector = []
+    for i in range(1, (n-1)**d+1):
+        # create list of discretization points
+        x = inv_idx(i,d,n)  #pylint: disable=invalid-name
+        x = [j/n for j in x]    #pylint: disable=invalid-name
+        #calculate right side of f(x)*(-h^2)=b
+        b_vector.append(pp_u(x)*(-h**2))
+
+    # use fast mode or not as specified above
+    if FAST_MODE:
+        loesung = linsol.solve_lu(mat_p, mat_l, mat_u, b_vector)
+    else:
+        loesung = linsol.solve_lu_alt(mat_p, mat_l, mat_u, b_vector)
+
+    maximum = compute_error(d,n,loesung, u)
+    return maximum
+
+
+def graph_error(n_max : int, pp_u : callable, u: callable):
     '''graphs the error of the numerical solution of the Poisson problem
     with respect to the infinity-norm
 
     Parameters
     ----------
+    n_max : int
+        maximum value for n
     pp_u : callable
         function that is used for the numerical solution of the Poisson problem
     u : callable
         analytic solution of the Poisson problem
     '''
-    dim = [1, 2, 3]
-    # create logarithmic list of int from 10^0.4 to 10^maximum
-    n = np.logspace(0.4, 1.4, 20, dtype=int) #pylint: disable=invalid-name
-    # convert numpy.int to int in order to prevent stackoverflow
-    n = [int(e) for e in n] #pylint: disable=invalid-name
-    data = []
+    x_values = [[],[],[]]
+    y_values = [[],[],[]]
+    n = np.logspace(0.4, n_max, 20, dtype=int)
+    n = [int(e) for e in n]
+    labels = []
+    for d in [1,2,3]:
+        for e in n:
+            x = (e-1)**d
+            y = graph_error_helper(d,e, pp_u, u)
+            x_values[d-1].append(x)
+            y_values[d-1].append(y)
+        labels += [f"Maximalfehler d={d}"]
 
-    # save each dataset for one dimension in a sublist of data
-    for d in dim:   #pylint: disable=invalid-name
-        data += [[]]
-        for e in n: #pylint: disable=invalid-name
-            # Initialize BlockMatrix for calculating it lu-decomposition
-            block = BlockMatrix(d, e)
-            p_mat, l_mat, u_mat = block.get_lu()    #pylint: disable=unbalanced-tuple-unpacking
-            # creat list of discretization points
-            disc_points = [inv_idx(m, d, e) for m in range(1, (e-1)**d+1)]
-            disc_points = [[x/e for x in y] for y in disc_points]
-
-            # solve Ax=b for x
-            solutions = linsol.solve_lu(p_mat, l_mat, u_mat, [u(x) for x in disc_points])
-            # save error of this calculation
-            data[d-1] = np.append(data[d-1], compute_error(d=d, n=e, hat_u=np.array(solutions),
-                                                           u=u))
-
-    # create a list formated for use in plotter()
-    x_values = [[int(x)**3 for x in n],
-                [int(int(x)**1.5) for x in n],
-                [int(x) for x in n]]
-
-    # create lists used for plotter()
-    labels = [f"error d={d}" for d in dim]
-    linestyles = ["dashdot"]*3
-    colors = ["b", "r", "c"]
-
-    # plot graph
-    plotter(x_values, data, labels, linestyles, colors)
+    plotter(x_values, y_values, labels, ["dashdot"]*3,["b", "r", "c"])
 
 
 
@@ -288,8 +293,9 @@ def main():
     input_text_1 = "Es folgt eine graphische Darstellung der Fehler der numerischen Loesung "
     input_text_1 += "des Poisson Problems. Dies kann einen Moment dauern. "
     input_text_1 += "Bitte bestaetigen Sie dies mit ENTER."
+    #progress_bar()
     input(input_text_1)
-    graph_error(pp_zu_bsp_1, bsp_1)
+    graph_error(1.2, pp_zu_bsp_1, bsp_1)
     print("\n--------------------------MAIN-END--------------------------\n")
 
 

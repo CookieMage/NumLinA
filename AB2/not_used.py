@@ -1,3 +1,10 @@
+import numpy as np
+from block_matrix import BlockMatrix
+import poisson_problem as pp
+from scipy import sparse, linalg
+import linear_solvers as linsol
+from plotter import plotter
+
 def add_row_to_row(mat, a, b, value = 1):
     new_mat = mat
     ident = sparse.eye(mat.shape[0]).tolil()
@@ -48,3 +55,47 @@ def get_lu(self):
     #        mul = U[l, k] / U[k, k]
     #        entry_list += [(k, l, mul)]
     #        U = add_row_to_row(U, l, k, -mul)
+
+FAST_MODE = True
+
+def graph_error_helper(d: int , n : int, pp_u : callable, u: callable):
+    h = 1/n
+    # create coefficient matrix A for given n and d
+    mat = BlockMatrix(d,n)
+    mat_p, mat_l, mat_u = mat.get_lu()  #pylint: disable=invalid-name, disable=unbalanced-tuple-unpacking
+
+    #b_vector = pp.rhs(n,d,pp.pp_zu_bsp_1)
+    b_vector = []
+    for i in range(1, (n-1)**d+1):
+        # create list of discretization points
+        x = pp.inv_idx(i,d,n)  #pylint: disable=invalid-name
+        x = [j/n for j in x]    #pylint: disable=invalid-name
+        #calculate right side of f(x)*(-h^2)=b
+        b_vector.append(pp_u(x)*(-h**2))
+
+    # use fast mode or not as specified above
+    if FAST_MODE:
+        loesung = linsol.solve_lu(mat_p, mat_l, mat_u, b_vector)
+    else:
+        loesung = linsol.solve_lu_alt(mat_p, mat_l, mat_u, b_vector)
+
+    maximum = pp.compute_error(d,n,loesung, u)
+    return maximum
+
+
+def graph_error(n_max : int, pp_u : callable, u: callable):
+    x_values = [[],[],[]]
+    y_values = [[],[],[]]
+    n = np.logspace(0.4, n_max, 20, dtype=int)
+    n = [int(e) for e in n]
+    labels = []
+    for d in [1,2,3]:
+        for e in n:
+            print(e)
+            x = (e-1)**d
+            y = graph_error_helper(d,e, pp_u, u)
+            x_values[d-1].append(x)
+            y_values[d-1].append(y)
+        labels += [f"Maximalfehler d={d}"]
+
+    plotter(x_values, y_values, labels, ["dashdot"]*3,["b", "r", "c"])
